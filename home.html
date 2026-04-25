@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Academic Schedule Builder</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-brand">
+      <span class="brand-icon">📚</span>
+      <span>MAIN</span>
+    </div>
+
+    <nav class="app-nav">
+      <button class="nav-button" onclick="window.location.href='home.html'">Home</button>
+      <button class="nav-button" onclick="window.location.href='coursepicker.html'">Course Picker</button>
+      <button class="nav-button" onclick="window.location.href='subjectschedule.html'">Schedule Picker</button>
+      <button class="nav-button" onclick="window.location.href='scheduleplotter.html'">Schedule Plotter</button>
+    </nav>
+
+    <button class="profile-button" aria-label="Open profile">👤</button>
+  </header>
+
+  <main class="page-content">
+    <div class="page-title">
+      <h1>Academic Schedule Builder</h1>
+      <p>Choose a tool to get started with your academic planning.</p>
+    </div>
+
+    <section class="page-panel">
+      <div class="dashboard-grid">
+        <div class="dashboard-card" onclick="window.location.href='coursepicker.html'">
+          <div class="card-icon">📚</div>
+          <h3>Course Picker</h3>
+          <p>Select courses and build your term schedule.</p>
+        </div>
+        <div class="dashboard-card" onclick="window.location.href='subjectschedule.html'">
+          <div class="card-icon">📅</div>
+          <h3>Schedule Picker</h3>
+          <p>Inspect your subject-by-subject timetable.</p>
+        </div>
+        <div class="dashboard-card" onclick="window.location.href='scheduleplotter.html'">
+          <div class="card-icon">📊</div>
+          <h3>Schedule Plotter</h3>
+          <p>Visualize your weekly schedule and customize blocks.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
