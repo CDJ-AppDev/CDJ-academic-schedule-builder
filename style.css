@@ -350,7 +350,50 @@ input:focus {
   font-size: 1rem;
 }
 
-.page-panel {\n  background: rgba(255,255,255,0.94);\n  border-radius: 28px;\n  border: 1px solid rgba(0,0,0,0.08);\n  box-shadow: 0 20px 48px rgba(0,0,0,0.12);\n  padding: 32px;\n}\n\n.dashboard-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));\n  gap: 24px;\n}\n\n.dashboard-card {\n  background: var(--surface);\n  border-radius: 20px;\n  border: 1px solid rgba(0,0,0,0.08);\n  padding: 28px;\n  cursor: pointer;\n  transition: transform 0.2s ease, box-shadow 0.2s ease;\n  text-align: center;\n}\n\n.dashboard-card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 16px 32px rgba(0,0,0,0.15);\n}\n\n.card-icon {\n  font-size: 3rem;\n  margin-bottom: 16px;\n}\n\n.dashboard-card h3 {\n  margin: 0 0 12px;\n  font-size: 1.4rem;\n}\n\n.dashboard-card p {\n  margin: 0;\n  color: var(--muted);\n  font-size: 0.95rem;\n}
+.page-panel {
+  background: rgba(255,255,255,0.94);
+  border-radius: 28px;
+  border: 1px solid rgba(0,0,0,0.08);
+   box-shadow: 0 20px 48px rgba(0,0,0,0.12);
+   padding: 32px;
+  }
+  
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.dashboard-card {
+  background: var(--surface);
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.08);
+ padding: 28px;
+ cursor: pointer;
+ transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+   box-shadow: 0 16px 32px rgba(0,0,0,0.15);
+  }
+  
+.card-icon {
+  font-size: 3rem;
+    margin-bottom: 16px;
+  }
+  
+.dashboard-card h3 {
+    margin: 0 0 12px;
+    font-size: 1.4rem;
+  }
+  
+.dashboard-card p {
+    margin: 0;
+    color: var(--muted);
+      font-size: 0.95rem;
+    }
 
 @media (max-width: 820px) {
   .app-header {
