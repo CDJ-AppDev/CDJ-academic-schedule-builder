@@ -427,3 +427,216 @@ input:focus {
   }
 }
 
+<<<<<<< HEAD
+=======
+/* Course Picker Styles */
+.course-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.course-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #000000;
+  transition: all 0.2s ease;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.course-checkbox:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.course-checkbox input[type="checkbox"],
+.course-checkbox input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #4a9eff;
+  flex-shrink: 0;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  background: #4a9eff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 16px 0;
+}
+
+.btn-primary:hover {
+  background: #2e82db;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(74, 158, 255, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.selected-courses {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(74, 158, 255, 0.1);
+  border-left: 4px solid #4a9eff;
+  border-radius: 4px;
+  color: #4a9eff;
+  font-weight: 500;
+}
+
+/* Schedule Plotter Styles */
+.course-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #000;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  color: #000;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.form-group input::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+}
+
+.courses-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.course-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(74, 158, 255, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.course-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #4a9eff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(74, 158, 255, 0.15);
+}
+
+.course-card-header {
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.2), rgba(74, 158, 255, 0.1));
+  padding: 16px;
+  border-bottom: 1px solid rgba(74, 158, 255, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course-card-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #000000;
+}
+
+.course-card-body {
+  padding: 16px;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.course-card-body p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.btn-remove {
+  padding: 8px 16px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-remove:hover {
+  background: #ff3838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+}
+
+.btn-remove:active {
+  transform: translateY(0);
+}
+
+.btn-add {
+  padding: 8px 16px;
+  background: #2ed573;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add:hover {
+  background: #26de81;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 213, 115, 0.3);
+}
+
+.btn-add:active {
+  transform: translateY(0);
+}
+
+
+
+>>>>>>> 54348b5 (lab prototype)

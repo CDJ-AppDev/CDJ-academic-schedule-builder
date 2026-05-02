@@ -4,7 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subject Schedule</title>
+<<<<<<< HEAD
   <link rel="stylesheet" href="/style.css">
+=======
+  <link rel="stylesheet" href="../style.css">
+>>>>>>> 54348b5 (lab prototype)
 </head>
 <body>
   <header class="app-header">
@@ -30,9 +34,68 @@
     </div>
 
     <section class="page-panel">
-      <h2>Subject Overview</h2>
-      <p>Review class subjects and schedule details in one place.</p>
+      <h2>Available Courses</h2>
+      <div id="available-courses" class="courses-list"></div>
+    </section>
+
+    <section class="page-panel">
+      <h2>Add Course to Schedule</h2>
+      
+      <div class="course-form">
+        <div class="form-group">
+          <label for="course-code">Course Code:</label>
+          <input type="text" id="course-code" placeholder="e.g., CS101" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="course-name">Course Name:</label>
+          <input type="text" id="course-name" placeholder="e.g., Intro to Programming" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="teacher-name">Teacher Name:</label>
+          <input type="text" id="teacher-name" placeholder="e.g., Prof. Garcia" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="teacher-dept">Department:</label>
+          <input type="text" id="teacher-dept" placeholder="e.g., Computer Science" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="schedule-day">Day:</label>
+          <select id="schedule-day" required>
+            <option value="">Select Day</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="start-time">Start Time:</label>
+          <input type="time" id="start-time" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="end-time">End Time:</label>
+          <input type="time" id="end-time" required>
+        </div>
+        
+        <button id="add-course-btn" class="btn-primary">Add Course</button>
+      </div>
+    </section>
+
+    <section class="page-panel">
+      <h2>Scheduled Courses</h2>
+      <div id="courses-list" class="courses-list"></div>
     </section>
   </main>
+
+  <script src="../scripts/script.js"></script>
+  <script src="../scripts/classes.js"></script>
+  <script src="../scripts/plotter.js"></script>
 </body>
 </html>
