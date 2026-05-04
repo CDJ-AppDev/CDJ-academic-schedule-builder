@@ -147,30 +147,11 @@
     }
 
    function removeCourse(index) {
-  // 1. Remove from courses array and get the object
-  const [removedCourse] = courses.splice(index, 1);
-  
-  // 2. Format it back to match your availableCourses structure
-  const formattedCourse = {
-    code: removedCourse.code,
-    name: removedCourse.name,
-    teacher: {
-      name: removedCourse.teacher.name,
-      department: removedCourse.teacher.department
-    },
-    schedule: {
-      day: removedCourse.schedule.day,
-      startTime: removedCourse.schedule.startTime,
-      endTime: removedCourse.schedule.endTime
-    }
-  };
+  // 1. Remove from scheduled courses array
+  courses.splice(index, 1);
 
-  // 3. Add back to availableCourses
-  availableCourses.push(formattedCourse);
-  
-  // 4. Refresh both lists
+  // 2. Refresh scheduled list only
   displayCourses();
-  displayAvailableCourses();
 }
 
     addCourseBtn.addEventListener('click', () => {
