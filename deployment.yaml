@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-deployment-sched-builder
+  name: sched-builder
 spec:
   replicas: 12
   selector:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: schedule-builder:v1
+        image: jjtschooldlsud/sched-builder:v1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80

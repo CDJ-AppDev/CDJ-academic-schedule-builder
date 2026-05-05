@@ -16,62 +16,8 @@
     // Load available courses from JSON
     async function loadAvailableCourses() {
       try {
-        // const response = await fetch('../db/courses.json');
-        // availableCourses = await response.json();
-        availableCourses = [
-              {
-                "code": "CS101",
-                "name": "Intro to Programming",
-                "teacher": {
-                  "name": "Prof. Garcia",
-                  "department": "Computer Science"
-                },
-                "schedule": {
-                  "day": "Monday",
-                  "startTime": "09:00",
-                  "endTime": "11:00"
-                }
-              },
-              {
-                "code": "CS102",
-                "name": "Data Structures",
-                "teacher": {
-                  "name": "Prof. Smith",
-                  "department": "Computer Science"
-                },
-                "schedule": {
-                  "day": "Wednesday",
-                  "startTime": "10:00",
-                  "endTime": "12:00"
-                }
-              },
-              {
-                "code": "IT201",
-                "name": "Network Fundamentals",
-                "teacher": {
-                  "name": "Prof. Johnson",
-                  "department": "Information Technology"
-                },
-                "schedule": {
-                  "day": "Tuesday",
-                  "startTime": "14:00",
-                  "endTime": "16:00"
-                }
-              },
-              {
-                "code": "IT202",
-                "name": "System Administration",
-                "teacher": {
-                  "name": "Prof. Williams",
-                  "department": "Information Technology"
-                },
-                "schedule": {
-                  "day": "Thursday",
-                  "startTime": "09:00",
-                  "endTime": "11:00"
-                }
-              }
-            ]
+        const response = await fetch('../db/courses.json');
+        availableCourses = await response.json();
         displayAvailableCourses();
       } catch (error) {
         console.error('Error loading courses:', error);

@@ -13,7 +13,7 @@ if (loginButton) {
       return;
     }
 
-    window.location.href = `home.html?email=${encodeURIComponent(email)}`;
+    window.location.href = `pages/home.html?email=${encodeURIComponent(email)}`;
   });
 }
 
