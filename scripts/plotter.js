@@ -1,29 +1,34 @@
 // Schedule Plotter Functionality
-    const addCourseBtn = document.getElementById('add-course-btn');
-    const coursesList = document.getElementById('courses-list');
-    const availableCoursesList = document.getElementById('available-courses');
-    
-    const courseCodeInput = document.getElementById('course-code');
-    const courseNameInput = document.getElementById('course-name');
-    const teacherNameInput = document.getElementById('teacher-name');
-    const teacherDeptInput = document.getElementById('teacher-dept');
-    const scheduleDayInput = document.getElementById('schedule-day');
-    const startTimeInput = document.getElementById('start-time');
-    const endTimeInput = document.getElementById('end-time');
+const addCourseBtn = document.getElementById('add-course-btn');
+const coursesList = document.getElementById('courses-list');
+const availableCoursesList = document.getElementById('available-courses');
 
-    let availableCourses = [];
+const courseCodeInput = document.getElementById('course-code');
+const courseNameInput = document.getElementById('course-name');
+const teacherNameInput = document.getElementById('teacher-name');
+const teacherDeptInput = document.getElementById('teacher-dept');
+const scheduleDayInput = document.getElementById('schedule-day');
+const startTimeInput = document.getElementById('start-time');
+const endTimeInput = document.getElementById('end-time');
 
-    // Load available courses from JSON
-    async function loadAvailableCourses() {
-      try {
-        const response = await fetch('../db/courses.json');
-        availableCourses = await response.json();
-        displayAvailableCourses();
-      } catch (error) {
-        console.error('Error loading courses:', error);
-        availableCoursesList.innerHTML = '<p style="color: #999;">Error loading courses.</p>';
-      }
-    }
+
+// Load available courses from JSON
+async function loadAvailableCourses() {
+  if (typeof initialAvailableCourses !== 'undefined') {
+    availableCourses = initialAvailableCourses.slice();
+    displayAvailableCourses();
+    return;
+  }
+
+  try {
+    const response = await fetch(new URL('../db/courses.json', location.href));
+    availableCourses = await response.json();
+    displayAvailableCourses();
+  } catch (error) {
+    console.error('Error loading courses:', error);
+    availableCoursesList.innerHTML = '<p style="color: #999;">Error loading courses.</p>';
+  }
+}
 
     function displayAvailableCourses() {
       availableCoursesList.innerHTML = '';
@@ -100,6 +105,7 @@
   displayCourses();
 }
 
+if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
       const code = courseCodeInput.value.trim();
       const name = courseNameInput.value.trim();
@@ -130,6 +136,11 @@
 
       displayCourses();
     });
+}
 
+if (coursesList && availableCoursesList) {
     displayCourses();
     loadAvailableCourses();
+} else {
+    console.warn('Plotter.js loaded on a page without required UI elements.');
+}

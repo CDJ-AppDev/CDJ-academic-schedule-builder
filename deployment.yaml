@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sched-builder
 spec:
-  replicas: 12
+  replicas: 5
   selector:
     matchLabels:
       app: web-site
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: jjtschooldlsud/sched-builder:v1
+        image: jjtschooldlsud/sched-builder:v2.1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
