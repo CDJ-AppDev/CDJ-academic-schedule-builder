@@ -12,16 +12,18 @@ const startTimeInput = document.getElementById('start-time');
 const endTimeInput = document.getElementById('end-time');
 
 
-// Load available courses from JSON
+// Load available courses from API
 async function loadAvailableCourses() {
-  if (typeof initialAvailableCourses !== 'undefined') {
-    availableCourses = initialAvailableCourses.slice();
-    displayAvailableCourses();
+  const token = localStorage.getItem('token');
+  if (!token) {
+    availableCoursesList.innerHTML = '<p style="color: #999;">Please login first.</p>';
     return;
   }
 
   try {
-    const response = await fetch(new URL('../db/courses.json', location.href));
+    const response = await fetch('http://sched-builder-backend-service:3000/api/courses', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     availableCourses = await response.json();
     displayAvailableCourses();
   } catch (error) {
@@ -56,20 +58,23 @@ async function loadAvailableCourses() {
     }
 
    function addAvailableCourse(index) {
-  // 1. Remove from availableCourses array and get the object
-  const [courseData] = availableCourses.splice(index, 1);
-  
-  // 2. Create the class instances
-  const teacher = new Teacher(courseData.teacher.name, courseData.teacher.department);
-  const schedule = new Schedule(courseData.schedule.day, courseData.schedule.startTime, courseData.schedule.endTime);
-  const newCourse = new Course(courseData.code, courseData.name, teacher, schedule);
+  const token = localStorage.getItem('token');
+  if (!token) return;
 
-  // 3. Add to the active courses array
-  courses.push(newCourse);
-  
-  // 4. Refresh both lists
-  displayCourses();
-  displayAvailableCourses();
+  const courseData = availableCourses[index];
+  fetch('http://sched-builder-backend-service:3000/api/schedule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ course_id: courseData.course_id })
+  }).then(() => {
+    // Remove from available and refresh
+    availableCourses.splice(index, 1);
+    displayAvailableCourses();
+    loadUserSchedule(); // Load user's schedule
+  }).catch(error => console.error('Error adding course:', error));
     }
 
     function displayCourses() {
@@ -86,23 +91,32 @@ async function loadAvailableCourses() {
         courseCard.innerHTML = `
           <div class="course-card-header">
             <h3>${course.code} - ${course.name}</h3>
-            <button class="btn-remove" onclick="removeCourse(${index})">Remove</button>
+            <button class="btn-remove" onclick="removeCourse(${course.course_id})">Remove</button>
           </div>
           <div class="course-card-body">
-            <p><strong>Teacher:</strong> ${course.teacher.name} (${course.teacher.department})</p>
-            <p><strong>Schedule:</strong> ${course.schedule.day} | ${course.schedule.startTime} - ${course.schedule.endTime}</p>
+            <p><strong>Teacher:</strong> ${course.teacher_name} (${course.teacher_dept})</p>
+            <p><strong>Schedule:</strong> ${course.schedule_day} | ${course.start_time} - ${course.end_time}</p>
           </div>
         `;
         coursesList.appendChild(courseCard);
       });
     }
 
-   function removeCourse(index) {
-  // 1. Remove from scheduled courses array
-  courses.splice(index, 1);
+   function removeCourse(courseId) {
+  const token = localStorage.getItem('token');
+  if (!token) return;
 
-  // 2. Refresh scheduled list only
-  displayCourses();
+  fetch('http://sched-builder-backend-service:3000/api/schedule', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ course_id: courseId })
+  }).then(() => {
+    loadUserSchedule();
+    loadAvailableCourses();
+  }).catch(error => console.error('Error removing course:', error));
 }
 
 if (addCourseBtn) {
@@ -139,8 +153,24 @@ if (addCourseBtn) {
 }
 
 if (coursesList && availableCoursesList) {
-    displayCourses();
+    loadUserSchedule();
     loadAvailableCourses();
 } else {
     console.warn('Plotter.js loaded on a page without required UI elements.');
+}
+
+// Load user schedule
+async function loadUserSchedule() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  try {
+    const response = await fetch('http://sched-builder-backend-service:3000/api/schedule', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    courses = await response.json();
+    displayCourses();
+  } catch (error) {
+    console.error('Error loading schedule:', error);
+  }
 }
