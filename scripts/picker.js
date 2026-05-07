@@ -7,6 +7,21 @@
     const selectedCoursesDisplay = document.getElementById('selected-courses');
     const schedulePickerBtn = document.getElementById('schedule-picker-btn');
 
+    function saveToLocalStorage() {
+      const selectedCourse = Array.from(courseRadios).find(radio => radio.checked);
+      const selectedYear = Array.from(yearRadios).find(radio => radio.checked);
+      const selectedSemester = Array.from(semesterRadios).find(radio => radio.checked);
+      
+      if (selectedCourse && selectedYear && selectedSemester) {
+        const data = {
+          course: selectedCourse.value,
+          year: selectedYear.value,
+          semester: selectedSemester.value
+        };
+        localStorage.setItem('courseSelection', JSON.stringify(data));
+      }
+    }
+
     function updateURL() {
       const selectedCourse = Array.from(courseRadios).find(radio => radio.checked);
       const selectedYear = Array.from(yearRadios).find(radio => radio.checked);
@@ -22,6 +37,8 @@
         
         selectedCoursesDisplay.textContent = `Selected: ${courseLabel} - ${yearLabel} - ${semesterLabel}`;
         schedulePickerBtn.removeAttribute('hidden');
+        
+        saveToLocalStorage();
       } else {
         window.history.replaceState({}, document.title, 'coursepicker.html');
         selectedCoursesDisplay.textContent = '';
@@ -31,12 +48,30 @@
 
     applyBtn.addEventListener('click', updateURL);
 
-    // Load saved course, year, and semester from URL on page load
+    // Load saved course, year, and semester from localStorage or URL on page load
     window.addEventListener('load', () => {
-      const params = new URLSearchParams(window.location.search);
-      const course = params.get('course');
-      const year = params.get('year');
-      const semester = params.get('semester');
+      let course, year, semester;
+      
+      // First, try to load from localStorage
+      const savedData = localStorage.getItem('courseSelection');
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          course = data.course;
+          year = data.year;
+          semester = data.semester;
+        } catch (e) {
+          console.error('Error parsing saved course selection:', e);
+        }
+      }
+      
+      // If no localStorage data, try URL parameters
+      if (!course && !year && !semester) {
+        const params = new URLSearchParams(window.location.search);
+        course = params.get('course');
+        year = params.get('year');
+        semester = params.get('semester');
+      }
       
       if (course && year && semester) {
         const courseRadio = Array.from(courseRadios).find(r => r.value === course);

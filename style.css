@@ -278,8 +278,7 @@ input:focus {
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 16px;
-  background: var(--accent);
+  border-radius: 0;
   color: #fff;
   font-size: 1.1rem;
 }
@@ -427,8 +426,6 @@ input:focus {
   }
 }
 
-<<<<<<< HEAD
-=======
 /* Course Picker Styles */
 .course-selection {
   display: flex;
@@ -639,4 +636,3 @@ input:focus {
 
 
 
->>>>>>> 54348b5 (lab prototype)
