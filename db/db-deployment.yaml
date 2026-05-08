@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend-container
-        image: jjtschooldlsud/sched-builder-db:v1.2
+        image: jjtschooldlsud/sched-builder-db:v1.4
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000

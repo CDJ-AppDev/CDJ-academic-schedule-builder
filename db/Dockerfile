@@ -2,13 +2,14 @@ FROM node:16-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY db/package*.json ./
+# Since the Dockerfile is INSIDE the db folder, 
+# just refer to the files directly.
+COPY package*.json ./
 RUN npm install
 
-# Copy source code
-COPY db/db-server.js ./db-server.js
-COPY db/.env ./.env
+# Copy the server script and env
+COPY db-server.js .
+COPY .env .
 
 EXPOSE 3000
 

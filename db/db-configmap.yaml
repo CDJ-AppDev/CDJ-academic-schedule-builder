@@ -4,7 +4,7 @@ metadata:
   name: sched-builder-config
 data:
   DB_USER: "postgres"
-  DB_HOST: "localhost"  # Update to your PostgreSQL service name in K8s
+  DB_HOST: "localhost"
   DB_NAME: "scheduler"
   DB_PORT: "5432"
   PORT: "3000"
