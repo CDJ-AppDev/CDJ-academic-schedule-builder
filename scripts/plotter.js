@@ -138,6 +138,19 @@ if (addCourseBtn) {
     });
 }
 
+const toggleIrregularBtn = document.getElementById('toggle-irregular');
+const irregularSection = document.getElementById('irregular-section');
+
+if (toggleIrregularBtn && irregularSection) {
+    toggleIrregularBtn.addEventListener('click', () => {
+        if (irregularSection.style.display === 'none') {
+            irregularSection.style.display = 'block';
+        } else {
+            irregularSection.style.display = 'none';
+        }
+    });
+}
+
 if (coursesList && availableCoursesList) {
     displayCourses();
     loadAvailableCourses();

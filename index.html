@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,43 +8,46 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div class="page-shell">
-    <div class="page-header">LOGIN</div>
+  <header class="app-header">
+    <div class="app-brand">
+      <img src="./assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
+      <span>Academic Schedule Builder</span>
+    </div>
 
-    <div class="login-card">
-      <button class="close-btn" aria-label="Close login form">×</button>
-      <div class="card-content">
-        <h1>Welcome!</h1>
-        <p class="subtitle">Login to Academic Schedule Builder</p>
+    <nav class="app-nav">
+      <button class="nav-button" onclick="window.location.href='./index.html'">Home</button>
+      <button class="nav-button" onclick="window.location.href='./pages/coursepicker.html'">Course Picker</button>
+      <button class="nav-button" onclick="window.location.href='./pages/subjectschedule.html'">Schedule Picker</button>
+      <button class="nav-button" onclick="window.location.href='./pages/scheduleplotter.html'">Schedule Plotter</button>
+      <button class="nav-button" onclick="window.location.href='./login.html'">Login</button>
+    </nav>
+  </header>
 
-        <div class="form-group">
-          <label class="field">
-            <span>Email</span>
-            <input type="email" placeholder="Email" aria-label="Email address">
-          </label>
+  <main class="page-content">
+    <div class="page-title">
+      <h1>Plan your academic term with confidence</h1>
+      <p>Start building your course schedule, explore subject planning tools, and visualize your week in one polished academic planner.</p>
+    </div>
 
-          <label class="field">
-            <span>Password</span>
-            <input type="password" placeholder="Password" aria-label="Password">
-          </label>
+    <section class="page-panel">
+      <div class="dashboard-grid">
+        <div class="dashboard-card" onclick="window.location.href='./pages/coursepicker.html'">
+          <div class="card-icon"><img src="./assets/coursepicker.png" alt="Course Picker" class="brand-icon"></div>
+          <h3>Course Picker</h3>
+          <p>Select your classes and organize your semester with ease.</p>
         </div>
-
-        <button class="button primary login-btn">Login <span class="arrow">→</span></button>
-
-        <div class="separator"><span>or</span></div>
-
-        <button class="button social google">G Log in with Google</button>
-        <button class="button social facebook">f Log in with Facebook</button>
-        <button class="button social apple"> Log in with Apple</button>
-
-        <div class="footer-links">
-          <button class="link-button" id="forgot-password">Forgot your password?</button>
-          <p>Don't have an account? <button class="link-button accent" id="signup">Sign Up</button></p>
+        <div class="dashboard-card" onclick="window.location.href='./pages/subjectschedule.html'">
+          <div class="card-icon"><img src="./assets/schedulepicker.png" alt="Schedule Picker" class="brand-icon"></div>
+          <h3>Schedule Picker</h3>
+          <p>Review subject schedules, compare options, and manage your time.</p>
+        </div>
+        <div class="dashboard-card" onclick="window.location.href='./pages/scheduleplotter.html'">
+          <div class="card-icon"><img src="./assets/scheduleplotter.png" alt="Schedule Plotter" class="brand-icon"></div>
+          <h3>Schedule Plotter</h3>
+          <p>Visualize your weekly layout and refine your academic plan.</p>
         </div>
       </div>
-    </div>
-  </div>
-
-  <script src="./scripts/script.js"></script>
+    </section>
+  </main>
 </body>
 </html>
