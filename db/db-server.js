@@ -117,5 +117,39 @@ app.delete('/api/schedule', authenticateToken, async (req, res) => {
   }
 });
 
+// Save user program selection
+app.post('/api/program', authenticateToken, async (req, res) => {
+  const { program_id, year_level, semester } = req.body;
+  console.log('Received program save request:', { user_id: req.user.user_id, program_id, year_level, semester });
+  try {
+    await pool.query(`
+      INSERT INTO user_program (user_id, program_id, year_level, semester)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (user_id, program_id) DO UPDATE SET
+        year_level = EXCLUDED.year_level,
+        semester = EXCLUDED.semester
+    `, [req.user.user_id, program_id, year_level, semester]);
+    console.log('Program selection saved successfully');
+    res.status(201).json({ message: 'Program selection saved' });
+  } catch (error) {
+    console.error('Error saving program selection:', error);
+    res.status(400).json({ error: 'Invalid data' });
+  }
+});
+
+// Get user program selection
+app.get('/api/program', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT program_id, year_level, semester FROM user_program WHERE user_id = $1', [req.user.user_id]);
+    if (result.rows.length > 0) {
+      res.json(result.rows[0]);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
