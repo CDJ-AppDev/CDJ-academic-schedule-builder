@@ -1,4 +1,4 @@
-const API_BASE = 'http://sched-builder-backend-service:3000/api';
+const API_BASE = 'http://localhost:3000/api';
 
 const loginButton = document.querySelector('.login-btn');
 const forgotButton = document.getElementById('forgot-password');
@@ -59,9 +59,7 @@ if (signupButton) {
       alert('Signup failed');
     }
   });
-}
-
-if (closeButton) {
+} if (closeButton) {
   closeButton.addEventListener('click', () => {
     document.querySelector('.login-card').style.display = 'none';
   });

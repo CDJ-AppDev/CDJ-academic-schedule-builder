@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sched-builder-backend
+  name: sched-builder-db
 spec:
   replicas: 1
   selector:
@@ -14,43 +14,43 @@ spec:
     spec:
       containers:
       - name: backend-container
-        image: jjtschooldlsud/sched-builder-backend:v1.0  # Replace with your backend image
+        image: jjtschooldlsud/sched-builder-db:v1.2
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
         env:
         - name: DB_USER
           valueFrom:
-            secretKeyRef:
-              name: sched-builder-secret
+            configMapKeyRef:
+              name: sched-builder-config
               key: DB_USER
         - name: DB_HOST
           valueFrom:
-            secretKeyRef:
-              name: sched-builder-secret
+            configMapKeyRef:
+              name: sched-builder-config
               key: DB_HOST
         - name: DB_NAME
           valueFrom:
-            secretKeyRef:
-              name: sched-builder-secret
+            configMapKeyRef:
+              name: sched-builder-config
               key: DB_NAME
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: sched-builder-config
+              key: DB_PORT
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: sched-builder-config
+              key: PORT
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: sched-builder-secret
               key: DB_PASSWORD
-        - name: DB_PORT
-          valueFrom:
-            secretKeyRef:
-              name: sched-builder-secret
-              key: DB_PORT
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:
               name: sched-builder-secret
               key: JWT_SECRET
-        - name: PORT
-          valueFrom:
-            secretKeyRef:
-              name: sched-builder-secret
-              key: PORT

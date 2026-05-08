@@ -12,6 +12,8 @@ const startTimeInput = document.getElementById('start-time');
 const endTimeInput = document.getElementById('end-time');
 
 
+const API_BASE = 'http://localhost:30030/api';
+
 // Load available courses from API
 async function loadAvailableCourses() {
   const token = localStorage.getItem('token');
@@ -21,7 +23,7 @@ async function loadAvailableCourses() {
   }
 
   try {
-    const response = await fetch('http://sched-builder-backend-service:3000/api/courses', {
+    const response = await fetch(`${API_BASE}/courses`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     availableCourses = await response.json();
@@ -62,7 +64,7 @@ async function loadAvailableCourses() {
   if (!token) return;
 
   const courseData = availableCourses[index];
-  fetch('http://sched-builder-backend-service:3000/api/schedule', {
+  fetch(`${API_BASE}/schedule`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -106,7 +108,7 @@ async function loadAvailableCourses() {
   const token = localStorage.getItem('token');
   if (!token) return;
 
-  fetch('http://sched-builder-backend-service:3000/api/schedule', {
+  fetch(`${API_BASE}/schedule`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -165,7 +167,7 @@ async function loadUserSchedule() {
   if (!token) return;
 
   try {
-    const response = await fetch('http://sched-builder-backend-service:3000/api/schedule', {
+    const response = await fetch(`${API_BASE}/schedule`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     courses = await response.json();
