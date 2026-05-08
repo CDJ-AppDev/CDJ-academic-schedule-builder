@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: jjtschooldlsud/sched-builder:v2.1
+        image: jjtschooldlsud/sched-builder:v3.7
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80

@@ -6,15 +6,24 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-app.use(cors());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 app.use(express.json());
 
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'scheduler',
-  password: process.env.DB_PASSWORD || 'your_password',
-  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
 // Middleware to verify JWT
@@ -22,7 +31,7 @@ const authenticateToken = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Access denied' });
 
-  jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ error: 'Invalid token' });
     req.user = user;
     next();
@@ -55,7 +64,7 @@ app.post('/api/login', async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password_hash);
     if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
 
-    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET || 'your_jwt_secret');
+    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET);
     res.json({ token, user: { user_id: user.user_id, name: user.name, email: user.email } });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
@@ -108,5 +117,5 @@ app.delete('/api/schedule', authenticateToken, async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
