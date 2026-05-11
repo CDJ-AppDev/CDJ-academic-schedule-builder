@@ -72,10 +72,27 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Get courses
-app.get('/api/courses', authenticateToken, async (req, res) => {
+app.get('/api/courses', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM course_list');
-    res.json(result.rows);
+    const courses = result.rows.map(row => ({
+      course_id: row.course_id,
+      code: row.code,
+      name: row.name,
+      program_id: row.program_id,
+      year_level: row.year_level,
+      semester: row.semester,
+      teacher: {
+        name: row.teacher_name,
+        department: row.teacher_dept
+      },
+      schedule: {
+        day: row.schedule_day,
+        startTime: row.start_time,
+        endTime: row.end_time
+      }
+    }));
+    res.json(courses);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
