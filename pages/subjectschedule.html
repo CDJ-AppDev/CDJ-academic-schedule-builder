@@ -10,8 +10,8 @@
 <body>
   <header class="app-header">
     <div class="app-brand">
-      <img src="../assets/logo.png" alt="Brand" class="brand-icon">
-      <span>MAIN</span>
+      <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
+      <span>Academic Schedule Builder</span>
     </div>
 
     <nav class="app-nav">
@@ -21,7 +21,7 @@
       <button class="nav-button" onclick="window.location.href='scheduleplotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="profile-button" aria-label="Open profile">👤</button>
+    <button class="profile-button" aria-label="Login" onclick="window.location.href='../login.html'">👤</button>
   </header>
 
   <main class="page-content">
@@ -33,10 +33,11 @@
     <section class="page-panel">
       <h2>Available Courses</h2>
       <div id="available-courses" class="courses-list"></div>
+      <button id="toggle-irregular" class="btn-toggle">Irregular Student</button>
     </section>
 
-    <section class="page-panel">
-      <h2>Add Course to Schedule</h2>
+    <section class="page-panel" id="irregular-section" style="display: none;">
+      <h2>Irregular Student</h2>
       
       <div class="course-form">
         <div class="form-group">

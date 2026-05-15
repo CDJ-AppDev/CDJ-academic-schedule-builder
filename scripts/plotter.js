@@ -12,7 +12,7 @@ const startTimeInput = document.getElementById('start-time');
 const endTimeInput = document.getElementById('end-time');
 
 
-const API_BASE = 'http://localhost:30030/api';
+const API_BASE = 'http://localhost:3000/api';
 
 // Load available courses from API
 async function loadAvailableCourses() {
@@ -151,6 +151,19 @@ if (addCourseBtn) {
       endTimeInput.value = '';
 
       displayCourses();
+    });
+}
+
+const toggleIrregularBtn = document.getElementById('toggle-irregular');
+const irregularSection = document.getElementById('irregular-section');
+
+if (toggleIrregularBtn && irregularSection) {
+    toggleIrregularBtn.addEventListener('click', () => {
+        if (irregularSection.style.display === 'none') {
+            irregularSection.style.display = 'block';
+        } else {
+            irregularSection.style.display = 'none';
+        }
     });
 }
 

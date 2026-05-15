@@ -2,7 +2,7 @@ FROM nginx:alpine
 
 WORKDIR /usr/share/nginx/html
 
-COPY index.html ./
+COPY login.html ./
 COPY style.css ./
 COPY favicon.png ./
 COPY assets ./assets
