@@ -3,9 +3,9 @@
 :root {
   color-scheme: dark;
   --bg: #161616;
-  --panel: rgba(255,255,255,0.96);
-  --panel-shadow: 0 24px 60px rgba(0,0,0,0.32);
-  --border: rgba(0,0,0,0.12);
+  --panel: rgba(255, 255, 255, 0.96);
+  --panel-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+  --border: rgba(0, 0, 0, 0.12);
   --text: #151515;
   --muted: #555;
   --accent: #111;
@@ -21,10 +21,10 @@ body {
   min-height: 100vh;
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 25%),
-              linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
-              linear-gradient(180deg, rgba(255,255,255,0.04) 1px, transparent 1px),
-              #111;
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 25%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    #111;
   background-size: 100% 100%, 40px 40px, 40px 40px;
 }
 
@@ -32,7 +32,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 28%);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 28%);
   pointer-events: none;
 }
 
@@ -48,7 +48,7 @@ body::before {
   position: absolute;
   top: 24px;
   left: 32px;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   letter-spacing: 0.32em;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -60,7 +60,7 @@ body::before {
   background: var(--panel);
   border-radius: 28px;
   box-shadow: var(--panel-shadow);
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
@@ -68,7 +68,7 @@ body::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.23), transparent 40%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.23), transparent 40%);
   pointer-events: none;
 }
 
@@ -83,10 +83,10 @@ body::before {
   right: 20px;
   width: 38px;
   height: 38px;
-  border: 1px solid rgba(0,0,0,0.12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 50%;
   color: var(--text);
-  background: rgba(255,255,255,0.88);
+  background: rgba(255, 255, 255, 0.88);
   font-size: 1.25rem;
   cursor: pointer;
   display: grid;
@@ -129,7 +129,7 @@ input {
   width: 100%;
   padding: 16px 18px;
   border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   background: #fff;
   font-size: 1rem;
   color: var(--text);
@@ -138,8 +138,8 @@ input {
 }
 
 input:focus {
-  border-color: rgba(17,17,17,0.35);
-  box-shadow: 0 0 0 4px rgba(17,17,17,0.05);
+  border-color: rgba(17, 17, 17, 0.35);
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.05);
 }
 
 .button {
@@ -165,7 +165,7 @@ input:focus {
   background: var(--accent);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
 }
 
 .arrow {
@@ -186,7 +186,7 @@ input:focus {
   inset: 50% auto auto 0;
   width: calc(50% - 40px);
   height: 1px;
-  background: rgba(0,0,0,0.08);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .separator::after {
@@ -204,7 +204,7 @@ input:focus {
 .social {
   background: #fff;
   color: var(--text);
-  border-color: rgba(0,0,0,0.09);
+  border-color: rgba(0, 0, 0, 0.09);
 }
 
 .social.google {
@@ -216,7 +216,7 @@ input:focus {
 }
 
 .social.apple {
-  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
 .footer-links {
@@ -252,10 +252,10 @@ input:focus {
   padding: 16px 28px;
   margin: 0 auto;
   max-width: 1200px;
-  background: rgba(248,248,248,0.92);
-  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(248, 248, 248, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 22px;
-  box-shadow: 0 18px 36px rgba(0,0,0,0.12);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(12px);
   position: sticky;
   top: 16px;
@@ -293,9 +293,9 @@ input:focus {
 }
 
 .nav-button {
-  border: 1px solid rgba(0,0,0,0.12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 999px;
-  background: rgba(17,17,17,0.92);
+  background: rgba(17, 17, 17, 0.92);
   color: #fff;
   padding: 12px 18px;
   font-size: 0.9rem;
@@ -312,7 +312,7 @@ input:focus {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   background: #fff;
   color: var(--text);
   display: grid;
@@ -325,10 +325,10 @@ input:focus {
   max-width: 1200px;
   margin: 36px auto 48px;
   padding: 0 28px;
-  background: rgba(248,248,248,0.92);
+  background: rgba(248, 248, 248, 0.92);
   border-radius: 22px;
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 18px 36px rgba(0,0,0,0.12);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(12px);
 }
 
@@ -350,13 +350,13 @@ input:focus {
 }
 
 .page-panel {
-  background: rgba(255,255,255,0.94);
+  background: rgba(255, 255, 255, 0.94);
   border-radius: 28px;
-  border: 1px solid rgba(0,0,0,0.08);
-   box-shadow: 0 20px 48px rgba(0,0,0,0.12);
-   padding: 32px;
-  }
-  
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
+  padding: 32px;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -366,33 +366,33 @@ input:focus {
 .dashboard-card {
   background: var(--surface);
   border-radius: 20px;
-  border: 1px solid rgba(0,0,0,0.08);
- padding: 28px;
- cursor: pointer;
- transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 28px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
 }
 
 .dashboard-card:hover {
   transform: translateY(-4px);
-   box-shadow: 0 16px 32px rgba(0,0,0,0.15);
-  }
-  
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+}
+
 .card-icon {
   font-size: 3rem;
-    margin-bottom: 16px;
-  }
-  
+  margin-bottom: 16px;
+}
+
 .dashboard-card h3 {
-    margin: 0 0 12px;
-    font-size: 1.4rem;
-  }
-  
+  margin: 0 0 12px;
+  font-size: 1.4rem;
+}
+
 .dashboard-card p {
-    margin: 0;
-    color: var(--muted);
-      font-size: 0.95rem;
-    }
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
 
 @media (max-width: 820px) {
   .app-header {
@@ -656,6 +656,3 @@ input:focus {
 .btn-toggle:active {
   transform: translateY(0);
 }
-
-
-
