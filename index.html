@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Schedule Builder</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="page-header">ACADEMIC SCHEDULE BUILDER</div>
+
+    <div class="landing-container">
+      <div class="landing-content">
+        <h1 style="color: #b9b9b9;">Academic Schedule Builder</h1>
+        <p class="subtitle" style="color: #b9b9b9;">Plan your courses and organize your academic semester with ease</p>
+        <p class="description" style="color: #b9b9b9;">Get started building and visualizing your ideal academic schedule.</p>
+      </div>
+
+      <div class="landing-buttons">
+        <button class="button primary" id="login-btn">Login</button>
+        <button class="button secondary" id="signup-btn">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('login-btn').addEventListener('click', () => {
+      window.location.href = './pages/login.html';
+    });
+
+    document.getElementById('signup-btn').addEventListener('click', () => {
+      window.location.href = './pages/signup.html';
+    });
+  </script>
+</body>
+</html>
