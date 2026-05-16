@@ -90,7 +90,7 @@ function applySelectionToUI(course, year, semester) {
   if (semesterRadio) semesterRadio.checked = true;
 const ord = ['st', 'nd', 'rd', 'th'];
   const courseLabel = 
-    course === 'computer-science' ? 'Computer Science' : 'Information Technology';
+    course === 'CS' ? 'Computer Science' : 'Information Technology';
   const yearLabel = `${year}${ord[year - 1]} Year`;
   const semesterLabel = `${semester}${ord[semester - 1]} Semester`;
   selectedCoursesDisplay.textContent =

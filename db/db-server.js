@@ -45,11 +45,19 @@ app.post('/api/signup', async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      'INSERT INTO user_credentials (name, email, password_hash) VALUES ($1, $2, $3) RETURNING user_id',
-      [name, email, hashedPassword]
+      'INSERT INTO user_credentials (useremail, userpassword, useraccess) VALUES (LOWER($1), $2, $3) RETURNING userid',
+      [email, hashedPassword, 'Default']
     );
-    res.status(201).json({ user_id: result.rows[0].user_id });
+    
+    // Create user profile
+    await pool.query(
+      'INSERT INTO user_profile (userid, username) VALUES ($1, $2)',
+      [result.rows[0].userid, name]
+    );
+    
+    res.status(201).json({ user_id: result.rows[0].userid });
   } catch (error) {
+    console.error('Signup error:', error);
     res.status(400).json({ error: 'User already exists or invalid data' });
   }
 });
@@ -58,11 +66,27 @@ app.post('/api/signup', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    const result = await pool.query('SELECT * FROM user_login WHERE email = $1', [email]);
-    if (result.rows.length === 0) return res.status(400).json({ error: 'User not found' });
+    console.log('Login attempt for email:', email);
+    
+    const result = await pool.query(
+      'SELECT uc.userid, uc.userpassword, up.username FROM user_credentials uc LEFT JOIN user_profile up ON uc.userid = up.userid WHERE LOWER(uc.useremail) = LOWER($1)',
+      [email]
+    );
+    
+    console.log('Query result rows:', result.rows.length);
+    
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'User not found' });
+    }
 
     const user = result.rows[0];
-    const validPassword = await bcrypt.compare(password, user.password_hash);
+    console.log('User found, checking password');
+    
+    if (!user.userpassword) {
+      return res.status(400).json({ error: 'User password not found' });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.userpassword);
     if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
 
     if (!process.env.JWT_SECRET) {
@@ -70,18 +94,49 @@ app.post('/api/login', async (req, res) => {
       return res.status(500).json({ error: 'Server misconfiguration' });
     }
 
-    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET);
-    res.json({ token, user: { user_id: user.user_id, name: user.name, email: user.email } });
+    const token = jwt.sign({ user_id: user.userid }, process.env.JWT_SECRET);
+    res.json({ token, user: { user_id: user.userid, name: user.username, email: email } });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Login error:', error.message);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
 // Get courses
-app.get('/api/courses', async (req, res) => {
+app.get('/api/courses', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM course_list');
+    const userResult = await pool.query(
+      'SELECT termid FROM user_profile WHERE userid = $1',
+      [req.user.user_id]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].termid) {
+      return res.json([]);
+    }
+
+    const userTermId = userResult.rows[0].termid;
+
+    const result = await pool.query(`
+      SELECT
+        c.coursecode as course_id,
+        c.coursecode as code,
+        c.coursename as name,
+        t.programid as program_id,
+        t.yearlevel as year_level,
+        t.semester as semester,
+        p.profname as teacher_name,
+        p.profdepartment as teacher_dept,
+        cs.scheduleday as schedule_day,
+        cs.starttime as start_time,
+        cs.endtime as end_time
+      FROM course c
+      JOIN term t ON c.termid = t.termid
+      LEFT JOIN courseslot cs ON c.coursecode = cs.coursecode
+      LEFT JOIN professor p ON cs.profid = p.profid
+      WHERE c.termid = $1
+      ORDER BY c.coursecode
+    `, [userTermId]);
     const courses = result.rows.map(row => ({
       course_id: row.course_id,
       code: row.code,
@@ -101,42 +156,112 @@ app.get('/api/courses', async (req, res) => {
     }));
     res.json(courses);
   } catch (error) {
+    console.error('Error fetching courses:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
 // Add course to user schedule
 app.post('/api/schedule', authenticateToken, async (req, res) => {
-  const { course_id } = req.body;
+  const { course_id, schedule_id } = req.body;
   try {
-    await pool.query('INSERT INTO user_schedule (user_id, course_id) VALUES ($1, $2)', [req.user.user_id, course_id]);
-    res.status(201).json({ message: 'Course added to schedule' });
+    // If no schedule_id, create a new schedule
+    let sid = schedule_id;
+    if (!sid) {
+      const scheduleResult = await pool.query(
+        'INSERT INTO schedule (userid, schedulename) VALUES ($1, $2) RETURNING scheduleid',
+        [req.user.user_id, 'My Schedule']
+      );
+      sid = scheduleResult.rows[0].scheduleid;
+    }
+
+    // Add course to the schedule
+    const result = await pool.query(
+      'UPDATE schedule SET schedulelist = schedulelist || $1::jsonb WHERE scheduleid = $2 AND userid = $3 RETURNING scheduleid',
+      [JSON.stringify([{ course_id }]), sid, req.user.user_id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Schedule not found' });
+    }
+    
+    res.status(201).json({ message: 'Course added to schedule', schedule_id: sid });
   } catch (error) {
-    res.status(400).json({ error: 'Course already in schedule or invalid' });
+    console.error('Error adding course to schedule:', error);
+    res.status(400).json({ error: 'Failed to add course to schedule' });
   }
 });
 
 // Get user schedule
 app.get('/api/schedule', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT c.* FROM course_list c
-      JOIN user_schedule us ON c.course_id = us.course_id
-      WHERE us.user_id = $1
-    `, [req.user.user_id]);
-    res.json(result.rows);
+    const result = await pool.query(
+      'SELECT scheduleid, schedulename, schedulelist, totalunits FROM schedule WHERE userid = $1',
+      [req.user.user_id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.json([]);
+    }
+    
+    // For each schedule, get the course details
+    const schedules = [];
+    for (const schedule of result.rows) {
+      const courseIds = schedule.schedulelist.map(item => item.course_id);
+      if (courseIds.length > 0) {
+        const courseResult = await pool.query(`
+          SELECT 
+            c.coursecode as course_id,
+            c.coursename as name,
+            c.courseunits as units,
+            t.programid as program_id,
+            p.profname as teacher_name
+          FROM course c
+          JOIN term t ON c.termid = t.termid
+          LEFT JOIN courseslot cs ON c.coursecode = cs.coursecode
+          LEFT JOIN professor p ON cs.profid = p.profid
+          WHERE c.coursecode = ANY($1::varchar[])
+        `, [courseIds]);
+        
+        schedules.push({
+          schedule_id: schedule.scheduleid,
+          schedule_name: schedule.schedulename,
+          courses: courseResult.rows,
+          total_units: schedule.totalunits
+        });
+      }
+    }
+    
+    res.json(schedules);
   } catch (error) {
+    console.error('Error fetching schedule:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
 // Remove course from user schedule
 app.delete('/api/schedule', authenticateToken, async (req, res) => {
-  const { course_id } = req.body;
+  const { course_id, schedule_id } = req.body;
   try {
-    await pool.query('DELETE FROM user_schedule WHERE user_id = $1 AND course_id = $2', [req.user.user_id, course_id]);
+    const result = await pool.query(
+      `UPDATE schedule 
+       SET schedulelist = (
+         SELECT jsonb_agg(item) 
+         FROM jsonb_array_elements(schedulelist) item 
+         WHERE item->>'course_id' != $1
+       )
+       WHERE scheduleid = $2 AND userid = $3
+       RETURNING scheduleid`,
+      [course_id, schedule_id, req.user.user_id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Schedule not found' });
+    }
+    
     res.json({ message: 'Course removed from schedule' });
   } catch (error) {
+    console.error('Error removing course from schedule:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -156,20 +281,28 @@ app.post('/api/program', authenticateToken, async (req, res) => {
   try {
     await client.query('BEGIN');
     
-    // Use UPSERT to insert or update the program selection
+    // Get the TermID based on program_id, year_level, and semester
+    const termResult = await client.query(
+      'SELECT termid FROM term WHERE programid = $1 AND yearlevel = $2 AND semester = $3',
+      [program_id, year_level, semester]
+    );
+    
+    if (termResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ error: 'Invalid program, year level, or semester combination' });
+    }
+    
+    const termID = termResult.rows[0].termid;
+    
+    // Update user profile with the selected term
     await client.query(
-      `INSERT INTO user_program (user_id, program_id, year_level, semester) 
-       VALUES ($1, $2, $3, $4)
-       ON CONFLICT (user_id) DO UPDATE SET
-       program_id = EXCLUDED.program_id,
-       year_level = EXCLUDED.year_level,
-       semester = EXCLUDED.semester`,
-      [req.user.user_id, program_id, year_level, semester]
+      'UPDATE user_profile SET termid = $1 WHERE userid = $2',
+      [termID, req.user.user_id]
     );
     
     await client.query('COMMIT');
     console.log('Program selection saved successfully for user:', req.user.user_id);
-    res.status(201).json({ message: 'Program selection saved', user_id: req.user.user_id });
+    res.status(201).json({ message: 'Program selection saved', user_id: req.user.user_id, term_id: termID });
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error saving program selection:', error);
@@ -183,7 +316,10 @@ app.post('/api/program', authenticateToken, async (req, res) => {
 app.get('/api/program', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT program_id, year_level, semester FROM user_program WHERE user_id = $1',
+      `SELECT t.programid as program_id, t.yearlevel as year_level, t.semester as semester
+       FROM user_profile up
+       JOIN term t ON up.termid = t.termid
+       WHERE up.userid = $1`,
       [req.user.user_id]
     );
     

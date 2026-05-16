@@ -35,7 +35,7 @@ INSERT INTO COURSE (CourseCode, TermID, CourseName, CourseUnits) VALUES
 ('IT802', 'IT8', 'Course Name', 3);
 
 -- TIMESLOTS
-INSERT INTO TIMESLOT (
+INSERT INTO COURSESLOT (
     CourseCode,
     ProfID,
     StartTime,
