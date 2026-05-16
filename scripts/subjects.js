@@ -1,7 +1,7 @@
 // Schedule Plotter Functionality
 const addCourseBtn = document.getElementById('add-course-btn');
-const coursesList = document.getElementById('courses-list');
-const availableCoursesList = document.getElementById('available-courses');
+const coursesList = document.getElementById('scheduledList');
+const availableCoursesList = document.getElementById('availableCourses');
 
 const courseCodeInput = document.getElementById('course-code');
 const courseNameInput = document.getElementById('course-name');
@@ -10,7 +10,6 @@ const teacherDeptInput = document.getElementById('teacher-dept');
 const scheduleDayInput = document.getElementById('schedule-day');
 const startTimeInput = document.getElementById('start-time');
 const endTimeInput = document.getElementById('end-time');
-
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -23,33 +22,26 @@ async function loadAvailableCourses() {
   }
 
   try {
-    // First, fetch the user's current program/term
     const programResponse = await fetch(`${API_BASE}/program`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    
+
     const programData = await programResponse.json();
     if (!programData) {
       availableCoursesList.innerHTML = '<p style="color: #999;">Please select a program first.</p>';
       return;
     }
 
-    // Extract program_id and construct termId (e.g., "CS4", "IT1")
     const termId = programData.program_id + programData.year_level;
     currentTermId = termId;
 
-    // Fetch all available courses
     const response = await fetch(`${API_BASE}/courses`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    
+
     const allCourses = await response.json();
-    
-    // Filter courses to only show those matching the current term
-    availableCourses = allCourses.filter(course => 
-      `${course.program_id}${course.year_level}` === termId
-    );
-    
+
+    availableCourses = allCourses.filter(course => `${course.program_id}${course.year_level}` === termId);
     displayAvailableCourses();
   } catch (error) {
     console.error('Error loading courses:', error);
@@ -57,78 +49,105 @@ async function loadAvailableCourses() {
   }
 }
 
-    function displayAvailableCourses() {
-      availableCoursesList.innerHTML = '';
-      
-      if (availableCourses.length === 0) {
-        availableCoursesList.innerHTML = '<p style="color: #999;">No available courses for your term.</p>';
-        return;
-      }
+function displayAvailableCourses() {
+  availableCoursesList.innerHTML = '';
 
-      // Group courses by course code to aggregate their slots
-      const courseMap = {};
-      availableCourses.forEach((courseData) => {
-        if (!courseMap[courseData.code]) {
-          courseMap[courseData.code] = {
-            code: courseData.code,
-            name: courseData.name,
-            course_id: courseData.course_id,
-            program_id: courseData.program_id,
-            year_level: courseData.year_level,
-            semester: courseData.semester,
-            slots: []
-          };
-        }
-        
-        // Add slot if it has schedule information
-        if (courseData.schedule && courseData.schedule.day) {
-          courseMap[courseData.code].slots.push({
-            day: courseData.schedule.day,
-            startTime: courseData.schedule.startTime,
-            endTime: courseData.schedule.endTime,
-            teacher: courseData.teacher
-          });
-        }
-      });
+  if (!availableCourses || availableCourses.length === 0) {
+    availableCoursesList.innerHTML = '<p style="color: #999;">No available courses for your term.</p>';
+    return;
+  }
 
-      // Display each unique course with all its slots
-      Object.values(courseMap).forEach((course, index) => {
-        const courseCard = document.createElement('div');
-        courseCard.className = 'course-card';
-        
-        // Build slots HTML
-        const slotsHTML = course.slots.length > 0
-          ? course.slots.map(slot => `
-              <div style="margin: 8px 0; padding: 8px; background: #f5f5f5; border-radius: 4px;">
-                <p style="margin: 4px 0;"><strong>${slot.day}</strong> | ${slot.startTime} - ${slot.endTime}</p>
-                ${slot.teacher && slot.teacher.name ? `<p style="margin: 4px 0; font-size: 0.9em;">Prof. ${slot.teacher.name}</p>` : ''}
-              </div>
-            `).join('')
-          : '<p style="color: #999; font-size: 0.9em;">Schedule TBD</p>';
-        
-        courseCard.innerHTML = `
-          <div class="course-card-header">
-            <h3>${course.code} - ${course.name}</h3>
-            <button class="btn-add" onclick="addAvailableCourse('${course.code}')">Add</button>
-          </div>
-          <div class="course-card-body">
-            <div style="margin-top: 8px;">
-              ${slotsHTML}
-            </div>
-          </div>
-        `;
-        availableCoursesList.appendChild(courseCard);
-      });
+  const courseGroups = {};
+  availableCourses.forEach((courseData) => {
+    const key = `${courseData.code}||${courseData.name}`;
+    if (!courseGroups[key]) {
+      courseGroups[key] = {
+        code: courseData.code,
+        name: courseData.name,
+        sections: []
+      };
     }
+    courseGroups[key].sections.push(courseData);
+  });
 
-   function addAvailableCourse(courseCode) {
+  Object.values(courseGroups).forEach((course) => {
+    const courseCard = document.createElement('div');
+    courseCard.className = 'course-card';
+
+    const courseHeader = document.createElement('div');
+    courseHeader.className = 'course-card-header';
+    courseHeader.style.cursor = 'pointer';
+    courseHeader.style.justifyContent = 'space-between';
+
+    const titleEl = document.createElement('h3');
+    titleEl.textContent = `${course.code} - ${course.name}`;
+    titleEl.style.margin = '0';
+    titleEl.style.fontSize = '1rem';
+
+    const arrowEl = document.createElement('span');
+    arrowEl.className = 'arrow';
+    arrowEl.textContent = '⌄';
+    arrowEl.style.fontSize = '1.2rem';
+    arrowEl.style.transition = 'transform 0.3s';
+
+    courseHeader.appendChild(titleEl);
+    courseHeader.appendChild(arrowEl);
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'dropdown';
+    dropdown.style.overflow = 'hidden';
+    dropdown.style.maxHeight = '0';
+    dropdown.style.transition = 'max-height 0.4s ease';
+
+    courseHeader.addEventListener('click', () => {
+      const isOpen = dropdown.classList.toggle('active');
+      arrowEl.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+      dropdown.style.maxHeight = isOpen ? `${dropdown.scrollHeight}px` : '0';
+    });
+
+    course.sections.forEach((section, index) => {
+      const sectionCard = document.createElement('div');
+      sectionCard.className = 'course-card';
+      sectionCard.style.marginTop = index === 0 ? '0' : '12px';
+      sectionCard.innerHTML = `
+        <div class="course-card-body">
+          <p style="margin:0 0 6px;"><strong>Teacher:</strong> ${section.teacher?.name ?? 'TBD'}</p>
+          <p style="margin:0 0 6px;"><strong>Schedule:</strong> ${section.schedule?.day ?? 'TBD'} ${section.schedule?.startTime ? `| ${section.schedule.startTime} - ${section.schedule.endTime}` : ''}</p>
+          <div style="display:flex; justify-content:flex-end; margin-top: 12px;">
+            <button class="btn-add" type="button">Add</button>
+          </div>
+        </div>
+      `;
+
+      const addButton = sectionCard.querySelector('button');
+      addButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        addAvailableCourse(section.course_id);
+      });
+
+      dropdown.appendChild(sectionCard);
+    });
+
+    courseCard.appendChild(courseHeader);
+    courseCard.appendChild(dropdown);
+    availableCoursesList.appendChild(courseCard);
+  });
+
+  if (!document.getElementById('subject-schedule-inline-style')) {
+    const style = document.createElement('style');
+    style.id = 'subject-schedule-inline-style';
+    style.textContent = `.dropdown.active{max-height:320px;} .arrow.rotate{transform:rotate(180deg);}`;
+    document.head.appendChild(style);
+  }
+}
+
+function addAvailableCourse(courseId) {
   const token = localStorage.getItem('token');
   if (!token) return;
 
-  // Find the course_id from availableCourses that matches this code
-  const courseData = availableCourses.find(c => c.code === courseCode);
+  const courseData = availableCourses.find(c => c.course_id == courseId);
   if (!courseData) {
-    console.error('Course not found:', courseCode);
+    console.error('Course not found:', courseId);
     return;
   }
 
@@ -140,12 +159,11 @@ async function loadAvailableCourses() {
     },
     body: JSON.stringify({ course_id: courseData.course_id })
   }).then(() => {
-    // Remove all slots of this course from available and refresh
-    availableCourses = availableCourses.filter(c => c.code !== courseCode);
+    availableCourses = availableCourses.filter(c => c.course_id != courseId);
     displayAvailableCourses();
-    loadUserSchedule(); // Load user's schedule
+    loadUserSchedule();
   }).catch(error => console.error('Error adding course:', error));
-    }
+}
 
     function displayCourses() {
       coursesList.innerHTML = '';
