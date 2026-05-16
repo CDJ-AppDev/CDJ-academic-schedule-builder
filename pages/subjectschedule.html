@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="stylesheet" href="../style.css">
 </head>
+
 <body>
   <header class="app-header">
     <div class="app-brand">
@@ -33,99 +35,105 @@
     <section class="page-panel">
       <h2>Available Courses</h2>
 
-<div id="availableCourses" class="courses-list" style="grid-template-columns: 1fr;"></div>
+      <div id="availableCourses" class="courses-list" style="grid-template-columns: 1fr;"></div>
 
-<!-- dynamic courses loaded from API -->
-        <script>
-          // DB-rendered UI below will populate #availableCourses
-        </script>
+      <!-- dynamic courses loaded from API -->
+      <script>
+        // DB-rendered UI below will populate #availableCourses
+      </script>
 
-          <div class="course-card">
-  <div class="course-card-header" style="cursor: pointer;" onclick="toggleDropdown('cs10Dropdown','cs10Arrow')">
-    <h3 style="margin:0; font-size: 1rem;">CS10 - INTRO TO PROGRAMMING - LAB</h3>
-    <span class="arrow" id="cs10Arrow" style="font-size: 1.2rem; transition: transform 0.3s;">⌄</span>
-  </div>
-
-  <!-- DROPDOWN -->
-  <div class="course-card-body">
-    <div class="dropdown" id="cs10Dropdown" style="overflow: hidden; max-height: 0; transition: max-height 0.4s ease;">
-      <div class="course-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; border-color: rgba(0,0,0,0.08);">
-        <div class="course-card-body">
-          <p style="margin:0 0 10px; font-weight: 700;">TEACHER: N/A</p>
-          <p style="margin:0; color: rgba(0,0,0,0.7);">Schedule: N/A</p>
-          <div style="display:flex; justify-content:flex-end; margin-top: 12px;">
-            <button class="btn-add" type="button" onclick="addCourse('CS10 - INTRO TO PROGRAMMING - LAB','N/A','N/A')">ADD</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  function toggleDropdown(dropdownId, arrowId) {
-  const dropdown = document.getElementById(dropdownId);
-  const arrow = document.getElementById(arrowId);
-
-  if (dropdown.style.maxHeight === "0px" || dropdown.style.maxHeight === "") {
-    dropdown.style.maxHeight = dropdown.scrollHeight + "px";
-    arrow.style.transform = "rotate(180deg)";
-  } else {
-    dropdown.style.maxHeight = "0";
-    arrow.style.transform = "rotate(0deg)";
-  }
-}
-</script>
-
-
-
-</div>
-        <!-- Other Sections: functional collapsible dropdown (same spacing/icons as main section) -->
-<div class="course-card">
-  <div class="course-card-header" onclick="toggleDropdown('otherDropdown','otherArrow')">
-    <h3>Other Sections</h3>
-    <span class="arrow" id="otherArrow">⌄</span>
-  </div>
-
-  <div class="course-card-body">
-    <div class="dropdown" id="otherDropdown">
       <div class="course-card">
-        <div class="course-card-body">
-          <p class="teacher">TEACHER: N/A</p>
-          <p class="schedule">Schedule: N/A</p>
-          <div class="btn-container">
-            <button class="btn-add" type="button" onclick="addCourse('Other Section','N/A','N/A')">ADD</button>
-          </div>
+        <div class="course-card-header" style="cursor: pointer;" onclick="toggleDropdown('cs10Dropdown','cs10Arrow')">
+          <h3 style="margin:0; font-size: 1rem;">CS10 - INTRO TO PROGRAMMING - LAB</h3>
+          <span class="arrow" id="cs10Arrow" style="font-size: 1.2rem; transition: transform 0.3s;">⌄</span>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-
-        <!-- IRREGULAR STUDENTS (MANUAL): functional collapsible dropdown -->
-        <div class="course-card" style="margin: 0; border-color: rgba(244, 90, 195, 0.35); opacity: 0.95;">
-          <div class="course-card-header"
-               style="border-radius: 12px; cursor: pointer; border-bottom: none; background: linear-gradient(135deg, rgba(244, 90, 195, 0.25), rgba(244, 90, 195, 0.12));"
-               onclick="toggleOtherDropdown('irregular')">
-            <h3 style="margin:0; font-size: 1rem;">IRREGULAR STUDENTS (MANUAL)</h3>
-            <span class="arrow" style="font-weight:700; opacity:0.7; font-size: 1.2rem;" id="irregularArrow">⌄</span>
-          </div>
-
-          <div class="course-card-body" style="padding: 14px 16px 16px;">
-            <div class="dropdown" id="irregularDropdown" style="overflow: hidden; max-height: 0; transition: max-height 0.4s ease;">
-              <div class="course-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; border-color: rgba(0,0,0,0.08);">
-                <div class="course-card-body">
-                  <p style="margin:0 0 10px; font-weight: 700;">TEACHER: N/A</p>
-                  <p style="margin:0; color: rgba(0,0,0,0.7);">Schedule: N/A</p>
-                  <div style="display:flex; justify-content:flex-end; margin-top: 12px;">
-                    <button class="btn-add" type="button" onclick="addCourse('IRREGULAR STUDENTS (MANUAL)','N/A','N/A')">ADD</button>
-                  </div>
+        <!-- DROPDOWN -->
+        <div class="course-card-body">
+          <div class="dropdown" id="cs10Dropdown"
+            style="overflow: hidden; max-height: 0; transition: max-height 0.4s ease;">
+            <div class="course-card"
+              style="background: rgba(255,255,255,0.05); border-radius: 12px; border-color: rgba(0,0,0,0.08);">
+              <div class="course-card-body">
+                <p style="margin:0 0 10px; font-weight: 700;">TEACHER: N/A</p>
+                <p style="margin:0; color: rgba(0,0,0,0.7);">Schedule: N/A</p>
+                <div style="display:flex; justify-content:flex-end; margin-top: 12px;">
+                  <button class="btn-add" type="button"
+                    onclick="addCourse('CS10 - INTRO TO PROGRAMMING - LAB','N/A','N/A')">ADD</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <script>
+        function toggleDropdown(dropdownId, arrowId) {
+          const dropdown = document.getElementById(dropdownId);
+          const arrow = document.getElementById(arrowId);
+
+          if (dropdown.style.maxHeight === "0px" || dropdown.style.maxHeight === "") {
+            dropdown.style.maxHeight = dropdown.scrollHeight + "px";
+            arrow.style.transform = "rotate(180deg)";
+          } else {
+            dropdown.style.maxHeight = "0";
+            arrow.style.transform = "rotate(0deg)";
+          }
+        }
+      </script>
+
+      </div>
+      <!-- Other Sections: functional collapsible dropdown (same spacing/icons as main section) -->
+      <div class="course-card">
+        <div class="course-card-header" style="cursor: pointer;" onclick="toggleDropdown('otherDropdown','otherArrow')">
+          <h3 style="margin:0; font-size: 1rem;">Other Sections</h3>
+          <span class="arrow" id="otherArrow" style="font-size: 1.2rem; transition: transform 0.3s;">⌄</span>
+        </div>
+
+        <div class="course-card-body">
+          <div class="dropdown" id="otherDropdown"
+            style="overflow: hidden; max-height: 0; transition: max-height 0.4s ease;">
+            <div class="course-card"
+              style="background: rgba(255,255,255,0.05); border-radius: 12px; border-color: rgba(0,0,0,0.08);">
+              <div class="course-card-body">
+                <p style="margin:0 0 10px; font-weight: 700;">TEACHER: N/A</p>
+                <p style="margin:0; color: rgba(0,0,0,0.7);">Schedule: N/A</p>
+                <div style="display:flex; justify-content:flex-end; margin-top: 12px;">
+                  <button class="btn-add" type="button" onclick="addCourse('Other Section','N/A','N/A')">ADD</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- IRREGULAR STUDENTS (MANUAL): functional collapsible dropdown -->
+      <div class="course-card" style="margin: 0; border-color: rgba(244, 90, 195, 0.35); opacity: 0.95;">
+        <div class="course-card-header"
+          style="border-radius: 12px; cursor: pointer; border-bottom: none; background: linear-gradient(135deg, rgba(244, 90, 195, 0.25), rgba(244, 90, 195, 0.12));"
+          onclick="toggleDropdown('irregularDropdown','irregularArrow')">
+          <h3 style="margin:0; font-size: 1rem;">IRREGULAR STUDENTS (MANUAL)</h3>
+          <span class="arrow" style="font-weight:700; opacity:0.7; font-size: 1.2rem; transition: transform 0.3s;" id="irregularArrow">⌄</span>
+        </div>
+
+        <div class="course-card-body" style="padding: 14px 16px 16px;">
+          <div class="dropdown" id="irregularDropdown"
+            style="overflow: hidden; max-height: 0; transition: max-height 0.4s ease;">
+            <div class="course-card"
+              style="background: rgba(255,255,255,0.05); border-radius: 12px; border-color: rgba(0,0,0,0.08);">
+              <div class="course-card-body">
+                <p style="margin:0 0 10px; font-weight: 700;">TEACHER: N/A</p>
+                <p style="margin:0; color: rgba(0,0,0,0.7);">Schedule: N/A</p>
+                <div style="display:flex; justify-content:flex-end; margin-top: 12px;">
+                  <button class="btn-add" type="button"
+                    onclick="addCourse('IRREGULAR STUDENTS (MANUAL)','N/A','N/A')">ADD</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
 
       <div style="height: 20px;"></div>
