@@ -134,7 +134,7 @@ app.get('/api/courses', authenticateToken, async (req, res) => {
       JOIN term t ON c.termid = t.termid
       LEFT JOIN courseslot cs ON c.coursecode = cs.coursecode
       LEFT JOIN professor p ON cs.profid = p.profid
-      WHERE c.termid = $1
+      WHERE c.termid = $1 AND cs.courseslotid IS NOT NULL
       ORDER BY c.coursecode
     `, [userTermId]);
     const courses = result.rows.map(row => ({
