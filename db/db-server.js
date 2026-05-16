@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
@@ -44,7 +45,7 @@ app.post('/api/signup', async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      'INSERT INTO user_login (name, email, password_hash) VALUES ($1, $2, $3) RETURNING user_id',
+      'INSERT INTO user_credentials (name, email, password_hash) VALUES ($1, $2, $3) RETURNING user_id',
       [name, email, hashedPassword]
     );
     res.status(201).json({ user_id: result.rows[0].user_id });
@@ -64,9 +65,15 @@ app.post('/api/login', async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password_hash);
     if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
 
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET is not set in environment');
+      return res.status(500).json({ error: 'Server misconfiguration' });
+    }
+
     const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET);
     res.json({ token, user: { user_id: user.user_id, name: user.name, email: user.email } });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -137,33 +144,58 @@ app.delete('/api/schedule', authenticateToken, async (req, res) => {
 // Save user program selection
 app.post('/api/program', authenticateToken, async (req, res) => {
   const { program_id, year_level, semester } = req.body;
+  
+  // Validate input
+  if (!program_id || year_level === undefined || !semester) {
+    return res.status(400).json({ error: 'Missing required fields: program_id, year_level, semester' });
+  }
+  
   console.log('Received program save request:', { user_id: req.user.user_id, program_id, year_level, semester });
+  
+  const client = await pool.connect();
   try {
-    await pool.query(`
-      INSERT INTO user_program (user_id, program_id, year_level, semester)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (user_id, program_id) DO UPDATE SET
-        year_level = EXCLUDED.year_level,
-        semester = EXCLUDED.semester
-    `, [req.user.user_id, program_id, year_level, semester]);
-    console.log('Program selection saved successfully');
-    res.status(201).json({ message: 'Program selection saved' });
+    await client.query('BEGIN');
+    
+    // Use UPSERT to insert or update the program selection
+    await client.query(
+      `INSERT INTO user_program (user_id, program_id, year_level, semester) 
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (user_id) DO UPDATE SET
+       program_id = EXCLUDED.program_id,
+       year_level = EXCLUDED.year_level,
+       semester = EXCLUDED.semester`,
+      [req.user.user_id, program_id, year_level, semester]
+    );
+    
+    await client.query('COMMIT');
+    console.log('Program selection saved successfully for user:', req.user.user_id);
+    res.status(201).json({ message: 'Program selection saved', user_id: req.user.user_id });
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error('Error saving program selection:', error);
-    res.status(400).json({ error: 'Invalid data' });
+    res.status(500).json({ error: 'Failed to save program selection' });
+  } finally {
+    client.release();
   }
 });
 
 // Get user program selection
 app.get('/api/program', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT program_id, year_level, semester FROM user_program WHERE user_id = $1', [req.user.user_id]);
+    const result = await pool.query(
+      'SELECT program_id, year_level, semester FROM user_program WHERE user_id = $1',
+      [req.user.user_id]
+    );
+    
     if (result.rows.length > 0) {
+      console.log('Program found for user:', req.user.user_id, result.rows[0]);
       res.json(result.rows[0]);
     } else {
+      console.log('No program found for user:', req.user.user_id);
       res.json(null);
     }
   } catch (error) {
+    console.error('Error retrieving program selection:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

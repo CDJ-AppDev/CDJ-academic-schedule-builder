@@ -1,94 +1,166 @@
+const API_BASE = 'http://localhost:3000/api';
 
-    // Course, Year, and Semester Picker Functionality - Single Selection Only
-    const courseRadios = document.getElementsByName('course-picker');
-    const yearRadios = document.getElementsByName('year-picker');
-    const semesterRadios = document.getElementsByName('semester-picker');
-    const applyBtn = document.getElementById('apply-courses-btn');
-    const selectedCoursesDisplay = document.getElementById('selected-courses');
-    const schedulePickerBtn = document.getElementById('schedule-picker-btn');
+// Course, Year, and Semester Picker Functionality - Single Selection Only
+const courseRadios = document.getElementsByName('course-picker');
+const yearRadios = document.getElementsByName('year-picker');
+const semesterRadios = document.getElementsByName('semester-picker');
+const applyBtn = document.getElementById('apply-courses-btn');
+const selectedCoursesDisplay = document.getElementById('selected-courses');
+const schedulePickerBtn = document.getElementById('schedule-picker-btn');
 
-    function saveToLocalStorage() {
-      const selectedCourse = Array.from(courseRadios).find(radio => radio.checked);
-      const selectedYear = Array.from(yearRadios).find(radio => radio.checked);
-      const selectedSemester = Array.from(semesterRadios).find(radio => radio.checked);
-      
-      if (selectedCourse && selectedYear && selectedSemester) {
-        const data = {
-          course: selectedCourse.value,
-          year: selectedYear.value,
-          semester: selectedSemester.value
-        };
-        localStorage.setItem('courseSelection', JSON.stringify(data));
-      }
+// ---------------- SERVER SAVE ----------------
+
+async function saveToServer(program_id, year_level, semester) {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.warn('No token found. User may not be logged in.');
+      return;
     }
 
-    function updateURL() {
-      const selectedCourse = Array.from(courseRadios).find(radio => radio.checked);
-      const selectedYear = Array.from(yearRadios).find(radio => radio.checked);
-      const selectedSemester = Array.from(semesterRadios).find(radio => radio.checked);
-      
-      if (selectedCourse && selectedYear && selectedSemester) {
-        const url = `coursepicker.html?course=${selectedCourse.value}&year=${selectedYear.value}&semester=${selectedSemester.value}`;
-        window.history.replaceState({}, document.title, url);
-        
-        const courseLabel = selectedCourse.value === 'computer-science' ? 'Computer Science' : 'IT';
-        const yearLabel = `${selectedYear.value}${['st', 'nd', 'rd', 'th'][parseInt(selectedYear.value) - 1]} Year`;
-        const semesterLabel = `${selectedSemester.value}${['st', 'nd'][parseInt(selectedSemester.value) - 1]} Semester`;
-        
-        selectedCoursesDisplay.textContent = `Selected: ${courseLabel} - ${yearLabel} - ${semesterLabel}`;
-        schedulePickerBtn.removeAttribute('hidden');
-        
-        saveToLocalStorage();
-      } else {
-        window.history.replaceState({}, document.title, 'coursepicker.html');
-        selectedCoursesDisplay.textContent = '';
-        schedulePickerBtn.setAttribute('hidden', '');
-      }
+    const response = await fetch(`${API_BASE}/program`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        program_id,
+        year_level,
+        semester
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Failed to save program to server');
     }
+  } catch (err) {
+    console.error('Server request error:', err);
+  }
+}
 
-    applyBtn.addEventListener('click', updateURL);
+// ---------------- SERVER LOAD ----------------
 
-    // Load saved course, year, and semester from localStorage or URL on page load
-    window.addEventListener('load', () => {
-      let course, year, semester;
-      
-      // First, try to load from localStorage
-      const savedData = localStorage.getItem('courseSelection');
-      if (savedData) {
-        try {
-          const data = JSON.parse(savedData);
-          course = data.course;
-          year = data.year;
-          semester = data.semester;
-        } catch (e) {
-          console.error('Error parsing saved course selection:', e);
-        }
-      }
-      
-      // If no localStorage data, try URL parameters
-      if (!course && !year && !semester) {
-        const params = new URLSearchParams(window.location.search);
-        course = params.get('course');
-        year = params.get('year');
-        semester = params.get('semester');
-      }
-      
-      if (course && year && semester) {
-        const courseRadio = Array.from(courseRadios).find(r => r.value === course);
-        const yearRadio = Array.from(yearRadios).find(r => r.value === year);
-        const semesterRadio = Array.from(semesterRadios).find(r => r.value === semester);
-        
-        if (courseRadio && yearRadio && semesterRadio) {
-          courseRadio.checked = true;
-          yearRadio.checked = true;
-          semesterRadio.checked = true;
-          
-          const courseLabel = course === 'computer-science' ? 'Computer Science' : 'IT';
-          const yearLabel = `${year}${['st', 'nd', 'rd', 'th'][parseInt(year) - 1]} Year`;
-          const semesterLabel = `${semester}${['st', 'nd'][parseInt(semester) - 1]} Semester`;
-          
-          selectedCoursesDisplay.textContent = `Selected: ${courseLabel} - ${yearLabel} - ${semesterLabel}`;
-          schedulePickerBtn.removeAttribute('hidden');
-        }
+async function loadFromServer() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    const response = await fetch(`${API_BASE}/program`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
     });
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+
+    // server returns null if no row found
+    if (!data) return null;
+
+    return {
+      course: data.program_id,
+      year: String(data.year_level),
+      semester: String(data.semester)
+    };
+
+  } catch (err) {
+    console.error('Error loading from server:', err);
+    return null;
+  }
+}
+
+// ---------------- LOCAL SAVE ----------------
+
+function saveToLocalStorage(course, year, semester) {
+  const data = { course, year, semester };
+  localStorage.setItem('courseSelection', JSON.stringify(data));
+}
+
+// ---------------- UI UPDATE ----------------
+
+function applySelectionToUI(course, year, semester) {
+  const courseRadio = Array.from(courseRadios).find(r => r.value === course);
+  const yearRadio = Array.from(yearRadios).find(r => r.value === year);
+  const semesterRadio = Array.from(semesterRadios).find(r => r.value === semester);
+
+  if (courseRadio) courseRadio.checked = true;
+  if (yearRadio) yearRadio.checked = true;
+  if (semesterRadio) semesterRadio.checked = true;
+const ord = ['st', 'nd', 'rd', 'th'];
+  const courseLabel = 
+    course === 'computer-science' ? 'Computer Science' : 'Information Technology';
+  const yearLabel = `${year}${ord[year - 1]} Year`;
+  const semesterLabel = `${semester}${ord[semester - 1]} Semester`;
+  selectedCoursesDisplay.textContent =
+    `Selected: ${courseLabel} - ${yearLabel} - ${semesterLabel}`;
+  schedulePickerBtn.removeAttribute('hidden');
+  // URL normalization (keeps backward compatibility)
+  const courseForUrl = course;
+  window.history.replaceState(
+    {},
+    document.title,
+    `coursepicker.html?course=${courseForUrl}&year=${year}&semester=${semester}`
+  );
+}
+
+// ---------------- APPLY BUTTON ----------------
+
+applyBtn.addEventListener('click', async () => {
+  const selectedCourse = Array.from(courseRadios).find(r => r.checked);
+  const selectedYear = Array.from(yearRadios).find(r => r.checked);
+  const selectedSemester = Array.from(semesterRadios).find(r => r.checked);
+
+  if (!selectedCourse || !selectedYear || !selectedSemester) return;
+
+  const course = selectedCourse.value;
+  const year = selectedYear.value;
+  const semester = selectedSemester.value;
+
+  saveToLocalStorage(course, year, semester);
+  await saveToServer(course, year, semester);
+  applySelectionToUI(course, year, semester);
+});
+
+// ---------------- SERVER-FIRST PAGE LOAD ----------------
+
+window.addEventListener('load', async () => {
+  let course, year, semester;
+
+  // 1. Try server FIRST
+  const serverData = await loadFromServer();
+  if (serverData) {
+    course = serverData.course;
+    year = serverData.year;
+    semester = serverData.semester;
+  }
+
+  // 2. If no server data → try localStorage
+  if (!course || !year || !semester) {
+    const savedData = localStorage.getItem('courseSelection');
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        course = data.course;
+        year = data.year;
+        semester = data.semester;
+      } catch (err) {
+        console.error('LocalStorage parse error:', err);
+      }
+    }
+  }
+
+  // 3. If still nothing → try URL parameters
+  if (!course || !year || !semester) {
+    const params = new URLSearchParams(window.location.search);
+    course = params.get('course');
+    year = params.get('year');
+    semester = params.get('semester');
+  }
+
+  // 4. Apply UI if any data found
+  if (course && year && semester) {
+    applySelectionToUI(course, year, semester);
+  }
+});
