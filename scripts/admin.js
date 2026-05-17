@@ -10,7 +10,7 @@ function switchTab(tabId) {
   document.querySelectorAll('.admin-content').forEach(content => {
     content.classList.remove('active');
   });
-  
+
   // Remove active from all tabs
   document.querySelectorAll('.admin-tab').forEach(tab => {
     tab.classList.remove('active');
@@ -18,7 +18,7 @@ function switchTab(tabId) {
 
   // Show selected content
   document.getElementById(`${tabId}-tab`).classList.add('active');
-  
+
   // Activate selected tab
   event.currentTarget.classList.add('active');
 }

@@ -93,12 +93,14 @@ body::before {
   place-items: center;
   z-index: 10;
 }
+
 .landing-buttons {
   display: flex;
   flex-direction: column;
   gap: 16px;
   margin-top: 24px;
 }
+
 h1 {
   margin: 0;
   font-family: 'Patrick Hand', cursive;
@@ -680,7 +682,9 @@ select:focus {
 
 .btn-toggle:active {
   transform: translateY(0);
-}/* ========================================= */
+}
+
+/* ========================================= */
 /* Plotter Styles                            */
 /* ========================================= */
 .plotter-main {
@@ -880,7 +884,7 @@ select:focus {
 .day-columns-grid {
   display: flex;
   position: relative;
-  height: 780px; 
+  height: 780px;
 }
 
 .day-col {
@@ -907,7 +911,7 @@ select:focus {
   font-size: 0.65rem;
   font-weight: 600;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -917,12 +921,34 @@ select:focus {
   box-sizing: border-box;
 }
 
-.course-block .subject-code { font-size: 0.75rem; font-weight: 800; margin-bottom: 2px;}
-.course-block .subject-name { margin-bottom: 4px; line-height: 1.1; }
-.course-block .prof-name { font-style: italic; margin-bottom: 4px; font-size: 0.6rem;}
-.course-block .day-text { margin-bottom: 2px; }
-.course-block .time-text { white-space: nowrap; }
-.course-block .room-text { margin-top: 2px; }
+.course-block .subject-code {
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.course-block .subject-name {
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+
+.course-block .prof-name {
+  font-style: italic;
+  margin-bottom: 4px;
+  font-size: 0.6rem;
+}
+
+.course-block .day-text {
+  margin-bottom: 2px;
+}
+
+.course-block .time-text {
+  white-space: nowrap;
+}
+
+.course-block .room-text {
+  margin-top: 2px;
+}
 
 /* ========================================= */
 /* Admin Styles                              */
@@ -931,7 +957,7 @@ select:focus {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
-  border-bottom: 2px solid rgba(0,0,0,0.1);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
   padding-bottom: 10px;
   flex-wrap: wrap;
 }
@@ -949,7 +975,7 @@ select:focus {
 }
 
 .admin-tab:hover {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
   color: var(--text);
 }
 
@@ -968,8 +994,15 @@ select:focus {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .admin-table {
@@ -979,17 +1012,18 @@ select:focus {
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.admin-table th, .admin-table td {
+.admin-table th,
+.admin-table td {
   padding: 14px 18px;
   text-align: left;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .admin-table th {
-  background: rgba(0,0,0,0.02);
+  background: rgba(0, 0, 0, 0.02);
   font-weight: 600;
   color: var(--text);
   font-size: 0.95rem;
@@ -1005,6 +1039,6 @@ select:focus {
 }
 
 .admin-table tr:hover td {
-  background: rgba(0,0,0,0.02);
+  background: rgba(0, 0, 0, 0.02);
   color: var(--text);
 }
