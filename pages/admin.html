@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Academic Schedule Builder</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="app-brand">
+      <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
+      <span>Admin Dashboard</span>
+    </div>
+
+    <nav class="app-nav">
+      <button class="nav-button" onclick="window.location.href='home.html'">Home</button>
+      <button class="nav-button" onclick="window.location.href='profile.html'">Profile</button>
+      <button class="nav-button" onclick="window.location.href='builder.html'">Schedule Picker</button>
+      <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
+      <button class="nav-button" onclick="window.location.href='admin.html'">Admin</button>
+    </nav>
+
+    <button class="profile-button" aria-label="Login" onclick="window.location.href='./login.html'">👤</button>
+  </header>
+
+  <main class="page-content">
+    <div class="page-title">
+      <h1>Admin Dashboard</h1>
+      <p>Manage users, courses, schedules, and professors.</p>
+    </div>
+
+    <section class="page-panel">
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchTab('users')">Users</button>
+        <button class="admin-tab" onclick="switchTab('courses')">Courses</button>
+        <button class="admin-tab" onclick="switchTab('schedules')">Schedules</button>
+        <button class="admin-tab" onclick="switchTab('professors')">Professors</button>
+      </div>
+
+      <div id="users-tab" class="admin-content active">
+        <h3>All Users</h3>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="courses-tab" class="admin-content">
+        <h3>All Courses</h3>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Credits</th>
+              <th>Department</th>
+            </tr>
+          </thead>
+          <tbody id="courses-tbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="schedules-tab" class="admin-content">
+        <h3>All Schedules</h3>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Term</th>
+              <th>Courses Included</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+          <tbody id="schedules-tbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="professors-tab" class="admin-content">
+        <h3>All Professors</h3>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody id="professors-tbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="../scripts/admin.js"></script>
+</body>
+
+</html>

@@ -847,6 +847,8 @@ select:focus {
   margin-left: 16px;
 }
 
+
+
 /* ========================================= */
 /* Plotter Styles                            */
 /* ========================================= */
@@ -1084,31 +1086,9 @@ select:focus {
   box-sizing: border-box;
 }
 
-.course-block .subject-code {
-  font-size: 0.75rem;
-  font-weight: 800;
-  margin-bottom: 2px;
-}
-
-.course-block .subject-name {
-  margin-bottom: 4px;
-  line-height: 1.1;
-}
-
-.course-block .prof-name {
-  font-style: italic;
-  margin-bottom: 4px;
-  font-size: 0.6rem;
-}
-
-.course-block .day-text {
-  margin-bottom: 2px;
-}
-
-.course-block .time-text {
-  white-space: nowrap;
-}
-
-.course-block .room-text {
-  margin-top: 2px;
-}
+.course-block .subject-code { font-size: 0.75rem; font-weight: 800; margin-bottom: 2px;}
+.course-block .subject-name { margin-bottom: 4px; line-height: 1.1; }
+.course-block .prof-name { font-style: italic; margin-bottom: 4px; font-size: 0.6rem;}
+.course-block .day-text { margin-bottom: 2px; }
+.course-block .time-text { white-space: nowrap; }
+.course-block .room-text { margin-top: 2px; }
