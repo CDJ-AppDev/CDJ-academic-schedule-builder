@@ -41,7 +41,7 @@ const authenticateToken = (req, res, next) => {
 
 // Signup endpoint
 app.post('/api/signup', async (req, res) => {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
@@ -49,10 +49,10 @@ app.post('/api/signup', async (req, res) => {
       [email, hashedPassword, 'Default']
     );
     
-    // Create user profile
+    // Create user profile with email as temporary username (will be updated during setup)
     await pool.query(
       'INSERT INTO user_profile (userid, username) VALUES ($1, $2)',
-      [result.rows[0].userid, name]
+      [result.rows[0].userid, email]
     );
     
     res.status(201).json({ user_id: result.rows[0].userid });
@@ -266,16 +266,16 @@ app.delete('/api/schedule', authenticateToken, async (req, res) => {
   }
 });
 
-// Save user program selection
+// Save user program selection and full name (name is optional)
 app.post('/api/program', authenticateToken, async (req, res) => {
-  const { program_id, year_level, semester } = req.body;
+  const { name, program_id, year_level, semester } = req.body;
   
-  // Validate input
+  // Validate required fields
   if (!program_id || year_level === undefined || !semester) {
     return res.status(400).json({ error: 'Missing required fields: program_id, year_level, semester' });
   }
   
-  console.log('Received program save request:', { user_id: req.user.user_id, program_id, year_level, semester });
+  console.log('Received program save request:', { user_id: req.user.user_id, name, program_id, year_level, semester });
   
   const client = await pool.connect();
   try {
@@ -293,12 +293,31 @@ app.post('/api/program', authenticateToken, async (req, res) => {
     }
     
     const termID = termResult.rows[0].termid;
+    console.log('Found termID:', termID);
     
-    // Update user profile with the selected term
-    await client.query(
-      'UPDATE user_profile SET termid = $1 WHERE userid = $2',
-      [termID, req.user.user_id]
-    );
+    // Update user profile with selected term, and name if provided
+    let updateResult;
+    if (name) {
+      console.log('Updating with name:', name);
+      updateResult = await client.query(
+        'UPDATE user_profile SET username = $1, termid = $2 WHERE userid = $3 RETURNING userid',
+        [name, termID, req.user.user_id]
+      );
+    } else {
+      console.log('Updating termid only');
+      updateResult = await client.query(
+        'UPDATE user_profile SET termid = $1 WHERE userid = $2 RETURNING userid',
+        [termID, req.user.user_id]
+      );
+    }
+    
+    console.log('Update result rows:', updateResult.rows.length);
+    
+    if (updateResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      console.error('No rows updated for userid:', req.user.user_id);
+      return res.status(500).json({ error: 'Failed to update user profile' });
+    }
     
     await client.query('COMMIT');
     console.log('Program selection saved successfully for user:', req.user.user_id);
@@ -306,7 +325,7 @@ app.post('/api/program', authenticateToken, async (req, res) => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error saving program selection:', error);
-    res.status(500).json({ error: 'Failed to save program selection' });
+    res.status(500).json({ error: 'Failed to save program selection', details: error.message });
   } finally {
     client.release();
   }

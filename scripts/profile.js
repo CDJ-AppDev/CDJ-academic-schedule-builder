@@ -18,6 +18,8 @@ async function saveToServer(program_id, year_level, semester) {
       return;
     }
 
+    console.log('Saving to server:', { program_id, year_level, semester });
+
     const response = await fetch(`${API_BASE}/program`, {
       method: 'POST',
       headers: {
@@ -31,11 +33,20 @@ async function saveToServer(program_id, year_level, semester) {
       })
     });
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      console.error('Failed to save program to server');
+      console.error('Failed to save program to server:', data);
+      alert('Failed to save program selection: ' + (data.error || 'Unknown error'));
+      return false;
     }
+    
+    console.log('Program saved successfully:', data);
+    return true;
   } catch (err) {
     console.error('Server request error:', err);
+    alert('Error saving program: ' + err.message);
+    return false;
   }
 }
 
@@ -119,8 +130,13 @@ applyBtn.addEventListener('click', async () => {
   const semester = selectedSemester.value;
 
   saveToLocalStorage(course, year, semester);
-  await saveToServer(course, year, semester);
-  applySelectionToUI(course, year, semester);
+  
+  // Wait for server save to complete
+  const saved = await saveToServer(course, year, semester);
+  
+  if (saved) {
+    applySelectionToUI(course, year, semester);
+  }
 });
 
 // ---------------- SERVER-FIRST PAGE LOAD ----------------

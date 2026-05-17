@@ -27,7 +27,7 @@ if (loginButton) {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        window.location.href = `pages/home.html`;
+        window.location.href = `./home.html`;
       } else {
         alert(data.error);
       }
@@ -38,13 +38,12 @@ if (loginButton) {
 }
 
 if (signupButton) {
-  signupButton.addEventListener('click', () => {
-    const name = document.querySelector('input[type="text"]').value.trim();
+  signupButton.addEventListener('click', async () => {
     const email = document.querySelector('input[type="email"]').value.trim();
     const password = document.querySelectorAll('input[type="password"]')[0].value.trim();
     const confirmPassword = document.querySelectorAll('input[type="password"]')[1].value.trim();
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       alert('Please fill in all fields.');
       return;
     }
@@ -59,9 +58,40 @@ if (signupButton) {
       return;
     }
 
-    // For now, redirect to home page with email parameter
-    // In a real app, this would make an API call to register the user
-    window.location.href = `./home.html?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`;
+    try {
+      // Call signup endpoint
+      const signupResponse = await fetch(`${API_BASE}/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const signupData = await signupResponse.json();
+      
+      if (!signupResponse.ok) {
+        alert(signupData.error || 'Signup failed');
+        return;
+      }
+
+      // Auto-login to get token
+      const loginResponse = await fetch(`${API_BASE}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const loginData = await loginResponse.json();
+      
+      if (loginResponse.ok) {
+        // Store user info and token
+        localStorage.setItem('token', loginData.token);
+        localStorage.setItem('user', JSON.stringify(loginData.user));
+        // Redirect to setup page
+        window.location.href = `./setup.html`;
+      } else {
+        alert(loginData.error || 'Login failed');
+      }
+    } catch (error) {
+      alert('Signup failed: ' + error.message);
+    }
   });
 }
 

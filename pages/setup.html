@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup - Academic Schedule Builder</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="page-header">SETUP</div>
+
+    <div class="login-card">
+      <div class="card-content">
+        <h1>Complete Your Setup</h1>
+        <p class="subtitle">Select your program, year level, and semester</p>
+
+        <div class="form-group">
+          <label class="field">
+            <span>Full Name</span>
+            <input type="text" placeholder="Full Name" aria-label="Full name" id="name-input">
+          </label>
+
+          <label class="field">
+            <span>Program</span>
+            <select id="program-select" aria-label="Select program">
+              <option value="">-- Select a program --</option>
+              <option value="CS">Computer Science</option>
+              <option value="IT">Information Technology</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Year Level</span>
+            <select id="year-select" aria-label="Select year level">
+              <option value="">-- Select year level --</option>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+              <option value="4">Year 4</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Semester</span>
+            <select id="semester-select" aria-label="Select semester">
+              <option value="">-- Select semester --</option>
+              <option value="1">First Semester</option>
+              <option value="2">Second Semester</option>
+            </select>
+          </label>
+        </div>
+        <div class="separator"></div>
+        <button class="button primary setup-btn">Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../scripts/setup.js"></script>
+</body>
+</html>

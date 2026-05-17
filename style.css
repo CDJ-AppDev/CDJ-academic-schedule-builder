@@ -91,8 +91,14 @@ body::before {
   cursor: pointer;
   display: grid;
   place-items: center;
+  z-index: 10;
 }
-
+.landing-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
 h1 {
   margin: 0;
   font-family: 'Patrick Hand', cursive;
@@ -138,6 +144,25 @@ input {
 }
 
 input:focus {
+  border-color: rgba(17, 17, 17, 0.35);
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.05);
+}
+
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: var(--text);
+  background-color: white;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+select:focus {
   border-color: rgba(17, 17, 17, 0.35);
   box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.05);
 }
