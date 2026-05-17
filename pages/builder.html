@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subject Schedule</title>
   <link rel="icon" type="image/png" href="../favicon.png">
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/builder.css">
 </head>
 
 <body>
@@ -123,9 +124,12 @@
 
       <div class="schedules-header-container">
         <h2 class="schedules-title">Schedules</h2>
-        <select id="schedule-selector" class="schedule-selector">
-          <option value="new">+ Create New Schedule</option>
-        </select>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button id="delete-schedule-btn" class="btn-remove" style="display: none; background-color: #cc3333; border-radius: 20px; padding: 8px 16px; text-transform: uppercase; font-weight: bold; color: white; border: none; font-size: 0.85rem; cursor: pointer;">DELETE</button>
+          <select id="schedule-selector" class="schedule-selector">
+            <option value="new">+ Create New Schedule</option>
+          </select>
+        </div>
       </div>
       <div class="courses-list single-column" id="scheduledList"></div>
 

@@ -1,0 +1,36 @@
+/* Course Picker Styles */
+.course-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.course-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #000000;
+  transition: all 0.2s ease;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.course-checkbox:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.course-checkbox input[type="checkbox"],
+.course-checkbox input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #4a9eff;
+  flex-shrink: 0;
+}

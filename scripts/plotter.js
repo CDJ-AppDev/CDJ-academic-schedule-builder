@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderScheduleList() {
         scheduleListContainer.innerHTML = '';
         if (schedules.length === 0) {
-            scheduleListContainer.innerHTML = '<div class="plotter-schedule-item"><span>No schedules found. Create one in the Schedule Picker!</span></div>';
+            scheduleListContainer.innerHTML = '<div class="plotter-schedule-item"><span>No schedules found.</span></div>';
             return;
         }
 
@@ -214,15 +214,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dayRoomEl = document.createElement('div');
             dayRoomEl.className = 'day-room-text';
             let dayRoomText = '';
-            
+
             if (!hideDay.checked) {
                 dayRoomText += day;
             }
-            
+
             if (!hideRoom.checked) {
                 dayRoomText += dayRoomText ? ` (${room})` : `(${room})`;
             }
-            
+
             dayRoomEl.textContent = dayRoomText;
             block.appendChild(dayRoomEl);
         }

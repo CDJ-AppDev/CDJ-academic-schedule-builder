@@ -61,9 +61,9 @@ function doTimesOverlap(start1, end1, start2, end2) {
   const end1Min = timeStringToMinutes(end1);
   const start2Min = timeStringToMinutes(start2);
   const end2Min = timeStringToMinutes(end2);
-  
+
   if (!start1Min || !end1Min || !start2Min || !end2Min) return false;
-  
+
   return start1Min < end2Min && start2Min < end1Min;
 }
 
@@ -72,7 +72,7 @@ function checkScheduleConflict(newDay, newStartTime, newEndTime) {
   for (let course of courses) {
     // Get the course's schedule information
     let courseDay, courseStartTime, courseEndTime;
-    
+
     if (course.schedule) {
       // API course format
       courseDay = course.schedule.day;
@@ -86,7 +86,7 @@ function checkScheduleConflict(newDay, newStartTime, newEndTime) {
     } else {
       continue;
     }
-    
+
     // Check if days match (case-insensitive)
     if (courseDay && courseDay.toLowerCase() === newDay.toLowerCase()) {
       // Check if times overlap
@@ -100,7 +100,7 @@ function checkScheduleConflict(newDay, newStartTime, newEndTime) {
       }
     }
   }
-  
+
   return { conflict: false };
 }
 
@@ -129,16 +129,16 @@ async function loadAvailableCourses() {
     const allCourses = await response.json();
 
     availableCourses = allCourses.filter(course => `${course.program_id}${course.year_level}` === termId);
-    
+
     // Filter out course codes that are already added (deduplication by code)
     const addedCourseCodes = new Set();
     courses.forEach(c => {
       if (c.courseCode) addedCourseCodes.add(c.courseCode); // manual
       else if (c.code) addedCourseCodes.add(c.code); // api
     });
-    
+
     availableCourses = availableCourses.filter(c => !addedCourseCodes.has(c.code));
-    
+
     displayAvailableCourses();
   } catch (error) {
     console.error('Error loading courses:', error);
@@ -258,7 +258,7 @@ function addAvailableCourse(courseslotId) {
     courseData.schedule?.startTime,
     courseData.schedule?.endTime
   );
-  
+
   if (conflictCheck.conflict) {
     alert(
       `⚠️ Scheduling Conflict Detected!\n\n` +
@@ -426,7 +426,7 @@ if (addCourseBtn) {
 
     // Check for scheduling conflicts
     const conflictCheck = checkScheduleConflict(day, start, end);
-    
+
     if (conflictCheck.conflict) {
       alert(
         `⚠️ Scheduling Conflict Detected!\n\n` +
@@ -453,7 +453,7 @@ if (addCourseBtn) {
     };
 
     courses.push(newCourse);
-    
+
     // Clear inputs
     courseCodeInput.value = '';
     courseNameInput.value = '';
@@ -465,30 +465,33 @@ if (addCourseBtn) {
     if (courseUnitsInput) courseUnitsInput.value = '';
 
     displayCourses();
-    
+
     // Auto-close irregular section after adding
     const header = addCourseBtn.closest('.dropdown').previousElementSibling;
     if (header && header.classList.contains('course-card-header')) {
-        header.click();
+      header.click();
     }
   });
 }
 
-window.switchActiveSchedule = function(id) {
+window.switchActiveSchedule = function (id) {
   activeScheduleId = id;
   const nameInput = document.getElementById('schedule-name-input');
-  
+  const deleteBtn = document.getElementById('delete-schedule-btn');
+
   if (id === 'new') {
     clearTermCache(); // Clear cache when switching to new schedule
     courses = [];
     window.currentScheduleId = null;
     if (nameInput) nameInput.value = 'Schedule';
+    if (deleteBtn) deleteBtn.style.display = 'none';
   } else {
     const sched = userSchedules.find(s => s.schedule_id == id);
     if (sched) {
       window.currentScheduleId = sched.schedule_id;
       if (nameInput) nameInput.value = sched.schedule_name;
       courses = sched.courses || [];
+      if (deleteBtn) deleteBtn.style.display = 'block';
     }
   }
   displayCourses();
@@ -504,7 +507,7 @@ async function loadUserSchedule() {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     userSchedules = await response.json();
-    
+
     const selector = document.getElementById('schedule-selector');
     if (selector) {
       selector.innerHTML = '<option value="new">+ Create New Schedule</option>';
@@ -514,17 +517,17 @@ async function loadUserSchedule() {
         opt.textContent = s.schedule_name;
         selector.appendChild(opt);
       });
-      
+
       if (activeScheduleId && activeScheduleId !== 'new') {
         selector.value = activeScheduleId;
       } else if (userSchedules.length > 0 && activeScheduleId === 'new') {
         selector.value = userSchedules[0].schedule_id;
         activeScheduleId = userSchedules[0].schedule_id;
       }
-      
+
       selector.onchange = (e) => switchActiveSchedule(e.target.value);
     }
-    
+
     switchActiveSchedule(activeScheduleId);
   } catch (error) {
     console.error('Error loading schedule:', error);
@@ -549,14 +552,14 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Cannot save schedule: you are not logged in.');
         return;
       }
-      
+
       if (courses.length === 0) {
         alert('Cannot save empty schedule.');
         return;
       }
 
       const scheduleName = document.getElementById('schedule-name-input')?.value || 'My Schedule';
-      
+
       const scheduleList = [];
       courses.forEach(c => {
         if (c.courseCode) {
@@ -600,6 +603,40 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (error) {
         console.error('Error saving schedule:', error);
         alert('Error saving schedule.');
+      }
+    });
+  }
+
+  const deleteBtn = document.getElementById('delete-schedule-btn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      if (!window.currentScheduleId) return;
+
+      if (!confirm('Are you sure you want to delete this schedule?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/schedule/${window.currentScheduleId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          alert('Schedule deleted successfully.');
+          activeScheduleId = 'new';
+          loadUserSchedule();
+        } else {
+          alert('Failed to delete schedule.');
+        }
+      } catch (error) {
+        console.error('Error deleting schedule:', error);
+        alert('Error deleting schedule.');
       }
     });
   }

@@ -299,6 +299,26 @@ app.delete('/api/schedule', authenticateToken, async (req, res) => {
   }
 });
 
+// Delete full user schedule
+app.delete('/api/schedule/:id', authenticateToken, async (req, res) => {
+  const scheduleId = req.params.id;
+  try {
+    const result = await pool.query(
+      'DELETE FROM schedule WHERE scheduleid = $1 AND userid = $2 RETURNING scheduleid',
+      [scheduleId, req.user.user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Schedule not found' });
+    }
+
+    res.json({ message: 'Schedule deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting schedule:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Save user program selection and full name (name is optional)
 app.post('/api/term', authenticateToken, async (req, res) => {
   const { name, program_id, year_level, semester } = req.body;
