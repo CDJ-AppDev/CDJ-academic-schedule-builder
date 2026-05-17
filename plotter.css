@@ -99,7 +99,7 @@
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin: 0;
+  margin: 0 0 0 4vw;
   flex-shrink: 0;
 }
 
@@ -144,10 +144,11 @@
 
 /* Color Picker Section */
 .options-color {
+  margin: 0 4vw 0 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: 12px;
   font-size: 0.95rem;
   font-weight: 700;
   color: #000;
@@ -184,7 +185,7 @@
 
 /* Buttons */
 .btn-green {
-  background: var(--accent);
+  background: #00cc66;
   color: white;
   border: none;
   border-radius: 14px;
@@ -194,10 +195,12 @@
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   letter-spacing: 0.02em;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 .btn-green:hover {
-  background: rgba(17, 17, 17, 0.8);
+  background: #059669;
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
@@ -207,16 +210,22 @@
 }
 
 .btn-green.selected {
-  background: #ef4444;
+  background: #00cc66;
+  color: white;
 }
 
 .btn-centered {
-  align-self: center;
-  margin-top: 8px;
+  display: block;
+  margin: 12px auto;
 }
 
 .btn-save {
-  margin-top: 12px;
+  display: none;
+  margin: 12px auto;
+}
+
+.btn-save.visible {
+  display: block;
 }
 
 /* Canvas Wrapper */
@@ -227,6 +236,11 @@
   overflow-x: auto;
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: none;
+}
+
+.plotter-canvas-wrapper.visible {
+  display: block;
 }
 
 /* Timetable Grid */
@@ -364,6 +378,12 @@
 .course-block .day-text {
   margin-bottom: 2px;
   font-size: 0.7rem;
+}
+
+.course-block .day-room-text {
+  margin-bottom: 2px;
+  font-size: 0.7rem;
+  white-space: nowrap;
 }
 
 .course-block .time-text {

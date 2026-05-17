@@ -48,6 +48,62 @@ function clearTermCache() {
   localStorage.removeItem('termData');
 }
 
+// Function to parse time string to minutes
+function timeStringToMinutes(timeStr) {
+  if (!timeStr) return null;
+  const parts = timeStr.split(':');
+  return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+}
+
+// Function to check if two time ranges overlap
+function doTimesOverlap(start1, end1, start2, end2) {
+  const start1Min = timeStringToMinutes(start1);
+  const end1Min = timeStringToMinutes(end1);
+  const start2Min = timeStringToMinutes(start2);
+  const end2Min = timeStringToMinutes(end2);
+  
+  if (!start1Min || !end1Min || !start2Min || !end2Min) return false;
+  
+  return start1Min < end2Min && start2Min < end1Min;
+}
+
+// Function to check for scheduling conflicts
+function checkScheduleConflict(newDay, newStartTime, newEndTime) {
+  for (let course of courses) {
+    // Get the course's schedule information
+    let courseDay, courseStartTime, courseEndTime;
+    
+    if (course.schedule) {
+      // API course format
+      courseDay = course.schedule.day;
+      courseStartTime = course.schedule.startTime;
+      courseEndTime = course.schedule.endTime;
+    } else if (course.slots && course.slots.length > 0) {
+      // Manual course format
+      courseDay = course.slots[0].day;
+      courseStartTime = course.slots[0].startTime;
+      courseEndTime = course.slots[0].endTime;
+    } else {
+      continue;
+    }
+    
+    // Check if days match (case-insensitive)
+    if (courseDay && courseDay.toLowerCase() === newDay.toLowerCase()) {
+      // Check if times overlap
+      if (doTimesOverlap(courseStartTime, courseEndTime, newStartTime, newEndTime)) {
+        return {
+          conflict: true,
+          conflictingCourse: course.code || course.courseCode,
+          conflictingDay: courseDay,
+          conflictingTime: `${courseStartTime} - ${courseEndTime}`
+        };
+      }
+    }
+  }
+  
+  return { conflict: false };
+}
+
 // Load available courses from API
 async function loadAvailableCourses() {
   const token = localStorage.getItem('token');
@@ -193,6 +249,25 @@ function addAvailableCourse(courseslotId) {
   const courseData = availableCourses.find(c => c.courseslot_id == courseslotId);
   if (!courseData) {
     console.error('Course not found:', courseslotId);
+    return;
+  }
+
+  // Check for scheduling conflicts
+  const conflictCheck = checkScheduleConflict(
+    courseData.schedule?.day,
+    courseData.schedule?.startTime,
+    courseData.schedule?.endTime
+  );
+  
+  if (conflictCheck.conflict) {
+    alert(
+      `⚠️ Scheduling Conflict Detected!\n\n` +
+      `This course conflicts with:\n` +
+      `Course: ${conflictCheck.conflictingCourse}\n` +
+      `Day: ${conflictCheck.conflictingDay}\n` +
+      `Time: ${conflictCheck.conflictingTime}\n\n` +
+      `Please choose a different section or remove the conflicting course.`
+    );
     return;
   }
 
@@ -346,6 +421,21 @@ if (addCourseBtn) {
 
     if (!code || !name || !tName || !day || !start || !end) {
       alert("Please fill in all irregular course details.");
+      return;
+    }
+
+    // Check for scheduling conflicts
+    const conflictCheck = checkScheduleConflict(day, start, end);
+    
+    if (conflictCheck.conflict) {
+      alert(
+        `⚠️ Scheduling Conflict Detected!\n\n` +
+        `This course conflicts with:\n` +
+        `Course: ${conflictCheck.conflictingCourse}\n` +
+        `Day: ${conflictCheck.conflictingDay}\n` +
+        `Time: ${conflictCheck.conflictingTime}\n\n` +
+        `Please adjust the time or day.`
+      );
       return;
     }
 
