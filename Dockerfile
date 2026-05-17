@@ -2,12 +2,11 @@ FROM nginx:alpine
 
 WORKDIR /usr/share/nginx/html
 
-COPY pages/login.html ./
-COPY pages/signup.html ./
-COPY style.css ./
+COPY index.html ./
 COPY favicon.png ./
 COPY assets ./assets
 COPY pages ./pages
-COPY scripts ./scripts
+COPY frontend ./frontend
+COPY private ./private
 
 EXPOSE 80
