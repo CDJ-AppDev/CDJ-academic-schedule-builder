@@ -516,13 +516,15 @@ select:focus {
 }
 
 .selected-courses {
-  margin-top: 16px;
+  margin: 16px 0;
   padding: 12px;
   background: rgba(74, 158, 255, 0.1);
   border-left: 4px solid #4a9eff;
   border-radius: 4px;
   color: #4a9eff;
   font-weight: 500;
+  display: block;
+  width: 100%;
 }
 
 /* Schedule Plotter Styles */
@@ -844,3 +846,247 @@ select:focus {
   cursor: pointer;
   margin-left: 16px;
 }
+
+/* ========================================= */
+/* Plotter Styles                            */
+/* ========================================= */
+.plotter-main {
+  max-width: 900px;
+}
+
+.plotter-panel {
+  background: #a4b0be;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.plotter-controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.plotter-controls-section h3 {
+  margin: 0;
+  color: #111;
+  font-size: 1.2rem;
+}
+
+.plotter-schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plotter-schedule-item {
+  background: #dcdde1;
+  border-radius: 20px;
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: #2f3640;
+}
+
+.plotter-options-box {
+  background: #c7ecee;
+  border-radius: 15px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.options-title {
+  font-weight: 700;
+  color: #111;
+  font-size: 0.95rem;
+}
+
+.options-checkboxes {
+  display: flex;
+  gap: 30px;
+  flex: 1;
+}
+
+.options-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.options-column label {
+  font-size: 0.85rem;
+  color: #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.options-color {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111;
+  text-align: right;
+  margin-left: auto;
+}
+
+.options-color input[type="color"] {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-green {
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.btn-green:hover {
+  background: #0ea5e9;
+  transform: translateY(-2px);
+}
+
+.btn-green.selected {
+  background: #ef4444;
+}
+
+.btn-centered {
+  align-self: center;
+  margin-top: 5px;
+}
+
+.btn-save {
+  margin-top: 20px;
+}
+
+.plotter-canvas-wrapper {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.timetable-grid {
+  display: flex;
+  min-width: 600px;
+  border: 1px solid #dfe6e9;
+  background: #ffffff;
+  color: #2d3436;
+}
+
+.time-column {
+  width: 60px;
+  flex-shrink: 0;
+  border-right: 1px solid #dfe6e9;
+  display: flex;
+  flex-direction: column;
+}
+
+.time-cell {
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding-top: 5px;
+  border-bottom: 1px solid #f1f2f6;
+  box-sizing: border-box;
+}
+
+.header-cell {
+  height: 40px;
+  border-bottom: 1px solid #dfe6e9;
+}
+
+.day-columns-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.day-headers {
+  display: flex;
+  height: 40px;
+  border-bottom: 1px solid #dfe6e9;
+}
+
+.day-header {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-right: 1px solid #f1f2f6;
+}
+
+.day-columns-grid {
+  display: flex;
+  position: relative;
+  height: 780px; 
+}
+
+.day-col {
+  flex: 1;
+  border-right: 1px solid #f1f2f6;
+  background-image: linear-gradient(to bottom, transparent 59px, #f1f2f6 60px);
+  background-size: 100% 60px;
+}
+
+.blocks-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.course-block {
+  position: absolute;
+  border-radius: 12px;
+  padding: 6px;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+
+.course-block .subject-code { font-size: 0.75rem; font-weight: 800; margin-bottom: 2px;}
+.course-block .subject-name { margin-bottom: 4px; line-height: 1.1; }
+.course-block .prof-name { font-style: italic; margin-bottom: 4px; font-size: 0.6rem;}
+.course-block .day-text { margin-bottom: 2px; }
+.course-block .time-text { white-space: nowrap; }
+.course-block .room-text { margin-top: 2px; }
