@@ -392,7 +392,7 @@ window.switchActiveSchedule = function(id) {
     clearTermCache(); // Clear cache when switching to new schedule
     courses = [];
     window.currentScheduleId = null;
-    if (nameInput) nameInput.value = 'My New Schedule';
+    if (nameInput) nameInput.value = 'Schedule';
   } else {
     const sched = userSchedules.find(s => s.schedule_id == id);
     if (sched) {
