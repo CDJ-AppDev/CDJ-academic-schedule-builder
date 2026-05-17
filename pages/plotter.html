@@ -30,10 +30,11 @@
   <main class="page-content plotter-main">
     <div class="page-title">
       <h1>Schedule Plotter</h1>
+      <p>View and customize your schedule visualization</p>
     </div>
 
-    <section class="plotter-panel">
-
+    <section class="page-panel">
+      <!-- Controls Section -->
       <div class="plotter-controls-section">
         <h3>Select Schedule</h3>
 
@@ -43,32 +44,55 @@
             <span>Loading schedules...</span>
           </div>
         </div>
+      </div>
 
-        <div class="plotter-options-box">
-          <div class="options-title">OPTIONS</div>
+      <!-- Options Section -->
+      <div class="plotter-options-box">
+        <h3 class="options-title">OPTIONS</h3>
 
-          <div class="options-checkboxes">
-            <div class="options-column">
-              <label>Hide Professor <input type="checkbox" id="hide-prof"></label>
-              <label>Hide Subject Code <input type="checkbox" id="hide-code"></label>
-              <label>Hide Subject Name <input type="checkbox" id="hide-name"></label>
-            </div>
-            <div class="options-column">
-              <label>Hide Time <input type="checkbox" id="hide-time"></label>
-              <label>Hide Day <input type="checkbox" id="hide-day"></label>
-              <label>Hide Room <input type="checkbox" id="hide-room"></label>
-            </div>
+        <div class="options-checkboxes">
+          <div class="options-column">
+            <label>
+              <span>Hide Professor</span>
+              <input type="checkbox" id="hide-prof">
+            </label>
+            <label>
+              <span>Hide Subject Code</span>
+              <input type="checkbox" id="hide-code">
+            </label>
+            <label>
+              <span>Hide Subject Name</span>
+              <input type="checkbox" id="hide-name">
+            </label>
           </div>
-
-          <div class="options-color">
-            <label>Custom Color:<br>#Hex Code</label>
-            <input type="color" id="custom-color" value="#10b981">
+          <div class="options-column">
+            <label>
+              <span>Hide Time</span>
+              <input type="checkbox" id="hide-time">
+            </label>
+            <label>
+              <span>Hide Day</span>
+              <input type="checkbox" id="hide-day">
+            </label>
+            <label>
+              <span>Hide Room</span>
+              <input type="checkbox" id="hide-room">
+            </label>
           </div>
         </div>
 
-        <button id="btn-generate" class="btn-green btn-centered">GENERATE</button>
+        <div class="options-color">
+          <label>Custom Color:</label>
+          <div class="color-input-wrapper">
+            <input type="color" id="custom-color" value="#111111" oninput="document.getElementById('color-hex-display').textContent = this.value.toUpperCase()">
+            <span class="hex-text" id="color-hex-display">#111111</span>
+          </div>
+        </div>
       </div>
 
+      <button id="btn-generate" class="btn-green btn-centered">Generate Schedule</button>
+
+      <!-- Canvas Section -->
       <div class="plotter-canvas-wrapper" id="capture-area">
         <div class="timetable-grid" id="timetable">
           <!-- Timetable background grid and headers -->
@@ -115,8 +139,7 @@
         </div>
       </div>
 
-      <button id="btn-save-png" class="btn-green btn-centered btn-save">SAVE AS PNG</button>
-
+      <button id="btn-save-png" class="btn-green btn-centered btn-save">Save as PNG</button>
     </section>
   </main>
 
