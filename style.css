@@ -351,7 +351,7 @@ select:focus {
 .page-content {
   max-width: 1200px;
   margin: 36px auto 48px;
-  padding: 0 28px;
+  padding: 0 28px 28px 28px;
   background: rgba(248, 248, 248, 0.92);
   border-radius: 22px;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -536,7 +536,7 @@ select:focus {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   border: 1px solid var(--border);
-  margin: 16px 0;
+  margin: 16px;
 }
 
 .form-group {
@@ -1047,7 +1047,7 @@ select:focus {
 .day-columns-grid {
   display: flex;
   position: relative;
-  height: 780px; 
+  height: 780px;
 }
 
 .day-col {
@@ -1074,7 +1074,7 @@ select:focus {
   font-size: 0.65rem;
   font-weight: 600;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1084,9 +1084,31 @@ select:focus {
   box-sizing: border-box;
 }
 
-.course-block .subject-code { font-size: 0.75rem; font-weight: 800; margin-bottom: 2px;}
-.course-block .subject-name { margin-bottom: 4px; line-height: 1.1; }
-.course-block .prof-name { font-style: italic; margin-bottom: 4px; font-size: 0.6rem;}
-.course-block .day-text { margin-bottom: 2px; }
-.course-block .time-text { white-space: nowrap; }
-.course-block .room-text { margin-top: 2px; }
+.course-block .subject-code {
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.course-block .subject-name {
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+
+.course-block .prof-name {
+  font-style: italic;
+  margin-bottom: 4px;
+  font-size: 0.6rem;
+}
+
+.course-block .day-text {
+  margin-bottom: 2px;
+}
+
+.course-block .time-text {
+  white-space: nowrap;
+}
+
+.course-block .room-text {
+  margin-top: 2px;
+}
