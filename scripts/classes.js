@@ -27,7 +27,3 @@ class Course {
     this.slots = slots; // Array of CourseSlot objects
   }
 }
-
-let courses = [];
-let availableCourses = [];
-let currentTermId = null; // Track the current term for filtering

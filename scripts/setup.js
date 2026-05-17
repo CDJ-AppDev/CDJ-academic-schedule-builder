@@ -27,7 +27,7 @@ if (setupButton) {
         return;
       }
 
-      const response = await fetch(`${API_BASE}/program`, {
+      const response = await fetch(`${API_BASE}/term`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -37,6 +37,7 @@ if (setupButton) {
       });
       const data = await response.json();
       if (response.ok) {
+        localStorage.setItem('termId', program_id + year_level);
         // Redirect to home page
         window.location.href = './home.html';
       } else {

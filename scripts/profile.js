@@ -20,7 +20,7 @@ async function saveToServer(program_id, year_level, semester) {
 
     console.log('Saving to server:', { program_id, year_level, semester });
 
-    const response = await fetch(`${API_BASE}/program`, {
+    const response = await fetch(`${API_BASE}/term`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,12 +36,13 @@ async function saveToServer(program_id, year_level, semester) {
     const data = await response.json();
     
     if (!response.ok) {
-      console.error('Failed to save program to server:', data);
-      alert('Failed to save program selection: ' + (data.error || 'Unknown error'));
+      console.error('Failed to save term to server:', data);
+      alert('Failed to save term selection: ' + (data.error || 'Unknown error'));
       return false;
     }
     
-    console.log('Program saved successfully:', data);
+    localStorage.setItem('termId', program_id + year_level);
+    console.log('Term saved successfully:', data);
     return true;
   } catch (err) {
     console.error('Server request error:', err);
@@ -57,7 +58,7 @@ async function loadFromServer() {
     const token = localStorage.getItem('token');
     if (!token) return null;
 
-    const response = await fetch(`${API_BASE}/program`, {
+    const response = await fetch(`${API_BASE}/term`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -69,6 +70,8 @@ async function loadFromServer() {
 
     // server returns null if no row found
     if (!data) return null;
+
+    localStorage.setItem('termId', data.program_id + data.year_level);
 
     return {
       course: data.program_id,

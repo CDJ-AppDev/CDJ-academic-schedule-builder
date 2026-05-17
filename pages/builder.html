@@ -35,7 +35,7 @@
     <section class="page-panel">
       <h2>Available Courses</h2>
 
-      <div id="availableCourses" class="courses-list" style="grid-template-columns: 1fr;"></div>
+      <div id="availableCourses" class="courses-list single-column"></div>
 
       <!-- dynamic courses loaded from API -->
       <script>
@@ -57,15 +57,14 @@
         }
       </script>
 
-      <div class="course-card">
-        <div class="course-card-header" style="cursor: pointer;" onclick="toggleDropdown('irregularDropdown','irregularArrow')">
-          <h3 style="margin:0; font-size: 1rem;">Add Irregular Course</h3>
-          <span class="arrow" id="irregularArrow" style="font-size: 1.2rem; transition: transform 0.3s;">⌄</span>
+      <div class="course-card irregular-course">
+        <div class="course-card-header irregular-header" onclick="toggleDropdown('irregularDropdown','irregularArrow')">
+          <h3>Add Irregular Course</h3>
+          <span class="arrow" id="irregularArrow">⌄</span>
         </div>
 
-        <div class="course-card-body">
-          <div class="dropdown" id="irregularDropdown"
-            style="overflow: hidden; max-height: 0; transition: max-height 0.4s ease;">
+        <div class="course-card-body no-padding">
+          <div class="dropdown" id="irregularDropdown">
             <div class="course-form">
               <div class="form-group">
                 <label for="course-code">Course Code:</label>
@@ -75,6 +74,11 @@
               <div class="form-group">
                 <label for="course-name">Course Name:</label>
                 <input type="text" id="course-name" placeholder="e.g., Intro to Programming" required>
+              </div>
+
+              <div class="form-group">
+                <label for="course-units">Units:</label>
+                <input type="number" id="course-units" placeholder="e.g., 3" required>
               </div>
 
               <div class="form-group">
@@ -115,17 +119,24 @@
         </div>
       </div>
 
-      <div style="height: 20px;"></div>
+      <div class="spacer-20"></div>
 
-      <h2>Scheduled Courses</h2>
-      <div class="courses-list" style="grid-template-columns: 1fr;" id="scheduledList"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="margin: 0;">Schedules</h2>
+        <select id="schedule-selector" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; font-weight: bold; cursor: pointer;">
+          <option value="new">+ Create New Schedule</option>
+        </select>
+      </div>
+      <div class="courses-list single-column" id="scheduledList"></div>
 
-      <div style="margin-top: 18px; display:flex; justify-content: space-between; align-items:center; gap: 12px;">
-        <div style="font-weight: 700;">
+      <div class="save-schedule-container">
+        <div class="save-schedule-wrapper">
           Save Schedule as:
-          <div style="height: 18px; width: 115px; background: #c9c9c9; border-radius: 10px; margin-top: 8px;"></div>
+          <input type="text" id="schedule-name-input" class="save-input" value="">
+          <span id="schedule-units-display" class="units-display">Units: 0 / 0</span>
+          <span id="regular-status-badge" style="display: none; margin-left: 12px; font-weight: bold; font-size: 0.9rem; padding: 4px 8px; border-radius: 8px;"></span>
         </div>
-        <button class="btn-primary" type="button">SAVE</button>
+        <button id="save-schedule-btn" class="btn-primary btn-save" type="button">SAVE</button>
       </div>
     </section>
   </main>
@@ -133,4 +144,5 @@
   <script src="../scripts/classes.js"></script>
   <script src="../scripts/subjects.js"></script>
 </body>
+
 </html>
