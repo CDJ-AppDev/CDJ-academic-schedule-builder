@@ -923,3 +923,88 @@ select:focus {
 .course-block .day-text { margin-bottom: 2px; }
 .course-block .time-text { white-space: nowrap; }
 .course-block .room-text { margin-top: 2px; }
+
+/* ========================================= */
+/* Admin Styles                              */
+/* ========================================= */
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(0,0,0,0.1);
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-tab {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.admin-tab:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--text);
+}
+
+.admin-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.admin-content {
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.admin-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.admin-table th, .admin-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.admin-table th {
+  background: rgba(0,0,0,0.02);
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.admin-table td {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr:hover td {
+  background: rgba(0,0,0,0.02);
+  color: var(--text);
+}
