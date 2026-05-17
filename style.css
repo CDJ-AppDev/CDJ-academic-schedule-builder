@@ -821,3 +821,26 @@ select:focus {
   background-color: #00b359;
   box-shadow: 0 6px 16px rgba(0, 204, 102, 0.4);
 }
+
+.schedules-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.schedules-title {
+  margin: 0;
+}
+
+.schedule-selector {
+  width: auto;
+  min-width: 220px;
+  max-width: 300px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 16px;
+}
