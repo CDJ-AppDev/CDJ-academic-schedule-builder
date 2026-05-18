@@ -165,8 +165,8 @@ select {
 }
 
 select:focus {
-  border-color: rgba(17, 17, 17, 0.35);
-  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.05);
+  outline: none;
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .button {
@@ -460,4 +460,4 @@ select:focus {
 
 
 
-
+

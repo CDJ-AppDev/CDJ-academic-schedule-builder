@@ -10,6 +10,18 @@
   border: 1px solid var(--border);
 }
 
+.selected-courses {
+  margin: 16px 0;
+  padding: 12px;
+  background: rgba(74, 158, 255, 0.1);
+  border-left: 4px solid #4a9eff;
+  border-radius: 4px;
+  color: #4a9eff;
+  font-weight: 500;
+  display: block;
+  width: 100%;
+}
+
 .course-checkbox {
   display: flex;
   align-items: center;

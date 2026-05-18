@@ -5,7 +5,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    const API_BASE = 'http://localhost:3000/api';
+    // Detect API base URL based on environment
+    const API_BASE = (() => {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:3000/api';
+      }
+      // In Kubernetes/production, use same hostname with /api path
+      const protocol = window.location.protocol;
+      const port = window.location.port ? ':' + window.location.port : '';
+      return `${protocol}//${hostname}${port}/api`;
+    })();
     const scheduleListContainer = document.getElementById('plotter-schedule-list');
     const btnGenerate = document.getElementById('btn-generate');
     const btnSavePng = document.getElementById('btn-save-png');

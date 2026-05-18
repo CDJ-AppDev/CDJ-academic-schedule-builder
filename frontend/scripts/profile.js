@@ -1,4 +1,14 @@
-const API_BASE = 'http://localhost:3000/api';
+// Detect API base URL based on environment
+const API_BASE = (() => {
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3000/api';
+  }
+  // In Kubernetes/production, use same hostname with /api path
+  const protocol = window.location.protocol;
+  const port = window.location.port ? ':' + window.location.port : '';
+  return `${protocol}//${hostname}${port}/api`;
+})();
 
 // Course, Year, and Semester Picker Functionality - Single Selection Only
 const courseRadios = document.getElementsByName('course-picker');
@@ -76,7 +86,8 @@ async function loadFromServer() {
     return {
       course: data.program_id,
       year: String(data.year_level),
-      semester: String(data.semester)
+      semester: String(data.semester),
+      req_units: data.req_units
     };
 
   } catch (err) {
@@ -134,10 +145,15 @@ applyBtn.addEventListener('click', async () => {
 
   saveToLocalStorage(course, year, semester);
   
-  // Wait for server save to complete
+// Wait for server save to complete
   const saved = await saveToServer(course, year, semester);
   
   if (saved) {
+    // Load the term data to get req_units
+    const termData = await loadFromServer();
+    if (termData && termData.req_units) {
+      localStorage.setItem('reqUnits', termData.req_units);
+    }
     applySelectionToUI(course, year, semester);
   }
 });
@@ -147,12 +163,16 @@ applyBtn.addEventListener('click', async () => {
 window.addEventListener('load', async () => {
   let course, year, semester;
 
-  // 1. Try server FIRST
+// 1. Try server FIRST
   const serverData = await loadFromServer();
   if (serverData) {
     course = serverData.course;
     year = serverData.year;
     semester = serverData.semester;
+    // Store required units from server
+    if (serverData.req_units) {
+      localStorage.setItem('reqUnits', serverData.req_units);
+    }
   }
 
   // 2. If no server data → try localStorage

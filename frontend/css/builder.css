@@ -52,9 +52,9 @@
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.15);
-  border-color: #4a9eff;
-  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: none;
 }
 
 .courses-list {
@@ -84,6 +84,7 @@
   padding: 16px;
   border-bottom: 1px solid rgba(74, 158, 255, 0.2);
   display: flex;
+  border-radius: 0px;
   justify-content: space-between;
   align-items: center;
 }
@@ -272,4 +273,12 @@
   font-weight: bold;
   cursor: pointer;
   margin-left: 16px;
+  background-color: white;
+  outline: none;
+}
+
+.schedule-selector:focus {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: none;
+  outline: none;
 }

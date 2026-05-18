@@ -12,7 +12,17 @@ const startTimeInput = document.getElementById('start-time');
 const endTimeInput = document.getElementById('end-time');
 const courseUnitsInput = document.getElementById('course-units'); // Add this for irregular units
 
-const API_BASE = 'http://localhost:3000/api';
+// Detect API base URL based on environment
+const API_BASE = (() => {
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3000/api';
+  }
+  // In Kubernetes/production, use same hostname with /api path
+  const protocol = window.location.protocol;
+  const port = window.location.port ? ':' + window.location.port : '';
+  return `${protocol}//${hostname}${port}/api`;
+})();
 
 let courses = [];
 let availableCourses = [];
@@ -35,6 +45,10 @@ async function getTermData(token) {
     const termData = await termResponse.json();
     if (termData) {
       localStorage.setItem('termData', JSON.stringify(termData));
+      // Store required units for display
+      if (termData.req_units) {
+        localStorage.setItem('reqUnits', termData.req_units);
+      }
     }
     return termData;
   } catch (error) {
@@ -46,6 +60,7 @@ async function getTermData(token) {
 // Clear term data cache (useful when user changes term/program)
 function clearTermCache() {
   localStorage.removeItem('termData');
+  localStorage.removeItem('reqUnits');
 }
 
 // Function to parse time string to minutes
@@ -177,7 +192,7 @@ function displayAvailableCourses() {
     courseHeader.style.justifyContent = 'space-between';
     courseHeader.style.background = '#d0eaea';
     courseHeader.style.color = 'black';
-    courseHeader.style.borderRadius = '20px';
+    courseHeader.style.borderRadius = '0px';
     courseHeader.style.borderBottom = 'none';
 
     const titleEl = document.createElement('h3');
