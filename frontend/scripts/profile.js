@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = 'login.html';
-    return;
-  }
+  // const token = localStorage.getItem('token');
+  // if (!token) {
+  //   window.location.href = 'login.html';
+  //   return;
+  // }
 });
 
 // Course, Year, and Semester Picker Functionality - Single Selection Only
