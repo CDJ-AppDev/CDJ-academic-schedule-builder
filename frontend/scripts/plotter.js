@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // const token = localStorage.getItem('token');
-    // if (!token) {
-    //     window.location.href = 'login.html';
-    //     return;
-    // }
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
 
 
     const scheduleListContainer = document.getElementById('plotter-schedule-list');
