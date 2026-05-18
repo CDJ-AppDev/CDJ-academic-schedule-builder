@@ -322,7 +322,7 @@ select:focus {
 .nav-button {
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 999px;
-  background: rgba(17, 17, 17, 0.92);
+  background: #4543ab;
   color: #fff;
   padding: 12px 18px;
   font-size: 0.9rem;
@@ -332,7 +332,7 @@ select:focus {
 
 .nav-button:hover {
   transform: translateY(-1px);
-  background: #000;
+  background: #201f52;
 }
 
 .profile-button {
@@ -457,7 +457,3 @@ select:focus {
   background-color: #00b359;
   box-shadow: 0 6px 16px rgba(0, 204, 102, 0.4);
 }
-
-
-
-

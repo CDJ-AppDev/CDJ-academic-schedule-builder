@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="../frontend/css/main.css">
   <link rel="stylesheet" href="../frontend/css/profile.css">
 </head>
+
 <body>
   <header class="app-header">
     <div class="app-brand">
@@ -17,31 +19,72 @@
 
     <nav class="app-nav">
       <button class="nav-button" onclick="window.location.href='home.html'">Home</button>
-      <button class="nav-button" onclick="window.location.href='profile.html'">Profile</button>
       <button class="nav-button" onclick="window.location.href='builder.html'">Schedule Picker</button>
       <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="close-btn" style="position: static; margin-left: 0;"
-      onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+      <button style="position: static; margin-left: 0; background: none; border: none; padding: 5px; cursor: pointer;"
+        onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Profile" style="width: 24px; height: 24px;">
+      </button>
+      <button class="close-btn" style="position: static; margin-left: 0; background: none; padding: 5px; border: none;"
+        onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">
+        <img src="../assets/logout.png" alt="Log out" style="width: 24px; height: 24px;">
+      </button>
+    </div>
   </header>
 
   <main class="page-content">
+
     <div class="page-title">
-      <h1>Course Picker</h1>
-      <p>Select courses and build your term schedule.</p>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../assets/profile.png" alt="Profile" style="width: 40px; height: 40px;">
+        <h1 style="margin: 0;">Profile</h1>
+      </div>
+      <p>View and update your profile information.</p>
     </div>
+
+    <section class="page-panel" style="margin-bottom: 20px; margin-top: 20px;">
+      <h2>Profile Information</h2>
+      <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <img src="../assets/profile.png" alt="Profile" style="width: 24px; height: 24px;">
+          <input type="text" placeholder="Username" id="profile-username" disabled
+            style="width: 33.33%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+          <button style="background: none; border: none; cursor: pointer;"
+            onclick="const el = document.getElementById('profile-username'); el.disabled = !el.disabled; if(!el.disabled) el.focus();"><img
+              src="../assets/edit.png" alt="Edit" style="width: 24px; height: 24px;"></button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <img src="../assets/email.png" alt="Email" style="width: 24px; height: 24px;">
+          <input type="email" placeholder="Email" id="profile-email" disabled
+            style="width: 33.33%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+          <button style="background: none; border: none; cursor: pointer;"
+            onclick="const el = document.getElementById('profile-email'); el.disabled = !el.disabled; if(!el.disabled) el.focus();"><img
+              src="../assets/edit.png" alt="Edit" style="width: 24px; height: 24px;"></button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <img src="../assets/password.png" alt="Password" style="width: 24px; height: 24px;">
+          <input type="password" placeholder="Password" id="profile-password" disabled
+            style="width: 33.33%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+          <button style="background: none; border: none; cursor: pointer;"
+            onclick="const el = document.getElementById('profile-password'); el.disabled = !el.disabled; if(!el.disabled) el.focus();"><img
+              src="../assets/edit.png" alt="Edit" style="width: 24px; height: 24px;"></button>
+        </div>
+      </div>
+    </section>
 
     <section class="page-panel">
       <h2>Available Courses</h2>
       <p>Select your course track below:</p>
-      
+
       <div class="course-selection">
         <label class="course-checkbox">
           <input type="radio" name="course-picker" id="cs-course" value="CS">
           <span>Computer Science</span>
         </label>
-        
+
         <label class="course-checkbox">
           <input type="radio" name="course-picker" id="it-course" value="IT">
           <span>Information Technology</span>
@@ -56,7 +99,7 @@
           <input type="radio" name="year-picker" id="year-1" value="1">
           <span>1st Year</span>
         </label>
-        
+
         <label class="course-checkbox">
           <input type="radio" name="year-picker" id="year-2" value="2">
           <span>2nd Year</span>
@@ -81,19 +124,21 @@
           <input type="radio" name="semester-picker" id="semester-1" value="1">
           <span>1st Semester</span>
         </label>
-        
+
         <label class="course-checkbox">
           <input type="radio" name="semester-picker" id="semester-2" value="2">
           <span>2nd Semester</span>
         </label>
       </div>
-      
+
       <button id="apply-courses-btn" class="btn-primary">Apply Selection</button>
       <p id="selected-courses" class="selected-courses"></p>
-      <button id="schedule-picker-btn" class="btn-primary" onclick="window.location.href='builder.html'" hidden>Go to Schedule Picker</button>
+      <button id="schedule-picker-btn" class="btn-primary" onclick="window.location.href='builder.html'" hidden>Go to
+        Schedule Picker</button>
     </section>
   </main>
   <script src="../frontend/scripts/auth.js"></script>
   <script src="../frontend/scripts/profile.js"></script>
 </body>
+
 </html>
