@@ -15,14 +15,15 @@ const courseUnitsInput = document.getElementById('course-units'); // Add this fo
 // Detect API base URL based on environment
 const API_BASE = (() => {
   const hostname = window.location.hostname;
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+  const protocol = window.location.protocol;
+  if (protocol === 'file:' || hostname === 'localhost' || hostname === '127.0.0.1') {
     return 'http://localhost:3000/api';
   }
   // In Kubernetes/production, use same hostname with /api path
-  const protocol = window.location.protocol;
   const port = window.location.port ? ':' + window.location.port : '';
   return `${protocol}//${hostname}${port}/api`;
 })();
+
 
 let courses = [];
 let availableCourses = [];
