@@ -251,12 +251,14 @@ function renderTerms(terms) {
 // Render Courses Table
 function renderCourses(courses) {
   const tbody = document.getElementById('courses-tbody');
-  tbody.innerHTML = courses.map(course => `
+  tbody.innerHTML = courses.map(course => {
+    const termBadges = (course.termids || []).map(tid => `<span class="badge default">${escapeHtml(tid)}</span>`).join(' ');
+    return `
     <tr>
       <td><strong>${escapeHtml(course.coursecode)}</strong></td>
       <td>${escapeHtml(course.coursename)}</td>
       <td>${course.courseunits} units</td>
-      <td><span class="badge default">${escapeHtml(course.termid)}</span></td>
+      <td>${termBadges}</td>
       <td>
         <div class="action-buttons-flex">
           <button class="btn-action edit-btn" onclick="openEditModal('courses', ${JSON.stringify(course).replace(/"/g, '&quot;')})">Edit</button>
@@ -264,7 +266,7 @@ function renderCourses(courses) {
         </div>
       </td>
     </tr>
-  `).join('');
+  `}).join('');
 }
 
 // Render Professors Table
@@ -556,10 +558,10 @@ function generateFormFields(targetType, record) {
           </select>
         </div>
         <div class="form-group-admin">
-          <label for="course-term">Assigned Term</label>
-          <select id="course-term" required>
-            ${termOptionsHtml}
-          </select>
+          <label>Assigned Term(s)</label>
+          <div id="course-terms-container" style="max-height: 140px; overflow-y: auto; border: 1px solid rgba(0,0,0,0.1); padding: 6px; border-radius: 8px; background: #fafafa;">
+            ${cachedTerms.map(t => `<div style="padding: 4px 6px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.04)'" onmouseout="this.style.background='transparent'"><label style="display:flex; align-items:center; gap: 10px; font-weight: 500; cursor: pointer; color: #333; margin: 0; text-transform: none; justify-content: flex-start;"><input type="checkbox" name="course_term_cb" value="${t.termid}" style="width: 16px !important; height: 16px !important; margin: 0 !important; flex-shrink: 0;"> <span>${t.termid} <span style="color:#888; font-size: 0.85em; font-weight: normal;">(${t.programid} Y${t.yearlevel} S${t.semester})</span></span></label></div>`).join('')}
+          </div>
         </div>
       `;
     case 'professors':
@@ -668,12 +670,22 @@ function preFillFormFields(targetType, record) {
     document.getElementById('course-units').value = record.academicunits || record.courseunits || '';
 
     // Auto-resolve course term program
-    const termObj = cachedTerms.find(t => t.termid === record.termid);
-    if (termObj) {
-      document.getElementById('popup-course-program').value = termObj.programid;
-      filterPopupCourseTerms();
+    if (record.termids && record.termids.length > 0) {
+      const termObj = cachedTerms.find(t => t.termid === record.termids[0]);
+      if (termObj) {
+        document.getElementById('popup-course-program').value = termObj.programid;
+        filterPopupCourseTerms();
+      }
+
+      const checkboxes = document.querySelectorAll('input[name="course_term_cb"]');
+      Array.from(checkboxes).forEach(cb => {
+        if (record.termids.includes(cb.value)) {
+          cb.checked = true;
+        } else {
+          cb.checked = false;
+        }
+      });
     }
-    document.getElementById('course-term').value = record.termid || '';
   } else if (targetType === 'professors') {
     document.getElementById('prof-name').value = record.profname || '';
     document.getElementById('prof-dept').value = record.profdepartment || '';
@@ -761,27 +773,29 @@ window.filterPopupTermSemesters = filterPopupTermSemesters;
 
 function filterPopupCourseTerms() {
   const progSelect = document.getElementById('popup-course-program');
-  const termSelect = document.getElementById('course-term');
-  if (!progSelect || !termSelect) return;
+  const termContainer = document.getElementById('course-terms-container');
+  if (!progSelect || !termContainer) return;
 
   const selectedProg = progSelect.value;
-  const currentTermVal = termSelect.value;
+  const checkboxes = termContainer.querySelectorAll('input[name="course_term_cb"]');
+  const currentSelectedVals = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
 
   let filteredTerms = cachedTerms;
   if (selectedProg !== 'All') {
     filteredTerms = cachedTerms.filter(t => t.programid === selectedProg);
   }
 
-  // Re-populate termSelect
-  let html = filteredTerms.map(t => `<option value="${t.termid}">${t.termid} (${t.programid} Year ${t.yearlevel} Sem ${t.semester})</option>`).join('');
-  termSelect.innerHTML = html;
+  // Re-populate termContainer
+  let html = filteredTerms.map(t => `<div style="padding: 4px 6px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.04)'" onmouseout="this.style.background='transparent'"><label style="display:flex; align-items:center; gap: 10px; font-weight: 500; cursor: pointer; color: #333; margin: 0; text-transform: none; justify-content: flex-start;"><input type="checkbox" name="course_term_cb" value="${t.termid}" style="width: 16px !important; height: 16px !important; margin: 0 !important; flex-shrink: 0;"> <span>${t.termid} <span style="color:#888; font-size: 0.85em; font-weight: normal;">(${t.programid} Y${t.yearlevel} S${t.semester})</span></span></label></div>`).join('');
+  termContainer.innerHTML = html;
 
-  // Keep original value if still exists in options
-  if (filteredTerms.some(t => t.termid === currentTermVal)) {
-    termSelect.value = currentTermVal;
-  } else if (filteredTerms.length > 0) {
-    termSelect.value = filteredTerms[0].termid;
-  }
+  // Restore selections
+  const newCheckboxes = termContainer.querySelectorAll('input[name="course_term_cb"]');
+  Array.from(newCheckboxes).forEach(cb => {
+    if (currentSelectedVals.includes(cb.value)) {
+      cb.checked = true;
+    }
+  });
 }
 window.filterPopupCourseTerms = filterPopupCourseTerms;
 
@@ -881,7 +895,9 @@ async function handleFormSubmit(event) {
     payload.coursecode = document.getElementById('course-code').value.trim();
     payload.coursename = document.getElementById('course-name').value.trim();
     payload.courseunits = parseInt(document.getElementById('course-units').value);
-    payload.termid = document.getElementById('course-term').value;
+
+    const checkboxes = document.querySelectorAll('input[name="course_term_cb"]:checked');
+    payload.termids = Array.from(checkboxes).map(cb => cb.value);
   } else if (targetType === 'professors') {
     payload.profname = document.getElementById('prof-name').value.trim();
     payload.profdepartment = document.getElementById('prof-dept').value.trim();
@@ -1251,11 +1267,11 @@ function populateSlotsCourseDropdown() {
 
   if (selectedTerm !== 'All') {
     // If a term is selected, filter strictly by that term
-    coursesList = cachedCourses.filter(c => c.termid === selectedTerm);
+    coursesList = cachedCourses.filter(c => c.termids && c.termids.includes(selectedTerm));
   } else if (selectedProg !== 'All') {
     // If only a program is selected, filter by all terms belonging to that program
     const matchingTerms = cachedTerms.filter(t => t.programid === selectedProg).map(t => t.termid);
-    coursesList = cachedCourses.filter(c => matchingTerms.includes(c.termid));
+    coursesList = cachedCourses.filter(c => c.termids && c.termids.some(tid => matchingTerms.includes(tid)));
   }
 
   // Sort courses alphabetically by code
@@ -1303,12 +1319,12 @@ function applyFilters(tabId) {
     // Filter by Program
     if (progVal !== 'All') {
       const matchingTerms = cachedTerms.filter(t => t.programid === progVal).map(t => t.termid);
-      filtered = filtered.filter(c => matchingTerms.includes(c.termid));
+      filtered = filtered.filter(c => c.termids && c.termids.some(tid => matchingTerms.includes(tid)));
     }
 
     // Filter by Term
     if (termVal !== 'All') {
-      filtered = filtered.filter(c => c.termid === termVal);
+      filtered = filtered.filter(c => c.termids && c.termids.includes(termVal));
     }
 
     renderCourses(filtered);
@@ -1329,12 +1345,12 @@ function applyFilters(tabId) {
     } else {
       // 2. Otherwise, if a specific term is selected, filter by all courses of that term
       if (termVal !== 'All') {
-        const termCourses = cachedCourses.filter(c => c.termid === termVal).map(c => c.coursecode);
+        const termCourses = cachedCourses.filter(c => c.termids && c.termids.includes(termVal)).map(c => c.coursecode);
         filtered = filtered.filter(s => termCourses.includes(s.coursecode));
       } else if (progVal !== 'All') {
         // 3. Otherwise, if a specific program is selected, filter by all courses of all terms in that program
         const progTerms = cachedTerms.filter(t => t.programid === progVal).map(t => t.termid);
-        const progCourses = cachedCourses.filter(c => progTerms.includes(c.termid)).map(c => c.coursecode);
+        const progCourses = cachedCourses.filter(c => c.termids && c.termids.some(tid => progTerms.includes(tid))).map(c => c.coursecode);
         filtered = filtered.filter(s => progCourses.includes(s.coursecode));
       }
     }
