@@ -262,7 +262,9 @@ if (loginLinkButton) {
 }
 
 if (closeButton) {
-  closeButton.addEventListener('click', () => {
-    window.location.href = '../index.html';
-  });
+  if (window.location.pathname.includes('login.html') || window.location.pathname.includes('signup.html')) {
+    closeButton.addEventListener('click', () => {
+      window.location.href = '../index.html';
+    });
+  }
 }

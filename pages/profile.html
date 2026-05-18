@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="../frontend/css/main.css">
   <link rel="stylesheet" href="../frontend/css/profile.css">
 </head>
+
 <body>
   <header class="app-header">
     <div class="app-brand">
@@ -22,8 +24,7 @@
       <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="close-btn" style="position: static; margin-left: 0;"
-      onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">&times;</button>
+    <button class="close-btn close-btn-left" onclick="handleLogout('../index.html')">&times;</button>
   </header>
 
   <main class="page-content">
@@ -35,13 +36,13 @@
     <section class="page-panel">
       <h2>Available Courses</h2>
       <p>Select your course track below:</p>
-      
+
       <div class="course-selection">
         <label class="course-checkbox">
           <input type="radio" name="course-picker" id="cs-course" value="CS">
           <span>Computer Science</span>
         </label>
-        
+
         <label class="course-checkbox">
           <input type="radio" name="course-picker" id="it-course" value="IT">
           <span>Information Technology</span>
@@ -56,7 +57,7 @@
           <input type="radio" name="year-picker" id="year-1" value="1">
           <span>1st Year</span>
         </label>
-        
+
         <label class="course-checkbox">
           <input type="radio" name="year-picker" id="year-2" value="2">
           <span>2nd Year</span>
@@ -81,19 +82,22 @@
           <input type="radio" name="semester-picker" id="semester-1" value="1">
           <span>1st Semester</span>
         </label>
-        
+
         <label class="course-checkbox">
           <input type="radio" name="semester-picker" id="semester-2" value="2">
           <span>2nd Semester</span>
         </label>
       </div>
-      
+
       <button id="apply-courses-btn" class="btn-primary">Apply Selection</button>
       <p id="selected-courses" class="selected-courses"></p>
-      <button id="schedule-picker-btn" class="btn-primary" onclick="window.location.href='builder.html'" hidden>Go to Schedule Picker</button>
+      <button id="schedule-picker-btn" class="btn-primary" onclick="window.location.href='builder.html'" hidden>Go to
+        Schedule Picker</button>
     </section>
   </main>
+  <script src="../frontend/scripts/popup.js"></script>
   <script src="../frontend/scripts/auth.js"></script>
   <script src="../frontend/scripts/profile.js"></script>
 </body>
+
 </html>

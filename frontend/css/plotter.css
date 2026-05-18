@@ -82,7 +82,7 @@
 
 /* Options Box */
 .plotter-options-box {
-  background: linear-gradient(135deg, rgba(74, 158, 255, 0.08), rgba(74, 158, 255, 0.04));
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(139, 92, 246, 0.04));
   border-radius: 16px;
   padding: 20px;
   display: flex;

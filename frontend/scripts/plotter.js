@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Extract course data with proper field mapping
                 // Handle both API courses and manual courses
                 let startTime, endTime, day, room, courseCode, courseName, profName;
+                const isIrregular = !course.courseslot_id;
 
                 if (course.schedule) {
                     // API courses have schedule object
@@ -137,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     code: courseCode,
                     name: courseName,
                     teacher_name: profName
-                }, day, startTime, endTime, room, bgColor, fontColor);
+                }, day, startTime, endTime, room, bgColor, fontColor, isIrregular);
             });
         } else {
             alert('This schedule has no courses.');
@@ -156,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return index >= 0 ? index : 0;
     }
 
-    function plotBlock(course, day, startTime, endTime, room, bgColor, fontColor) {
+    function plotBlock(course, day, startTime, endTime, room, bgColor, fontColor, isIrregular = false) {
         const startMins = parseTime(startTime);
         const endMins = parseTime(endTime);
 
@@ -176,6 +177,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const block = document.createElement('div');
         block.className = 'course-block';
+        if (isIrregular) {
+            block.className += ' irregular-block';
+        }
         block.style.top = `${topPx}px`;
         block.style.height = `${heightPx}px`;
         block.style.left = `${leftPercent}%`;
@@ -183,12 +187,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         block.style.backgroundColor = bgColor;
         block.style.color = fontColor;
 
+        if (isIrregular) {
+            block.style.border = `2px dashed ${fontColor || 'rgba(255,255,255,0.85)'}`;
+            block.style.boxShadow = 'inset 0 0 12px rgba(0,0,0,0.15), 0 6px 16px rgba(0,0,0,0.12)';
+        }
+
         // Add course info to block based on checkbox states
         // Course Code
         if (!hideCode.checked) {
             const codeEl = document.createElement('div');
             codeEl.className = 'subject-code';
-            codeEl.textContent = course.code || course.course_id || 'TBA';
+            codeEl.textContent = (course.code || course.course_id || 'TBA') + (isIrregular ? ' (IRR)' : '');
             block.appendChild(codeEl);
         }
 

@@ -1,10 +1,10 @@
 .selected-courses {
   margin: 16px 0;
   padding: 12px;
-  background: rgba(74, 158, 255, 0.1);
-  border-left: 4px solid #4a9eff;
+  background: rgba(139, 92, 246, 0.1);
+  border-left: 4px solid #8b5cf6;
   border-radius: 4px;
-  color: #4a9eff;
+  color: #8b5cf6;
   font-weight: 500;
   display: block;
   width: 100%;
@@ -66,7 +66,7 @@
 
 .course-card {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(74, 158, 255, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.2s ease;
@@ -74,15 +74,15 @@
 
 .course-card:hover {
   background: rgba(255, 255, 255, 0.12);
-  border-color: #4a9eff;
+  border-color: #8b5cf6;
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(74, 158, 255, 0.15);
+  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.15);
 }
 
 .course-card-header {
-  background: linear-gradient(135deg, rgba(74, 158, 255, 0.2), rgba(74, 158, 255, 0.1));
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.1));
   padding: 16px;
-  border-bottom: 1px solid rgba(74, 158, 255, 0.2);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
   display: flex;
   border-radius: 0px;
   justify-content: space-between;
@@ -92,12 +92,12 @@
 .course-card-header h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: #000000;
+  color: #ffffff;
 }
 
 .course-card-body {
   padding: 16px;
-  color: rgba(0, 0, 0, 0.9);
+  color: rgb(0, 0, 0);
 }
 
 .course-card-body p {
@@ -281,4 +281,111 @@
   border-color: rgba(0, 0, 0, 0.12);
   box-shadow: none;
   outline: none;
+}
+
+/* Extracted styles from dynamic JS components & builder.html */
+.irregular-course-card {
+  background: #ccc !important;
+  color: black !important;
+  border-radius: 20px !important;
+}
+
+.btn-add-inline {
+  background-color: #00cc66;
+  border-radius: 20px;
+  padding: 6px 24px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-add-inline:hover {
+  background-color: #00b359;
+  transform: translateY(-1px);
+}
+
+.btn-remove-inline {
+  background-color: #cc3333;
+  border-radius: 20px;
+  padding: 8px 24px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-inline:hover {
+  background-color: #b32d2d;
+  transform: translateY(-1px);
+}
+
+.flex-center-gap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-delete-schedule {
+  display: none;
+  background-color: #cc3333;
+  border-radius: 20px;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: white;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-schedule:hover {
+  background-color: #b32d2d;
+  transform: translateY(-1px);
+}
+
+.schedule-status-badge {
+  display: none;
+  margin-left: 12px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+/* Utility Classes for JS-generated card templates */
+.card-body-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+.card-title-sm {
+  margin: 0 0 8px 0;
+  font-size: 0.85rem;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-text-main {
+  margin: 0 0 4px 0;
+  font-weight: bold;
+}
+
+.card-text-sub {
+  margin: 0;
+}
+
+.text-muted-light {
+  color: #999;
 }

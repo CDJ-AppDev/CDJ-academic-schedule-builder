@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Academic Schedule Builder</title>
+  <title>Admin Dashboard</title>
   <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="stylesheet" href="../frontend/css/main.css">
   <link rel="stylesheet" href="../frontend/css/admin.css">
@@ -14,18 +14,17 @@
   <header class="app-header">
     <div class="app-brand">
       <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
-      <span>Admin Dashboard</span>
+      <span>Academic Schedule Builder</span>
     </div>
 
-    <nav class="app-nav" id="admin-navbar" style="display: none; margin-left: 20px; margin-right: auto;">
+    <nav class="app-nav" id="admin-navbar">
       <button class="nav-button" onclick="window.location.href='../pages/home.html'">Home</button>
       <button class="nav-button" onclick="window.location.href='../pages/profile.html'">Profile</button>
       <button class="nav-button" onclick="window.location.href='../pages/builder.html'">Schedule Picker</button>
       <button class="nav-button" onclick="window.location.href='../pages/plotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="close-btn" style="position: static; margin-left: auto;"
-      onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">&times;</button>
+    <button class="close-btn close-btn-admin" onclick="handleLogout('../index.html')">&times;</button>
   </header>
 
   <main class="page-content">
@@ -208,11 +207,12 @@
           <!-- Populated dynamically based on target type -->
         </div>
 
-        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">Save Record</button>
+        <button type="submit" class="btn-primary full-width">Save Record</button>
       </form>
     </div>
   </div>
 
+  <script src="../frontend/scripts/popup.js"></script>
   <script src="admin.js"></script>
 </body>
 

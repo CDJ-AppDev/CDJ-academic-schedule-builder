@@ -13,10 +13,10 @@
 .selected-courses {
   margin: 16px 0;
   padding: 12px;
-  background: rgba(74, 158, 255, 0.1);
-  border-left: 4px solid #4a9eff;
+  background: rgba(139, 92, 246, 0.1);
+  border-left: 4px solid #8b5cf6;
   border-radius: 4px;
-  color: #4a9eff;
+  color: #8b5cf6;
   font-weight: 500;
   display: block;
   width: 100%;
@@ -43,6 +43,6 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #4a9eff;
+  accent-color: #8b5cf6;
   flex-shrink: 0;
 }

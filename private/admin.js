@@ -19,7 +19,7 @@ function getToken() {
     if (urlUser) {
       try {
         localStorage.setItem('user', decodeURIComponent(urlUser));
-      } catch (e) {}
+      } catch (e) { }
     }
     return urlToken;
   }
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (response.ok) {
       const freshUser = await response.json();
       localStorage.setItem('user', JSON.stringify(freshUser));
-      
+
       // Only show the navbar if NOT the super admin (admin@gmail.com)
       if (freshUser.email !== 'admin@gmail.com') {
         const navbar = document.getElementById('admin-navbar');
@@ -99,7 +99,7 @@ function fallbackNavbarToggle() {
           navbar.style.display = 'flex';
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
@@ -175,7 +175,7 @@ async function loadTab(tabId) {
     console.error(`Error loading tab ${tabId}:`, err);
     const tbody = document.getElementById(`${tabId}-tbody`);
     if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Error connecting to database: ${err.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="10" class="text-error-center">Error connecting to database: ${err.message}</td></tr>`;
     }
   }
 }
@@ -184,9 +184,9 @@ async function loadTab(tabId) {
 function renderUsers(users) {
   const tbody = document.getElementById('users-tbody');
   tbody.innerHTML = users.map(user => {
-    const termLabel = user.termid ? `<span class="badge admin">${user.termid}</span>` : '<span style="color: #999;">None</span>';
+    const termLabel = user.termid ? `<span class="badge admin">${user.termid}</span>` : '<span class="text-muted">None</span>';
     const roleLabel = user.useraccess === 'Admin' ? `<span class="badge admin">Admin</span>` : `<span class="badge default">Default</span>`;
-    
+
     return `
       <tr>
         <td>${user.userid}</td>
@@ -195,7 +195,7 @@ function renderUsers(users) {
         <td>${roleLabel}</td>
         <td>${termLabel}</td>
         <td>
-          <div style="display: flex; gap: 6px;">
+          <div class="action-buttons-flex">
             <button class="btn-action edit-btn" onclick="openEditModal('users', ${JSON.stringify(user).replace(/"/g, '&quot;')})">Edit</button>
             <button class="btn-action delete-btn" onclick="deleteRecord('users', ${user.userid})">Delete</button>
           </div>
@@ -216,7 +216,7 @@ function renderTerms(terms) {
       <td>Semester ${term.semester}</td>
       <td>${term.requnits} units</td>
       <td>
-        <div style="display: flex; gap: 6px;">
+        <div class="action-buttons-flex">
           <button class="btn-action edit-btn" onclick="openEditModal('terms', ${JSON.stringify(term).replace(/"/g, '&quot;')})">Edit</button>
           <button class="btn-action delete-btn" onclick="deleteRecord('terms', '${term.termid}')">Delete</button>
         </div>
@@ -235,7 +235,7 @@ function renderCourses(courses) {
       <td>${course.courseunits} units</td>
       <td><span class="badge default">${escapeHtml(course.termid)}</span></td>
       <td>
-        <div style="display: flex; gap: 6px;">
+        <div class="action-buttons-flex">
           <button class="btn-action edit-btn" onclick="openEditModal('courses', ${JSON.stringify(course).replace(/"/g, '&quot;')})">Edit</button>
           <button class="btn-action delete-btn" onclick="deleteRecord('courses', '${course.coursecode}')">Delete</button>
         </div>
@@ -253,7 +253,7 @@ function renderProfessors(professors) {
       <td><strong>${escapeHtml(prof.profname)}</strong></td>
       <td>${escapeHtml(prof.profdepartment || 'N/A')}</td>
       <td>
-        <div style="display: flex; gap: 6px;">
+        <div class="action-buttons-flex">
           <button class="btn-action edit-btn" onclick="openEditModal('professors', ${JSON.stringify(prof).replace(/"/g, '&quot;')})">Edit</button>
           <button class="btn-action delete-btn" onclick="deleteRecord('professors', ${prof.profid})">Delete</button>
         </div>
@@ -266,8 +266,8 @@ function renderProfessors(professors) {
 function renderCourseSlots(slots) {
   const tbody = document.getElementById('courseslots-tbody');
   tbody.innerHTML = slots.map(slot => {
-    const profName = slot.profname ? escapeHtml(slot.profname) : '<span style="color: #999; font-style: italic;">Unassigned (NULL)</span>';
-    
+    const profName = slot.profname ? escapeHtml(slot.profname) : '<span class="text-muted-italic">Unassigned (NULL)</span>';
+
     // Trim times for better visibility
     const startStr = slot.starttime ? slot.starttime.substring(0, 5) : '00:00';
     const endStr = slot.endtime ? slot.endtime.substring(0, 5) : '00:00';
@@ -275,13 +275,13 @@ function renderCourseSlots(slots) {
     return `
       <tr>
         <td>${slot.courseslotid}</td>
-        <td><strong>${escapeHtml(slot.coursecode)}</strong><br><small style="color: #666;">${escapeHtml(slot.coursename || '')}</small></td>
+        <td><strong>${escapeHtml(slot.coursecode)}</strong><br><small class="text-sub">${escapeHtml(slot.coursename || '')}</small></td>
         <td>${profName}</td>
         <td>${escapeHtml(slot.scheduleday)}</td>
         <td><code>${startStr} - ${endStr}</code></td>
         <td><span class="badge default">${escapeHtml(slot.roomcode)}</span></td>
         <td>
-          <div style="display: flex; gap: 6px;">
+          <div class="action-buttons-flex">
             <button class="btn-action edit-btn" onclick="openEditModal('courseslots', ${JSON.stringify(slot).replace(/"/g, '&quot;')})">Edit</button>
             <button class="btn-action delete-btn" onclick="deleteRecord('courseslots', ${slot.courseslotid})">Delete</button>
           </div>
@@ -295,12 +295,12 @@ function renderCourseSlots(slots) {
 function renderSchedules(schedules) {
   const tbody = document.getElementById('schedules-tbody');
   tbody.innerHTML = schedules.map(s => {
-    const statusBadge = s.regular 
-      ? '<span class="badge regular">Regular</span>' 
+    const statusBadge = s.regular
+      ? '<span class="badge regular">Regular</span>'
       : '<span class="badge irregular">Irregular</span>';
-    
+
     const formattedDate = s.createdat ? new Date(s.createdat).toLocaleString() : 'N/A';
-    const userLabel = `<strong>${escapeHtml(s.username || 'User')}</strong><br><small style="color: #666;">${escapeHtml(s.useremail || '')}</small>`;
+    const userLabel = `<strong>${escapeHtml(s.username || 'User')}</strong><br><small class="text-sub">${escapeHtml(s.useremail || '')}</small>`;
 
     return `
       <tr>
@@ -363,12 +363,12 @@ async function openCreateModal(targetType) {
 async function openEditModal(targetType, record) {
   await fetchDependencies(); // Get latest dependencies
 
-  const idVal = targetType === 'users' ? record.userid 
-              : targetType === 'terms' ? record.termid 
-              : targetType === 'courses' ? record.coursecode 
-              : targetType === 'professors' ? record.profid 
-              : targetType === 'courseslots' ? record.courseslotid
-              : '';
+  const idVal = targetType === 'users' ? record.userid
+    : targetType === 'terms' ? record.termid
+      : targetType === 'courses' ? record.coursecode
+        : targetType === 'professors' ? record.profid
+          : targetType === 'courseslots' ? record.courseslotid
+            : '';
 
   document.getElementById('modal-title').textContent = `Edit ${targetType.slice(0, -1).toUpperCase()}`;
   document.getElementById('form-action').value = 'update';
@@ -419,7 +419,7 @@ function generateFormFields(targetType, record) {
           </select>
         </div>
         <div class="form-group-admin">
-          <label for="user-term">Assigned Term Limit</label>
+          <label for="user-term">Assigned Term</label>
           <select id="user-term">
             <option value="None">None (Unassigned)</option>
             ${termOptionsHtml}
@@ -559,7 +559,7 @@ function preFillFormFields(targetType, record) {
     document.getElementById('slot-course').value = record.coursecode || '';
     document.getElementById('slot-prof').value = record.profid || 'None';
     document.getElementById('slot-day').value = record.scheduleday || 'Monday';
-    
+
     // Handle formatting start/end times safely
     const startClean = record.starttime ? record.starttime.substring(0, 5) : '';
     const endClean = record.endtime ? record.endtime.substring(0, 5) : '';
@@ -609,8 +609,40 @@ async function handleFormSubmit(event) {
     const profVal = document.getElementById('slot-prof').value;
     payload.profid = profVal === 'None' ? null : profVal;
     payload.scheduleday = document.getElementById('slot-day').value;
-    payload.starttime = document.getElementById('slot-start').value;
-    payload.endtime = document.getElementById('slot-end').value;
+    
+    const startStr = document.getElementById('slot-start').value;
+    const endStr = document.getElementById('slot-end').value;
+
+    const parseTimeToMins = (str) => {
+      if (!str) return null;
+      const parts = str.split(':');
+      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+    };
+
+    const startMins = parseTimeToMins(startStr);
+    const endMins = parseTimeToMins(endStr);
+    const limitStart = 7 * 60; // 7:00 AM
+    const limitEnd = 20 * 60;  // 8:00 PM
+
+    if (startMins === null || endMins === null) {
+      alert("Please enter valid start and end times.");
+      return;
+    }
+    if (startMins < limitStart) {
+      alert("⚠️ Invalid Time!\nStart time cannot be earlier than 7:00 AM.");
+      return;
+    }
+    if (endMins > limitEnd) {
+      alert("⚠️ Invalid Time!\nEnd time cannot be later than 8:00 PM.");
+      return;
+    }
+    if (startMins >= endMins) {
+      alert("⚠️ Invalid Time!\nStart time must precede end time.");
+      return;
+    }
+
+    payload.starttime = startStr;
+    payload.endtime = endStr;
     payload.roomcode = document.getElementById('slot-room').value.trim();
   }
 
@@ -649,55 +681,60 @@ async function handleFormSubmit(event) {
 
 // Make user an Admin directly
 async function elevateToAdmin(userId) {
-  if (!confirm('Are you absolutely sure you want to elevate this user to Admin access?')) return;
-  const token = localStorage.getItem('token');
-  try {
-    const response = await fetch(`${API_BASE}/admin/users/${userId}/make-admin`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`
+  confirmPopup(
+    'Are you absolutely sure you want to elevate this user to Admin access?',
+    async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await fetch(`${API_BASE}/admin/users/${userId}/make-admin`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          loadTab('users');
+        } else {
+          const data = await response.json();
+          alert(`Elevate failed: ${data.error}`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert(`Request error: ${err.message}`);
       }
-    });
-
-    if (response.ok) {
-      loadTab('users');
-    } else {
-      const data = await response.json();
-      alert(`Elevate failed: ${data.error}`);
-    }
-  } catch (err) {
-    console.error(err);
-    alert(`Request error: ${err.message}`);
-  }
+    },
+    null,
+    'Confirm Elevation'
+  );
 }
 
 // Remove Admin privileges from a user
 async function removeAdmin(userId) {
-  if (!confirm('Are you sure you want to remove Admin access from this user?')) return;
-  const token = localStorage.getItem('token');
-  try {
-    const response = await fetch(`${API_BASE}/admin/users/${userId}/remove-admin`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`
+  confirmPopup(
+    'Are you sure you want to remove Admin access from this user?',
+    async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await fetch(`${API_BASE}/admin/users/${userId}/remove-admin`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          loadTab('users');
+        } else {
+          const data = await response.json();
+          alert(`Privilege removal failed: ${data.error}`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert(`Request error: ${err.message}`);
       }
-    });
-
-    if (response.ok) {
-      loadTab('users');
-    } else {
-      const data = await response.json();
-      alert(`Privilege removal failed: ${data.error}`);
-    }
-  } catch (err) {
-    console.error(err);
-    alert(`Request error: ${err.message}`);
-  }
+    },
+    null,
+    'Confirm Removal'
+  );
 }
 
 // Delete Record
 async function deleteRecord(targetType, recordId) {
-  // Build customized confirmation message detailing cascade effects
   let msg = `Are you sure you want to delete this ${targetType.slice(0, -1)}?`;
   if (targetType === 'users') {
     msg += '\n\nWARNING: Deleting a user will also delete their profile and ALL saved schedules!';
@@ -707,28 +744,29 @@ async function deleteRecord(targetType, recordId) {
     msg += '\n\nNote: Deleting a professor will unassign them from course slots, leaving slots intact.';
   }
 
-  if (!confirm(msg)) return;
-
-  const token = localStorage.getItem('token');
-  try {
-    const response = await fetch(`${API_BASE}/admin/${targetType}/${encodeURIComponent(recordId)}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`
+  confirmPopup(
+    msg,
+    async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await fetch(`${API_BASE}/admin/${targetType}/${encodeURIComponent(recordId)}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (response.ok) {
+          loadTab(activeTab);
+        } else {
+          alert(`Delete failed: ${result.error || 'Server error'}`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert(`Delete failed: ${err.message}`);
       }
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      loadTab(activeTab); // Refresh active table
-    } else {
-      alert(`Delete failed: ${result.error || 'Server error'}`);
-    }
-  } catch (err) {
-    console.error(err);
-    alert(`Delete failed: ${err.message}`);
-  }
+    },
+    null,
+    'Confirm Delete'
+  );
 }
 
 // Utility to safely escape user strings to prevent XSS

@@ -136,13 +136,13 @@
 }
 
 .btn-action.edit-btn {
-  background-color: rgba(74, 158, 255, 0.1);
-  color: #1a73e8;
-  border-color: rgba(74, 158, 255, 0.2);
+  background-color: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border-color: rgba(139, 92, 246, 0.2);
 }
 
 .btn-action.edit-btn:hover {
-  background-color: #1a73e8;
+  background-color: #8b5cf6;
   color: #fff;
 }
 
@@ -321,4 +321,45 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+/* Extracted Admin Panel HTML Styles */
+#admin-navbar {
+  display: none;
+  margin-left: 20px;
+  margin-right: auto;
+}
+
+.close-btn-admin {
+  position: static !important;
+  margin-left: auto !important;
+}
+
+.btn-primary.full-width {
+  width: 100% !important;
+  margin-top: 20px !important;
+}
+
+/* JS Template Utility Classes */
+.text-error-center {
+  text-align: center;
+  color: red;
+}
+
+.text-muted {
+  color: #999;
+}
+
+.text-muted-italic {
+  color: #999;
+  font-style: italic;
+}
+
+.text-sub {
+  color: #666;
+}
+
+.action-buttons-flex {
+  display: flex;
+  gap: 6px;
 }

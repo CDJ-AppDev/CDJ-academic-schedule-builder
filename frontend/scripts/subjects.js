@@ -6,7 +6,7 @@ const availableCoursesList = document.getElementById('availableCourses');
 const courseCodeInput = document.getElementById('course-code');
 const courseNameInput = document.getElementById('course-name');
 const teacherNameInput = document.getElementById('teacher-name');
-const teacherDeptInput = document.getElementById('teacher-dept');
+const roomCodeInput = document.getElementById('room-code');
 const scheduleDayInput = document.getElementById('schedule-day');
 const startTimeInput = document.getElementById('start-time');
 const endTimeInput = document.getElementById('end-time');
@@ -131,14 +131,14 @@ function checkScheduleConflict(newDay, newStartTime, newEndTime) {
 async function loadAvailableCourses() {
   const token = localStorage.getItem('token');
   if (!token) {
-    availableCoursesList.innerHTML = '<p style="color: #999;">Please login first.</p>';
+    availableCoursesList.innerHTML = '<p class="text-muted-light">Please login first.</p>';
     return;
   }
 
   try {
     const termData = await getTermData(token);
     if (!termData) {
-      availableCoursesList.innerHTML = '<p style="color: #999;">Please select a program first.</p>';
+      availableCoursesList.innerHTML = '<p class="text-muted-light">Please select a program first.</p>';
       return;
     }
 
@@ -165,7 +165,7 @@ async function loadAvailableCourses() {
     displayAvailableCourses();
   } catch (error) {
     console.error('Error loading courses:', error);
-    availableCoursesList.innerHTML = '<p style="color: #999;">Error loading courses.</p>';
+    availableCoursesList.innerHTML = '<p class="text-muted-light">Error loading courses.</p>';
   }
 }
 
@@ -173,7 +173,7 @@ function displayAvailableCourses() {
   availableCoursesList.innerHTML = '';
 
   if (!availableCourses || availableCourses.length === 0) {
-    availableCoursesList.innerHTML = '<p style="color: #999;">No more available courses for your term.</p>';
+    availableCoursesList.innerHTML = '<p class="text-muted-light">No more available courses for your term.</p>';
     return;
   }
 
@@ -198,8 +198,8 @@ function displayAvailableCourses() {
     courseHeader.className = 'course-card-header';
     courseHeader.style.cursor = 'pointer';
     courseHeader.style.justifyContent = 'space-between';
-    courseHeader.style.background = '#d0eaea';
-    courseHeader.style.color = 'black';
+    courseHeader.style.background = '#310db3be';
+    courseHeader.style.color = 'white';
     courseHeader.style.borderRadius = '0px';
     courseHeader.style.borderBottom = 'none';
 
@@ -231,18 +231,15 @@ function displayAvailableCourses() {
 
     course.sections.forEach((section, index) => {
       const sectionCard = document.createElement('div');
-      sectionCard.className = 'course-card';
+      sectionCard.className = 'course-card irregular-course-card';
       sectionCard.style.marginTop = index === 0 ? '8px' : '12px';
-      sectionCard.style.background = '#ccc';
-      sectionCard.style.color = 'black';
-      sectionCard.style.borderRadius = '20px';
       sectionCard.innerHTML = `
-        <div class="course-card-body" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
+        <div class="course-card-body card-body-flex">
           <div>
-            <p style="margin:0 0 4px; font-weight: bold;">Professor: ${section.teacher?.name ?? 'TBD'}</p>
-            <p style="margin:0;">Schedule: ${section.schedule?.day ?? 'TBD'} ${section.schedule?.startTime ? `| ${section.schedule.startTime} - ${section.schedule.endTime}` : ''} ${section.schedule?.room ? `| Room: ${section.schedule.room}` : ''}</p>
+            <p class="card-text-main">Professor: ${section.teacher?.name ?? 'TBD'}</p>
+            <p class="card-text-sub">Schedule: ${section.schedule?.day ?? 'TBD'} ${section.schedule?.startTime ? `| ${section.schedule.startTime} - ${section.schedule.endTime}` : ''} ${section.schedule?.room ? `| Room: ${section.schedule.room}` : ''}</p>
           </div>
-          <button class="btn-add" type="button" style="background-color: #00cc66; border-radius: 20px; padding: 6px 24px; text-transform: uppercase; font-weight: bold;">Add</button>
+          <button class="btn-add btn-add-inline" type="button">Add</button>
         </div>
       `;
 
@@ -326,7 +323,7 @@ function displayCourses() {
   const statusBadge = document.getElementById('regular-status-badge');
 
   if (!courses || courses.length === 0) {
-    coursesList.innerHTML = '<p style="color: #999;">No courses added yet.</p>';
+    coursesList.innerHTML = '<p class="text-muted-light">No courses added yet.</p>';
     if (unitsDisplay) unitsDisplay.textContent = `Units: 0 / ${localStorage.getItem('reqUnits') || 0}`;
     if (statusBadge) statusBadge.style.display = 'none';
     window.currentTotalUnits = 0;
@@ -339,26 +336,31 @@ function displayCourses() {
   const coursesByCode = {};
 
   courses.forEach((course) => {
-    if (course.courseCode) {
+    if (!course.courseslot_id) {
       // Manual irregular course
       totalUnits += parseInt(course.units || 0, 10);
       hasIrregular = true;
 
       const courseCard = document.createElement('div');
-      courseCard.className = 'course-card';
+      courseCard.className = 'course-card irregular-course-card';
       courseCard.style.marginBottom = '12px';
-      courseCard.style.background = '#ccc';
-      courseCard.style.color = 'black';
-      courseCard.style.borderRadius = '20px';
-      const slot = course.slots[0] || {};
+
+      const slot = (course.slots && course.slots[0]) || {};
+      const displayCode = course.courseCode || course.code || course.course_id || 'TBA';
+      const displayProf = (slot.profId?.name) || course.teacher_name || 'TBD';
+      const displayDay = slot.day || (course.schedule?.day) || 'TBD';
+      const displayStart = slot.startTime || (course.schedule?.startTime) || '';
+      const displayEnd = slot.endTime || (course.schedule?.endTime) || '';
+      const displayRoom = slot.room || (course.schedule?.room) || '';
+
       courseCard.innerHTML = `
-         <div class="course-card-body" style="display: flex; justify-content: space-between; align-items: center; padding: 20px;">
+         <div class="course-card-body card-body-flex">
            <div>
-             <h3 style="margin: 0 0 8px 0; font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${course.courseCode} - ${course.name}</h3>
-             <p style="margin: 0 0 4px 0; font-weight: bold;">${slot.profId?.name || 'TBD'}</p>
-             <p style="margin: 0;">${slot.day || 'TBD'} | ${slot.startTime || ''} - ${slot.endTime || ''} ${slot.room ? `| Room: ${slot.room}` : ''}</p>
+             <h3 class="card-title-sm">${displayCode} - ${course.name}</h3>
+             <p class="card-text-main">${displayProf}</p>
+             <p class="card-text-sub">${displayDay} | ${displayStart} - ${displayEnd} ${displayRoom ? `| Room: ${displayRoom}` : ''}</p>
            </div>
-           <button class="btn-remove" style="background-color: #cc3333; border-radius: 20px; padding: 8px 24px; text-transform: uppercase; font-weight: bold;" onclick="removeManualCourse('${course.courseCode}')">REMOVE</button>
+           <button class="btn-remove btn-remove-inline" onclick="removeManualCourse('${displayCode}')">REMOVE</button>
          </div>
        `;
       coursesList.appendChild(courseCard);
@@ -374,20 +376,17 @@ function displayCourses() {
   // Display API courses
   Object.values(coursesByCode).forEach((course) => {
     const courseCard = document.createElement('div');
-    courseCard.className = 'course-card';
+    courseCard.className = 'course-card irregular-course-card';
     courseCard.style.marginBottom = '12px';
-    courseCard.style.background = '#ccc';
-    courseCard.style.color = 'black';
-    courseCard.style.borderRadius = '20px';
 
     courseCard.innerHTML = `
-      <div class="course-card-body" style="display: flex; justify-content: space-between; align-items: center; padding: 20px;">
+      <div class="course-card-body card-body-flex">
         <div>
-          <h3 style="margin: 0 0 8px 0; font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${course.code || course.course_id} - ${course.name}</h3>
-          <p style="margin: 0 0 4px 0; font-weight: bold;">${course.teacher_name || 'TBD'}</p>
-          <p style="margin: 0;">${course.schedule?.day || course.day || 'TBD'} ${course.schedule?.startTime || course.startTime ? `| ${course.schedule?.startTime || course.startTime} - ${course.schedule?.endTime || course.endTime}` : ''} ${course.schedule?.room || course.room ? `| Room: ${course.schedule?.room || course.room}` : ''}</p>
+          <h3 class="card-title-sm">${course.code || course.course_id} - ${course.name}</h3>
+          <p class="card-text-main">${course.teacher_name || 'TBD'}</p>
+          <p class="card-text-sub">${course.schedule?.day || course.day || 'TBD'} ${course.schedule?.startTime || course.startTime ? `| ${course.schedule?.startTime || course.startTime} - ${course.schedule?.endTime || course.endTime}` : ''} ${course.schedule?.room || course.room ? `| Room: ${course.schedule?.room || course.room}` : ''}</p>
         </div>
-        <button class="btn-remove" style="background-color: #cc3333; border-radius: 20px; padding: 8px 24px; text-transform: uppercase; font-weight: bold;" onclick="removeCourse(${course.courseslot_id})">REMOVE</button>
+        <button class="btn-remove btn-remove-inline" onclick="removeCourse(${course.courseslot_id})">REMOVE</button>
       </div>
     `;
     coursesList.appendChild(courseCard);
@@ -421,7 +420,7 @@ function displayCourses() {
 }
 
 window.removeManualCourse = function (courseCode) {
-  courses = courses.filter(c => c.courseCode !== courseCode);
+  courses = courses.filter(c => (c.courseCode || c.code || c.course_id) !== courseCode);
   displayCourses();
   loadAvailableCourses();
 };
@@ -441,9 +440,33 @@ if (addCourseBtn) {
     const start = startTimeInput.value.trim();
     const end = endTimeInput.value.trim();
     const units = parseInt(courseUnitsInput?.value || "0", 10);
+    const room = roomCodeInput.value.trim() || 'TBA';
 
     if (!code || !name || !tName || !day || !start || !end) {
       alert("Please fill in all irregular course details.");
+      return;
+    }
+
+    // Time validation (7:00 AM - 8:00 PM limit)
+    const startMins = timeStringToMinutes(start);
+    const endMins = timeStringToMinutes(end);
+    const limitStart = 7 * 60; // 7:00 AM
+    const limitEnd = 20 * 60;  // 8:00 PM
+
+    if (startMins === null || endMins === null) {
+      alert("Please enter valid start and end times.");
+      return;
+    }
+    if (startMins < limitStart) {
+      alert("Invalid Time!\nStart time cannot be earlier than 7:00 AM.");
+      return;
+    }
+    if (endMins > limitEnd) {
+      alert("Invalid Time!\nEnd time cannot be later than 8:00 PM.");
+      return;
+    }
+    if (startMins >= endMins) {
+      alert("Invalid Time!\nStart time must precede end time.");
       return;
     }
 
@@ -471,7 +494,7 @@ if (addCourseBtn) {
         day: day,
         startTime: start,
         endTime: end,
-        room: 'TBA'
+        room: room
       }]
     };
 
@@ -481,7 +504,7 @@ if (addCourseBtn) {
     courseCodeInput.value = '';
     courseNameInput.value = '';
     teacherNameInput.value = '';
-    teacherDeptInput.value = '';
+    roomCodeInput.value = '';
     scheduleDayInput.value = '';
     startTimeInput.value = '';
     endTimeInput.value = '';
@@ -648,35 +671,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const deleteBtn = document.getElementById('delete-schedule-btn');
   if (deleteBtn) {
-    deleteBtn.addEventListener('click', async () => {
+    deleteBtn.addEventListener('click', () => {
       const token = localStorage.getItem('token');
       if (!token) return;
-
       if (!window.currentScheduleId) return;
 
-      if (!confirm('Are you sure you want to delete this schedule?')) {
-        return;
-      }
-
-      try {
-        const response = await fetch(`${API_BASE}/schedule/${window.currentScheduleId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
+      confirmPopup(
+        'Are you sure you want to delete this schedule? This cannot be undone.',
+        async () => {
+          try {
+            const response = await fetch(`${API_BASE}/schedule/${window.currentScheduleId}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+              alert('Schedule deleted successfully.');
+              activeScheduleId = 'new';
+              loadUserSchedule();
+            } else {
+              alert('Failed to delete schedule.');
+            }
+          } catch (error) {
+            console.error('Error deleting schedule:', error);
+            alert('Error deleting schedule.');
           }
-        });
-
-        if (response.ok) {
-          alert('Schedule deleted successfully.');
-          activeScheduleId = 'new';
-          loadUserSchedule();
-        } else {
-          alert('Failed to delete schedule.');
-        }
-      } catch (error) {
-        console.error('Error deleting schedule:', error);
-        alert('Error deleting schedule.');
-      }
+        },
+        null,
+        'Delete Schedule'
+      );
     });
   }
 });

@@ -422,7 +422,7 @@ select:focus {
 
 .btn-primary {
   padding: 12px 24px;
-  background: #4a9eff;
+  background: #8b5cf6;
   color: white;
   border: none;
   border-radius: 8px;
@@ -434,16 +434,14 @@ select:focus {
 }
 
 .btn-primary:hover {
-  background: #2e82db;
+  background: #7c3aed;
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(74, 158, 255, 0.3);
+  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:active {
   transform: translateY(0);
 }
-
-
 
 .btn-save {
   background-color: #00cc66;
@@ -458,6 +456,147 @@ select:focus {
   box-shadow: 0 6px 16px rgba(0, 204, 102, 0.4);
 }
 
+/* Close Button Helper Class */
+.close-btn-left {
+  position: static !important;
+  margin-left: 0 !important;
+}
 
+/* Custom Popup Modal Styles */
+.custom-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 
+.custom-modal-overlay.active {
+  opacity: 1;
+}
 
+.custom-modal {
+  background: rgba(26, 21, 36, 0.95);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 20px 50px rgba(139, 92, 246, 0.15), inset 0 0 15px rgba(139, 92, 246, 0.1);
+  border-radius: 24px;
+  width: min(440px, calc(100vw - 32px));
+  padding: 30px;
+  text-align: center;
+  color: #fff;
+  transform: translateY(20px) scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.custom-modal-overlay.active .custom-modal {
+  transform: translateY(0) scale(1);
+}
+
+.custom-modal-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+  font-size: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.custom-modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+.custom-modal-body {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  white-space: pre-line;
+}
+
+.custom-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.custom-modal-btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.custom-modal-btn.primary {
+  background: #8b5cf6;
+  color: #fff;
+}
+
+.custom-modal-btn.primary:hover {
+  background: #7c3aed;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.custom-modal-btn.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.custom-modal-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+}.custom-modal-icon.warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+.custom-modal-title.warning-text {
+  color: #f59e0b;
+}
+
+.custom-modal-btn.warning {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.custom-modal-btn.warning:hover {
+  background: #d97706;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+
+.custom-modal-icon.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.custom-modal-title.error-text {
+  color: #ef4444;
+}
+
+.custom-modal-btn.error {
+  background: #ef4444;
+  color: #fff;
+}
+
+.custom-modal-btn.error:hover {
+  background: #dc2626;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}

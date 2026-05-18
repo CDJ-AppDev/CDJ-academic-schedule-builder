@@ -1,3 +1,15 @@
+if (typeof API_BASE === 'undefined') {
+  window.API_BASE = (() => {
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    if (protocol === 'file:' || hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3000/api';
+    }
+    const port = window.location.port ? ':' + window.location.port : '';
+    return `${protocol}//${hostname}${port}/api`;
+  })();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -41,13 +53,13 @@ async function saveToServer(program_id, year_level, semester) {
 
     const data = await response.json();
     console.log('saveToServer - Response:', data, 'Status:', response.status);
-    
+
     if (!response.ok) {
       console.error('Failed to save term to server:', data);
       alert('Failed to save term selection: ' + (data.error || 'Unknown error'));
       return false;
     }
-    
+
     localStorage.setItem('termId', data.term_id);
     console.log('saveToServer - Term saved successfully:', data);
     return true;
@@ -113,7 +125,7 @@ function saveToLocalStorage(course, year, semester) {
 
 function applySelectionToUI(course, year, semester) {
   console.log('applySelectionToUI called with:', { course, year, semester });
-  
+
   const courseRadio = Array.from(courseRadios).find(r => r.value === course);
   const yearRadio = Array.from(yearRadios).find(r => r.value === year);
   const semesterRadio = Array.from(semesterRadios).find(r => r.value === semester);
@@ -123,18 +135,18 @@ function applySelectionToUI(course, year, semester) {
   if (courseRadio) courseRadio.checked = true;
   if (yearRadio) yearRadio.checked = true;
   if (semesterRadio) semesterRadio.checked = true;
-  
+
   const ord = ['st', 'nd', 'rd', 'th'];
-  const courseLabel = 
+  const courseLabel =
     course === 'CS' ? 'Computer Science' : 'Information Technology';
   const yearLabel = `${year}${ord[year - 1]} Year`;
   const semesterLabel = `${semester}${ord[semester - 1]} Semester`;
   const displayText = `Selected: ${courseLabel} - ${yearLabel} - ${semesterLabel}`;
-  
+
   console.log('Setting display text to:', displayText);
   selectedCoursesDisplay.textContent = displayText;
   schedulePickerBtn.removeAttribute('hidden');
-  
+
   // URL normalization (keeps backward compatibility)
   const courseForUrl = course;
   window.history.replaceState(
@@ -158,10 +170,10 @@ applyBtn.addEventListener('click', async () => {
   const semester = selectedSemester.value;
 
   saveToLocalStorage(course, year, semester);
-  
+
   // Wait for server save to complete (convert to integers for backend)
   const saved = await saveToServer(course, parseInt(year), parseInt(semester));
-  
+
   if (saved) {
     // Load the term data to get req_units
     const termData = await loadFromServer();
