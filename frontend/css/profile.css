@@ -84,7 +84,8 @@
   cursor: pointer;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02), 0 2px 5px rgba(0, 0, 0, 0.02);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  appearance: none; /* Reset standard browser arrow */
+  appearance: none;
+  /* Reset standard browser arrow */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b5cf6' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 16px center;
@@ -119,4 +120,319 @@
   background: #ffffff;
   color: #151515;
   padding: 12px;
+}
+
+/* Profile Info Panel Styles */
+.profile-info-panel {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.profile-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.profile-info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-info-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.7;
+}
+
+.profile-info-input {
+  width: 33.33%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fafafb;
+  color: #151515;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.profile-info-input:focus:not(:disabled) {
+  border-color: #8b5cf6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.profile-info-input:disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: rgba(0, 0, 0, 0.05);
+  cursor: not-allowed;
+}
+
+.profile-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.profile-edit-btn:hover {
+  background: rgba(139, 92, 246, 0.08);
+  transform: scale(1.05);
+}
+
+.profile-edit-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Side-by-side 2-column Layout */
+.profile-container-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 25px;
+  background: #d4cbe1;
+  /* Premium background color matching the image! */
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .profile-container-two-col {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 20px;
+  }
+}
+
+/* Left Column Styles */
+.profile-info-panel-col {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-info-panel-col h2 {
+  font-size: 1.35rem;
+  color: #1e293b;
+  margin: 0 0 10px 0;
+  font-weight: 700;
+}
+
+.profile-info-list-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-info-row-col {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.5);
+  /* Frosted glass look */
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+}
+
+.profile-info-row-col:hover {
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.profile-info-icon-col {
+  width: 28px;
+  height: 28px;
+  opacity: 0.8;
+}
+
+.profile-info-field-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 4px;
+}
+
+.profile-info-field-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 6px;
+  margin-right: 20px;
+  /* Generous separation from the edit button */
+}
+
+.profile-info-field-wrapper label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.profile-info-input-col {
+  border: none;
+  background: transparent;
+  color: #1e293b;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  outline: none;
+  width: 100%;
+  padding: 8px 4px;
+  /* Generous vertical padding so full text is clearly visible */
+  border-bottom: 2px dashed rgba(139, 92, 246, 0.35);
+  /* Elegant soft purple dashed line when disabled */
+  border-radius: 0;
+  /* Ensures a perfectly straight horizontal dashed bottom border */
+  transition: all 0.2s ease;
+}
+
+.profile-info-input-col:not(:disabled) {
+  border-bottom: 2px dashed #8b5cf6;
+  /* Strong purple dashed border when editing */
+  color: #000000;
+}
+
+.profile-edit-btn-col {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.profile-edit-btn-col:hover {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  transform: scale(1.08);
+}
+
+.profile-edit-btn-col:hover .profile-edit-icon-col {
+  filter: brightness(0) invert(1);
+}
+
+.profile-edit-btn-col.editing {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.profile-edit-btn-col.editing .profile-edit-icon-col {
+  filter: brightness(0) invert(1);
+}
+
+.profile-edit-icon-col {
+  width: 22px;
+  height: 22px;
+  transition: all 0.2s ease;
+}
+
+/* Right Column Styles */
+.profile-selection-panel-col {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-selection-panel-col h2 {
+  font-size: 1.35rem;
+  color: #1e293b;
+  margin: 0 0 10px 0;
+  font-weight: 700;
+}
+
+.profile-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-select-group label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Styled Premium Dropdown Selectors */
+.profile-dropdown-select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #1e293b;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.profile-dropdown-select:hover:not(:disabled) {
+  border-color: #8b5cf6;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+}
+
+.profile-dropdown-select:focus {
+  border-color: #8b5cf6;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12), 0 4px 12px rgba(139, 92, 246, 0.08);
+}
+
+.profile-dropdown-select:disabled {
+  background-color: rgba(255, 255, 255, 0.4);
+  color: #94a3b8;
+  border-color: rgba(0, 0, 0, 0.04);
+  cursor: not-allowed;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+}
+
+.profile-dropdown-select option {
+  background-color: #ffffff;
+  color: #1e293b;
+  font-weight: 500;
+  padding: 10px;
+}
+
+.profile-apply-btn {
+  margin-top: 10px;
 }

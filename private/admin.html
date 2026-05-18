@@ -14,17 +14,35 @@
   <header class="app-header">
     <div class="app-brand">
       <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
-      <span>Academic Schedule Builder</span>
+      <div class="brand-text">
+        <span>Academic</span>
+        <span>Schedule</span>
+        <span>Builder</span>
+      </div>
     </div>
 
-    <nav class="app-nav" id="admin-navbar" style="display: none; margin-left: 20px; margin-right: auto;">
-      <button class="nav-button" onclick="window.location.href='../pages/home.html'">Home</button>
-      <button class="nav-button" onclick="window.location.href='../pages/profile.html'">Profile</button>
-      <button class="nav-button" onclick="window.location.href='../pages/builder.html'">Schedule Picker</button>
-      <button class="nav-button" onclick="window.location.href='../pages/plotter.html'">Schedule Plotter</button>
+    <nav class="app-nav" id="admin-navbar">
+      <button class="nav-button" onclick="window.location.href='../pages/home.html'"><img src="../assets/home.png"
+          alt="Home" class="nav-icon"> Home</button>
+      <button class="nav-button" onclick="window.location.href='../pages/builder.html'"><img src="../assets/builder.png"
+          alt="Builder" class="nav-icon"> Builder</button>
+      <button class="nav-button" onclick="window.location.href='../pages/plotter.html'"><img src="../assets/plotter.png"
+          alt="Plotter" class="nav-icon"> Plotter</button>
     </nav>
 
-    <button class="close-btn close-btn-admin" onclick="handleLogout('../index.html')">&times;</button>
+    <div class="header-profile">
+      <img src="../assets/profile.png" alt="Profile" class="header-profile-img">
+      <span class="header-username" id="header-username-display">Admin</span>
+    </div>
+
+    <div class="header-controls">
+      <button class="header-icon-btn" onclick="window.location.href='../pages/profile.html'">
+        <img src="../assets/settings.png" alt="Settings" class="header-icon-img">
+      </button>
+      <button class="header-icon-btn close-btn close-btn-admin" onclick="handleLogout('../index.html')">
+        <img src="../assets/logout.png" alt="Log out" class="header-icon-img">
+      </button>
+    </div>
   </header>
 
   <main class="page-content">
@@ -288,7 +306,7 @@
       </form>
     </div>
   </div>
-
+  <script src="../frontend/scripts/auth.js"></script>
   <script src="../frontend/scripts/popup.js"></script>
   <script src="admin.js"></script>
 </body>

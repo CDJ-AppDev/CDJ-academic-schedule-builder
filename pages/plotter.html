@@ -14,32 +14,39 @@
   <header class="app-header">
     <div class="app-brand">
       <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
-      <span>Academic Schedule Builder</span>
+      <div class="brand-text">
+        <span>Academic</span>
+        <span>Schedule</span>
+        <span>Builder</span>
+      </div>
     </div>
 
     <nav class="app-nav">
-      <button class="nav-button" onclick="window.location.href='home.html'">Home</button>
-      <button class="nav-button" onclick="window.location.href='builder.html'">Schedule Picker</button>
-      <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
+      <button class="nav-button" onclick="window.location.href='home.html'"><img src="../assets/home.png" alt="Home" class="nav-icon"> Home</button>
+      <button class="nav-button" onclick="window.location.href='builder.html'"><img src="../assets/builder.png" alt="Builder" class="nav-icon"> Builder</button>
+      <button class="nav-button" onclick="window.location.href='plotter.html'"><img src="../assets/plotter.png" alt="Plotter" class="nav-icon"> Plotter</button>
     </nav>
 
-    <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-      <button style="position: static; margin-left: 0; background: none; padding: 5px; border: none; cursor: pointer;"
-        onclick="window.location.href='profile.html'">
-        <img src="../assets/settings.png" alt="Profile" style="width: 24px; height: 24px;">
+    <div class="header-profile">
+      <img src="../assets/profile.png" alt="Profile" class="header-profile-img">
+      <span class="header-username" id="header-username-display">User</span>
+    </div>
+
+    <div class="header-controls">
+      <button class="header-icon-btn" onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Settings" class="header-icon-img">
       </button>
-      <button class="close-btn" style="position: static; margin-left: 0; background: none; padding: 5px; border: none;"
-        onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">
-        <img src="../assets/logout.png" alt="Log out" style="width: 24px; height: 24px;">
+      <button class="header-icon-btn close-btn" onclick="handleLogout('../index.html')">
+        <img src="../assets/logout.png" alt="Log out" class="header-icon-img">
       </button>
     </div>
   </header>
 
   <main class="page-content plotter-main">
     <div class="page-title">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="../assets/scheduleplotter.png" alt="Schedule Plotter" style="width: 40px; height: 40px;">
-        <h1 style="margin: 0;">Schedule Plotter</h1>
+      <div class="page-title-header">
+        <img src="../assets/plotter.png" alt="Schedule Plotter" class="page-title-icon">
+        <h1 class="page-title-text">Schedule Plotter</h1>
       </div>
       <p>View and customize your schedule visualization</p>
     </div>

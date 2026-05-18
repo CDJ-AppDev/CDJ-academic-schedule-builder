@@ -193,26 +193,41 @@ function displayAvailableCourses() {
   Object.values(courseGroups).forEach((course) => {
     const courseCard = document.createElement('div');
     courseCard.className = 'course-card';
+    courseCard.style.border = 'none';
+    courseCard.style.background = 'transparent';
+    courseCard.style.boxShadow = 'none';
+    courseCard.style.overflow = 'visible';
 
     const courseHeader = document.createElement('div');
     courseHeader.className = 'course-card-header';
     courseHeader.style.cursor = 'pointer';
+    courseHeader.style.display = 'flex';
     courseHeader.style.justifyContent = 'space-between';
-    courseHeader.style.background = '#310db3be';
+    courseHeader.style.alignItems = 'center';
+    courseHeader.style.background = '#8b5cf6'; // Premium solid violet/indigo color matching the mockup!
     courseHeader.style.color = 'white';
-    courseHeader.style.borderRadius = '0px';
+    courseHeader.style.borderRadius = '12px'; // Beautiful rounded corners matching the mockup!
+    courseHeader.style.padding = '14px 20px';
     courseHeader.style.borderBottom = 'none';
+    courseHeader.style.fontWeight = 'bolder';
+    courseHeader.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.15)';
+    courseHeader.style.transition = 'all 0.3s ease';
 
     const titleEl = document.createElement('h3');
     titleEl.textContent = `${course.code} - ${course.name}`;
     titleEl.style.margin = '0';
-    titleEl.style.fontSize = '0.95rem';
+    titleEl.style.fontSize = '0.98rem';
+    titleEl.style.fontWeight = '600';
+    titleEl.style.letterSpacing = '0.01em';
 
-    const arrowEl = document.createElement('span');
+    const arrowEl = document.createElement('img');
     arrowEl.className = 'arrow';
-    arrowEl.textContent = '⌄';
-    arrowEl.style.fontSize = '1.2rem';
-    arrowEl.style.transition = 'transform 0.3s';
+    arrowEl.src = '../assets/dropdown.png';
+    arrowEl.alt = 'Toggle';
+    arrowEl.style.width = '14px';
+    arrowEl.style.height = '14px';
+    arrowEl.style.objectFit = 'contain';
+    arrowEl.style.transition = 'transform 0.3s ease';
 
     courseHeader.appendChild(titleEl);
     courseHeader.appendChild(arrowEl);
@@ -227,6 +242,9 @@ function displayAvailableCourses() {
       const isOpen = dropdown.classList.toggle('active');
       arrowEl.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
       dropdown.style.maxHeight = isOpen ? `${dropdown.scrollHeight}px` : '0';
+
+      // Dynamic border-radius morphing to align with expanded dropdown body
+      courseHeader.style.borderRadius = isOpen ? '12px 12px 0 0' : '12px';
     });
 
     course.sections.forEach((section, index) => {

@@ -54,8 +54,7 @@ function injectAdminNavbarButton() {
           adminBtn.className = 'nav-button';
           adminBtn.style.backgroundColor = '#00cc66'; // Premium styling
           adminBtn.style.color = '#fff';
-          adminBtn.style.fontWeight = 'bold';
-          adminBtn.textContent = 'Admin Dashboard';
+          adminBtn.innerHTML = '<img src="../assets/admin.png" alt="Admin" class="nav-icon"> Admin';
           adminBtn.onclick = () => {
             const isInsidePages = window.location.pathname.includes('/pages/');
             redirectWithToken(isInsidePages ? '../private/admin.html' : './private/admin.html');
@@ -117,6 +116,35 @@ async function initAuth() {
 
   // 3. Inject Admin Dashboard button in navbar if they are a promoted Admin
   injectAdminNavbarButton();
+
+  // 4. Populate header profile name
+  const currentUserStr = localStorage.getItem('user');
+  if (currentUserStr) {
+    try {
+      const u = JSON.parse(currentUserStr);
+      populateHeaderUsername(u);
+    } catch (e) { }
+  }
+}
+
+function populateHeaderUsername(user) {
+  const display = document.getElementById('header-username-display');
+  if (display && user) {
+    const rawName = user.username || user.name || user.email || 'User';
+    display.textContent = rawName.length > 16 ? rawName.slice(0, 16) + '…' : rawName;
+    display.title = rawName; // show full name on hover
+  }
+
+  // Disable settings button for super admin account
+  if (user && user.email === 'admin@gmail.com') {
+    const settingsBtn = document.querySelector('.header-controls .header-icon-btn[onclick*="profile.html"]');
+    if (settingsBtn) {
+      settingsBtn.disabled = true;
+      settingsBtn.style.opacity = '0.5';
+      settingsBtn.style.cursor = 'not-allowed';
+      settingsBtn.removeAttribute('onclick');
+    }
+  }
 }
 
 if (document.readyState === 'loading') {

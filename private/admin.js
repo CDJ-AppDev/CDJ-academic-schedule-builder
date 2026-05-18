@@ -1,14 +1,3 @@
-// API base path environment selector
-const API_BASE = (() => {
-  const hostname = window.location.hostname;
-  const protocol = window.location.protocol;
-  if (protocol === 'file:' || hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:3000/api';
-  }
-  const port = window.location.port ? ':' + window.location.port : '';
-  return `${protocol}//${hostname}${port}/api`;
-})();
-
 // URL-based token propagation helper for file:// protocols crossing directory sandboxes
 function getToken() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -649,7 +638,7 @@ function preFillFormFields(targetType, record) {
     document.getElementById('user-email').value = record.useremail || '';
     document.getElementById('user-name').value = record.username || '';
     document.getElementById('user-access').value = record.useraccess || 'Default';
-    
+
     // Auto-resolve user term program
     if (record.termid && record.termid !== 'None') {
       const termObj = cachedTerms.find(t => t.termid === record.termid);
@@ -673,7 +662,7 @@ function preFillFormFields(targetType, record) {
     document.getElementById('course-code').value = record.coursecode || '';
     document.getElementById('course-name').value = record.coursename || '';
     document.getElementById('course-units').value = record.academicunits || record.courseunits || '';
-    
+
     // Auto-resolve course term program
     const termObj = cachedTerms.find(t => t.termid === record.termid);
     if (termObj) {
@@ -714,20 +703,20 @@ function filterPopupUserTerms() {
   const progSelect = document.getElementById('popup-user-program');
   const termSelect = document.getElementById('user-term');
   if (!progSelect || !termSelect) return;
-  
+
   const selectedProg = progSelect.value;
   const currentTermVal = termSelect.value;
-  
+
   let filteredTerms = cachedTerms;
   if (selectedProg !== 'All') {
     filteredTerms = cachedTerms.filter(t => t.programid === selectedProg);
   }
-  
+
   // Re-populate termSelect
   let html = '<option value="None">None (Unassigned)</option>';
   html += filteredTerms.map(t => `<option value="${t.termid}">${t.termid} (${t.programid} Year ${t.yearlevel} Sem ${t.semester})</option>`).join('');
   termSelect.innerHTML = html;
-  
+
   // Keep original value if still exists in options, else select None
   if (filteredTerms.some(t => t.termid === currentTermVal)) {
     termSelect.value = currentTermVal;
@@ -741,19 +730,19 @@ function filterPopupCourseTerms() {
   const progSelect = document.getElementById('popup-course-program');
   const termSelect = document.getElementById('course-term');
   if (!progSelect || !termSelect) return;
-  
+
   const selectedProg = progSelect.value;
   const currentTermVal = termSelect.value;
-  
+
   let filteredTerms = cachedTerms;
   if (selectedProg !== 'All') {
     filteredTerms = cachedTerms.filter(t => t.programid === selectedProg);
   }
-  
+
   // Re-populate termSelect
   let html = filteredTerms.map(t => `<option value="${t.termid}">${t.termid} (${t.programid} Year ${t.yearlevel} Sem ${t.semester})</option>`).join('');
   termSelect.innerHTML = html;
-  
+
   // Keep original value if still exists in options
   if (filteredTerms.some(t => t.termid === currentTermVal)) {
     termSelect.value = currentTermVal;
@@ -767,25 +756,25 @@ function filterPopupSlotTerms() {
   const progSelect = document.getElementById('popup-slot-program');
   const termSelect = document.getElementById('popup-slot-term');
   if (!progSelect || !termSelect) return;
-  
+
   const selectedProg = progSelect.value;
   const currentTermVal = termSelect.value;
-  
+
   let filteredTerms = cachedTerms;
   if (selectedProg !== 'All') {
     filteredTerms = cachedTerms.filter(t => t.programid === selectedProg);
   }
-  
+
   let html = '<option value="All">All Terms</option>';
   html += filteredTerms.map(t => `<option value="${t.termid}">${t.termid} (${t.programid} Year ${t.yearlevel} Sem ${t.semester})</option>`).join('');
   termSelect.innerHTML = html;
-  
+
   if (filteredTerms.some(t => t.termid === currentTermVal) || currentTermVal === 'All') {
     termSelect.value = currentTermVal;
   } else {
     termSelect.value = 'All';
   }
-  
+
   // Trigger course filtering update too!
   filterPopupSlotCourses();
 }
@@ -796,24 +785,24 @@ function filterPopupSlotCourses() {
   const termSelect = document.getElementById('popup-slot-term');
   const courseSelect = document.getElementById('slot-course');
   if (!courseSelect) return;
-  
+
   const selectedProg = progSelect ? progSelect.value : 'All';
   const selectedTerm = termSelect ? termSelect.value : 'All';
-  
+
   let filteredCourses = cachedCourses;
-  
+
   if (selectedTerm !== 'All') {
     filteredCourses = cachedCourses.filter(c => c.termid === selectedTerm);
   } else if (selectedProg !== 'All') {
     const matchingTerms = cachedTerms.filter(t => t.programid === selectedProg).map(t => t.termid);
     filteredCourses = cachedCourses.filter(c => matchingTerms.includes(c.termid));
   }
-  
+
   const currentCourseVal = courseSelect.value;
-  
+
   let html = filteredCourses.map(c => `<option value="${c.coursecode}">${c.coursecode} - ${escapeHtml(c.coursename)}</option>`).join('');
   courseSelect.innerHTML = html;
-  
+
   if (filteredCourses.some(c => c.coursecode === currentCourseVal)) {
     courseSelect.value = currentCourseVal;
   } else if (filteredCourses.length > 0) {

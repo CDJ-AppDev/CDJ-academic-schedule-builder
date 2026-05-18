@@ -447,3 +447,9 @@
   white-space: nowrap;
   overflow: hidden;
 }
+
+#admin-navbar {
+  display: none;
+  margin-left: 20px;
+  margin-right: auto;
+}
