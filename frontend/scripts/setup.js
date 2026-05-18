@@ -10,6 +10,14 @@ const API_BASE = (() => {
   return `${protocol}//${hostname}${port}/api`;
 })();
 
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    return;
+  }
+});
+
 
 const setupButton = document.querySelector('.setup-btn');
 const closeButton = document.querySelector('.close-btn');
@@ -48,7 +56,7 @@ if (setupButton) {
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('termId', program_id + year_level);
+        localStorage.setItem('termId', data.term_id);
         // Redirect to home page
         window.location.href = './home.html';
       } else {

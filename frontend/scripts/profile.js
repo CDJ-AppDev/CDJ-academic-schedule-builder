@@ -9,6 +9,14 @@ const API_BASE = (() => {
   return `${protocol}//${hostname}${port}/api`;
 })();
 
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    return;
+  }
+});
+
 // Course, Year, and Semester Picker Functionality - Single Selection Only
 const courseRadios = document.getElementsByName('course-picker');
 const yearRadios = document.getElementsByName('year-picker');
@@ -50,7 +58,7 @@ async function saveToServer(program_id, year_level, semester) {
       return false;
     }
     
-    localStorage.setItem('termId', program_id + year_level);
+    localStorage.setItem('termId', data.term_id);
     console.log('Term saved successfully:', data);
     return true;
   } catch (err) {
@@ -80,7 +88,7 @@ async function loadFromServer() {
     // server returns null if no row found
     if (!data) return null;
 
-    localStorage.setItem('termId', data.program_id + data.year_level);
+    localStorage.setItem('termId', data.term_id);
 
     return {
       course: data.program_id,

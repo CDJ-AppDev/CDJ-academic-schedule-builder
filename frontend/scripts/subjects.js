@@ -32,20 +32,35 @@ let userSchedules = [];
 let activeScheduleId = 'new';
 
 // Get or fetch term data (cached in localStorage)
-async function getTermData(token) {
-  const cachedTermData = localStorage.getItem('termData');
+async function getTermData(token, termId) {
+  // Fetch units according to the user's termID (stored in localStorage or from user profile)
+  const activeTermId = termId || localStorage.getItem('termId');
+
+  // Use a term-specific cache key to prevent stale cache when switching programs
+  const cacheKey = activeTermId ? `termData_${activeTermId}` : 'termData';
+  const cachedTermData = localStorage.getItem(cacheKey);
+
   if (cachedTermData) {
-    return JSON.parse(cachedTermData);
+    const termData = JSON.parse(cachedTermData);
+    if (termData && termData.req_units) {
+      localStorage.setItem('reqUnits', termData.req_units);
+    }
+    return termData;
   }
 
   try {
-    const termResponse = await fetch(`${API_BASE}/term`, {
+    let url = `${API_BASE}/term`;
+    if (activeTermId) {
+      url += `?termId=${encodeURIComponent(activeTermId)}`;
+    }
+
+    const termResponse = await fetch(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
     const termData = await termResponse.json();
     if (termData) {
-      localStorage.setItem('termData', JSON.stringify(termData));
+      localStorage.setItem(cacheKey, JSON.stringify(termData));
       // Store required units for display
       if (termData.req_units) {
         localStorage.setItem('reqUnits', termData.req_units);
@@ -60,6 +75,10 @@ async function getTermData(token) {
 
 // Clear term data cache (useful when user changes term/program)
 function clearTermCache() {
+  const activeTermId = localStorage.getItem('termId');
+  if (activeTermId) {
+    localStorage.removeItem(`termData_${activeTermId}`);
+  }
   localStorage.removeItem('termData');
   localStorage.removeItem('reqUnits');
 }
@@ -496,7 +515,6 @@ window.switchActiveSchedule = function (id) {
   const deleteBtn = document.getElementById('delete-schedule-btn');
 
   if (id === 'new') {
-    clearTermCache(); // Clear cache when switching to new schedule
     courses = [];
     window.currentScheduleId = null;
     if (nameInput) nameInput.value = 'Schedule';
@@ -551,6 +569,23 @@ async function loadUserSchedule() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Fetch term data as soon as the page opens, even if courses are not added yet
+  getTermData(token).then(termData => {
+    if (termData && termData.req_units) {
+      localStorage.setItem('reqUnits', termData.req_units);
+      // Force rendering the UI to reflect the fetched required units immediately
+      displayCourses();
+    }
+  }).catch(error => {
+    console.error('Error fetching term data on page open:', error);
+  });
+
   const reqUnits = localStorage.getItem('reqUnits');
   if (reqUnits) {
     const unitsDisplay = document.getElementById('schedule-units-display');
