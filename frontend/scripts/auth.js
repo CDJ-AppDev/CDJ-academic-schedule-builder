@@ -40,6 +40,15 @@ function redirectWithToken(targetUrl) {
 }
 window.redirectWithToken = redirectWithToken;
 
+// Helper to get the correct path to admin.html from any location
+function getAdminPath() {
+  const pathname = window.location.pathname;
+  if (pathname.includes('/pages/')) {
+    return '../private/admin.html';
+  }
+  return './private/admin.html';
+}
+
 // Inject Admin Dashboard button in navbar if they are a promoted Admin
 function injectAdminNavbarButton() {
   const userStr = localStorage.getItem('user');
@@ -57,6 +66,10 @@ function injectAdminNavbarButton() {
           adminBtn.innerHTML = '<img src="../assets/admin.png" alt="Admin" class="nav-icon"> Admin';
           adminBtn.onclick = () => {
             const isInsidePages = window.location.pathname.includes('/pages/');
+            const isAlreadyAtAdmin = window.location.pathname.includes('/private/') && window.location.pathname.includes('admin.html');
+            if (isAlreadyAtAdmin) {
+              return; // Already at admin page, no redirect needed
+            }
             redirectWithToken(isInsidePages ? '../private/admin.html' : './private/admin.html');
           };
           nav.appendChild(adminBtn);
@@ -92,7 +105,7 @@ async function initAuth() {
         if (isLandingOrAuth) {
           if (freshUser.email === 'admin@gmail.com') {
             // Super Admin always goes to Admin Dashboard
-            redirectWithToken('../private/admin.html');
+            redirectWithToken(getAdminPath());
           } else {
             // Regular user/promoted admin goes to Home
             redirectWithToken('./home.html');
@@ -163,7 +176,7 @@ function fallbackAutologinRedirect() {
 
       if (isLandingOrAuth) {
         if (user.email === 'admin@gmail.com') {
-          redirectWithToken('../private/admin.html');
+          redirectWithToken(getAdminPath());
         } else {
           redirectWithToken('./home.html');
         }
@@ -200,7 +213,7 @@ if (loginButton) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         if (data.user && data.user.access === 'Admin') {
-          redirectWithToken('../private/admin.html');
+          redirectWithToken(getAdminPath());
         } else {
           redirectWithToken(`./home.html`);
         }

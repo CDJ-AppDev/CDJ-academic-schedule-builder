@@ -76,6 +76,18 @@
   }
 }
 
+.page-title-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title-icon {
+  width: 32px;
+  height: 32px;
+  filter: invert(1) brightness(1.1);
+}
+
 /* Table Enhancements */
 .table-container {
   width: 100%;
