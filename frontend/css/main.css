@@ -322,7 +322,7 @@ select:focus {
 .nav-button {
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 999px;
-  background: rgba(17, 17, 17, 0.92);
+  background: #4543ab;
   color: #fff;
   padding: 12px 18px;
   font-size: 0.9rem;
@@ -332,7 +332,7 @@ select:focus {
 
 .nav-button:hover {
   transform: translateY(-1px);
-  background: #000;
+  background: #201f52;
 }
 
 .profile-button {
@@ -561,7 +561,9 @@ select:focus {
 
 .custom-modal-btn.secondary:hover {
   background: rgba(255, 255, 255, 0.15);
-}.custom-modal-icon.warning {
+}
+
+.custom-modal-icon.warning {
   background: rgba(245, 158, 11, 0.15);
   color: #f59e0b;
   box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);

@@ -19,17 +19,28 @@
 
     <nav class="app-nav">
       <button class="nav-button" onclick="window.location.href='home.html'">Home</button>
-      <button class="nav-button" onclick="window.location.href='profile.html'">Profile</button>
       <button class="nav-button" onclick="window.location.href='builder.html'">Schedule Picker</button>
       <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="close-btn close-btn-left" onclick="handleLogout('../index.html')">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+      <button style="position: static; margin-left: 0; background: none; padding: 5px; border: none; cursor: pointer;"
+        onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Profile" style="width: 24px; height: 24px;">
+      </button>
+      <button class="close-btn" style="position: static; margin-left: 0; background: none; padding: 5px; border: none;"
+        onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">
+        <img src="../assets/logout.png" alt="Log out" style="width: 24px; height: 24px;">
+      </button>
+    </div>
   </header>
 
   <main class="page-content plotter-main">
     <div class="page-title">
-      <h1>Schedule Plotter</h1>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../assets/scheduleplotter.png" alt="Schedule Plotter" style="width: 40px; height: 40px;">
+        <h1 style="margin: 0;">Schedule Plotter</h1>
+      </div>
       <p>View and customize your schedule visualization</p>
     </div>
 
@@ -84,12 +95,14 @@
         <div class="options-color">
           <label>Custom Block Color:</label>
           <div class="color-input-wrapper">
-            <input type="color" id="custom-color" value="#000000" oninput="document.getElementById('color-hex-display').textContent = this.value.toUpperCase()">
+            <input type="color" id="custom-color" value="#000000"
+              oninput="document.getElementById('color-hex-display').textContent = this.value.toUpperCase()">
             <span class="hex-text" id="color-hex-display">#000000</span>
           </div>
           <label>Custom Font Color:</label>
           <div class="color-input-wrapper">
-            <input type="color" id="custom-font-color" value="#FFFFFF" oninput="document.getElementById('font-color-hex-display').textContent = this.value.toUpperCase()">
+            <input type="color" id="custom-font-color" value="#FFFFFF"
+              oninput="document.getElementById('font-color-hex-display').textContent = this.value.toUpperCase()">
             <span class="hex-text" id="font-color-hex-display">#FFFFFF</span>
           </div>
         </div>

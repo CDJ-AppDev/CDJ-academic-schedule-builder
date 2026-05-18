@@ -17,7 +17,7 @@
       <span>Academic Schedule Builder</span>
     </div>
 
-    <nav class="app-nav" id="admin-navbar">
+    <nav class="app-nav" id="admin-navbar" style="display: none; margin-left: 20px; margin-right: auto;">
       <button class="nav-button" onclick="window.location.href='../pages/home.html'">Home</button>
       <button class="nav-button" onclick="window.location.href='../pages/profile.html'">Profile</button>
       <button class="nav-button" onclick="window.location.href='../pages/builder.html'">Schedule Picker</button>
@@ -132,13 +132,15 @@
           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <div class="filter-container compact">
               <label for="filter-courses-program">Program:</label>
-              <select id="filter-courses-program" class="admin-filter-select compact select-program" onchange="onCoursesProgramChange()">
+              <select id="filter-courses-program" class="admin-filter-select compact select-program"
+                onchange="onCoursesProgramChange()">
                 <option value="All">All Programs</option>
               </select>
             </div>
             <div class="filter-container compact">
               <label for="filter-courses-term">Term:</label>
-              <select id="filter-courses-term" class="admin-filter-select compact select-term" onchange="applyFilters('courses')">
+              <select id="filter-courses-term" class="admin-filter-select compact select-term"
+                onchange="applyFilters('courses')">
                 <option value="All">All Terms</option>
               </select>
             </div>
@@ -199,19 +201,22 @@
           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <div class="filter-container compact">
               <label for="filter-slots-program">Program:</label>
-              <select id="filter-slots-program" class="admin-filter-select compact select-program" onchange="onSlotsProgramChange()">
+              <select id="filter-slots-program" class="admin-filter-select compact select-program"
+                onchange="onSlotsProgramChange()">
                 <option value="All">All Programs</option>
               </select>
             </div>
             <div class="filter-container compact">
               <label for="filter-slots-term">Term:</label>
-              <select id="filter-slots-term" class="admin-filter-select compact select-term" onchange="onSlotsTermChange()">
+              <select id="filter-slots-term" class="admin-filter-select compact select-term"
+                onchange="onSlotsTermChange()">
                 <option value="All">All Terms</option>
               </select>
             </div>
             <div class="filter-container compact">
               <label for="filter-slots-course">Course:</label>
-              <select id="filter-slots-course" class="admin-filter-select compact select-course" onchange="applyFilters('courseslots')">
+              <select id="filter-slots-course" class="admin-filter-select compact select-course"
+                onchange="applyFilters('courseslots')">
                 <option value="All">All Courses</option>
               </select>
             </div>

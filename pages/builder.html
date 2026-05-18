@@ -19,22 +19,33 @@
 
     <nav class="app-nav">
       <button class="nav-button" onclick="window.location.href='home.html'">Home</button>
-      <button class="nav-button" onclick="window.location.href='profile.html'">Profile</button>
       <button class="nav-button" onclick="window.location.href='builder.html'">Schedule Picker</button>
       <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="close-btn close-btn-left" onclick="handleLogout('../index.html')">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+      <button style="position: static; margin-left: 0; background: none; border: none; padding: 5px; cursor: pointer;"
+        onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Profile" style="width: 24px; height: 24px;">
+      </button>
+      <button class="close-btn" style="position: static; margin-left: 0; background: none; padding: 5px; border: none;"
+        onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">
+        <img src="../assets/logout.png" alt="Log out" style="width: 24px; height: 24px;">
+      </button>
+    </div>
   </header>
 
   <main class="page-content">
     <div class="page-title">
-      <h1>Subject Schedules</h1>
-      <p>Select sections and build your schedule.</p>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../assets/schedulepicker.png" alt="Schedule Picker" style="width: 40px; height: 40px;">
+        <h1 style="margin: 0;">Schedule Picker</h1>
+      </div>
+      <p>Select classes and build your schedule.</p>
     </div>
 
     <section class="page-panel">
-      <h2>Available Courses</h2>
+      <h2>Available Classes</h2>
 
       <div id="availableCourses" class="courses-list single-column"></div>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="../frontend/css/main.css">
   <link rel="stylesheet" href="../frontend/css/dashboard.css">
 </head>
+
 <body>
   <header class="app-header">
     <div class="app-brand">
@@ -15,29 +17,29 @@
       <span>Academic Schedule Builder</span>
     </div>
 
-    <nav class="app-nav">
-      <button class="nav-button" onclick="window.location.href='home.html'">Home</button>
-      <button class="nav-button" onclick="window.location.href='profile.html'">Profile</button>
-      <button class="nav-button" onclick="window.location.href='builder.html'">Schedule Picker</button>
-      <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
-    </nav>
-
-    <button class="close-btn close-btn-left" onclick="handleLogout('../index.html')">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+      <button style="position: static; margin-left: 0; background: none; border: none; padding: 5px; cursor: pointer;"
+        onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Profile" style="width: 24px; height: 24px;">
+      </button>
+      <button class="close-btn" style="position: static; margin-left: 0; background: none; padding: 5px; border: none;"
+        onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">
+        <img src="../assets/logout.png" alt="Log out" style="width: 24px; height: 24px;">
+      </button>
+    </div>
   </header>
 
   <main class="page-content">
     <div class="page-title">
-      <h1>Academic Schedule Builder</h1>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../assets/coursepicker.png" alt="Home" style="width: 40px; height: 40px;">
+        <h1 style="margin: 0;">Home</h1>
+      </div>
       <p>Choose a tool to get started with your academic planning.</p>
     </div>
 
     <section class="page-panel">
       <div class="dashboard-grid">
-        <div class="dashboard-card" onclick="window.location.href='profile.html'">
-          <div class="card-icon"><img src="../assets/coursepicker.png" alt="Logo" class="brand-icon"></div>
-          <h3>Course Picker</h3>
-          <p>Select courses and build your term schedule.</p>
-        </div>
         <div class="dashboard-card" onclick="window.location.href='builder.html'">
           <div class="card-icon"><img src="../assets/schedulepicker.png" alt="Logo" class="brand-icon"></div>
           <h3>Schedule Picker</h3>
@@ -54,4 +56,5 @@
   <script src="../frontend/scripts/popup.js"></script>
   <script src="../frontend/scripts/auth.js"></script>
 </body>
+
 </html>
