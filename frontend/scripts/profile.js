@@ -11,11 +11,11 @@ if (typeof API_BASE === 'undefined') {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // const token = localStorage.getItem('token');
-  // if (!token) {
-  //   window.location.href = 'login.html';
-  //   return;
-  // }
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    return;
+  }
 });
 
 // Course, Year, and Semester Picker Functionality - Dropdowns
@@ -167,14 +167,14 @@ function applySelectionToUI(course, year, semester) {
   const ord = ['st', 'nd', 'rd', 'th'];
   const prog = programsList.find(p => p.programid === course);
   const courseLabel = prog ? prog.programname : course;
-  
+
   const yearNum = parseInt(year);
   const semNum = parseInt(semester);
   const yearLabel = `${yearNum}${ord[yearNum - 1] || 'th'} Year`;
-  
+
   const semLabels = ['First Semester', 'Second Semester', 'Summer Term'];
   const semesterLabel = semLabels[semNum - 1] || `${semNum} Semester`;
-  
+
   const displayText = `Selected: ${courseLabel} - ${yearLabel} - ${semesterLabel}`;
 
   console.log('Setting display text to:', displayText);
@@ -227,7 +227,7 @@ window.addEventListener('load', async () => {
     if (response.ok) {
       programsList = await response.json();
       if (programSelect) {
-        programSelect.innerHTML = '<option value="">-- Select a program --</option>' + 
+        programSelect.innerHTML = '<option value="">-- Select a program --</option>' +
           programsList.map(p => `<option value="${p.programid}">${p.programname}</option>`).join('');
       }
     }
