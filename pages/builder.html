@@ -24,7 +24,8 @@
       <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="profile-button">👤</button>
+    <button class="close-btn" style="position: static; margin-left: 0;"
+      onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">&times;</button>
   </header>
 
   <main class="page-content">
@@ -125,7 +126,8 @@
       <div class="schedules-header-container">
         <h2 class="schedules-title">Schedules</h2>
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button id="delete-schedule-btn" class="btn-remove" style="display: none; background-color: #cc3333; border-radius: 20px; padding: 8px 16px; text-transform: uppercase; font-weight: bold; color: white; border: none; font-size: 0.85rem; cursor: pointer;">DELETE</button>
+          <button id="delete-schedule-btn" class="btn-remove"
+            style="display: none; background-color: #cc3333; border-radius: 20px; padding: 8px 16px; text-transform: uppercase; font-weight: bold; color: white; border: none; font-size: 0.85rem; cursor: pointer;">DELETE</button>
           <select id="schedule-selector" class="schedule-selector">
             <option value="new">+ Create New Schedule</option>
           </select>
@@ -138,13 +140,15 @@
           Save Schedule as:
           <input type="text" id="schedule-name-input" class="save-input" value="">
           <span id="schedule-units-display" class="units-display">Units: 0 / 0</span>
-          <span id="regular-status-badge" style="display: none; margin-left: 12px; font-weight: bold; font-size: 0.9rem; padding: 4px 8px; border-radius: 8px;"></span>
+          <span id="regular-status-badge"
+            style="display: none; margin-left: 12px; font-weight: bold; font-size: 0.9rem; padding: 4px 8px; border-radius: 8px;"></span>
         </div>
         <button id="save-schedule-btn" class="btn-primary btn-save" type="button">SAVE</button>
       </div>
     </section>
   </main>
 
+  <script src="../frontend/scripts/auth.js"></script>
   <script src="../frontend/scripts/classes.js"></script>
   <script src="../frontend/scripts/subjects.js"></script>
 </body>

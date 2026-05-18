@@ -1,106 +1,744 @@
-document.addEventListener('DOMContentLoaded', () => {
+// API base path environment selector
+const API_BASE = (() => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  if (protocol === 'file:' || hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3000/api';
+  }
+  const port = window.location.port ? ':' + window.location.port : '';
+  return `${protocol}//${hostname}${port}/api`;
+})();
+
+// URL-based token propagation helper for file:// protocols crossing directory sandboxes
+function getToken() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlToken = urlParams.get('token');
+  if (urlToken) {
+    localStorage.setItem('token', urlToken);
+    const urlUser = urlParams.get('user');
+    if (urlUser) {
+      try {
+        localStorage.setItem('user', decodeURIComponent(urlUser));
+      } catch (e) {}
+    }
+    return urlToken;
+  }
+  return localStorage.getItem('token');
+}
+
+function redirectWithToken(targetUrl) {
   const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = '../pages/login.html';
+  const user = localStorage.getItem('user');
+  if (window.location.protocol === 'file:' && token) {
+    const separator = targetUrl.includes('?') ? '&' : '?';
+    const params = `token=${encodeURIComponent(token)}` + (user ? `&user=${encodeURIComponent(user)}` : '');
+    window.location.href = targetUrl + separator + params;
+  } else {
+    window.location.href = targetUrl;
+  }
+}
+window.redirectWithToken = redirectWithToken;
+
+// Route guard: check for token and sync user session on load
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = getToken();
+  if (!token || token === 'null' || token === 'undefined') {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    redirectWithToken('../pages/login.html');
     return;
   }
 
-  populateUsers();
-  populateCourses();
-  populateSchedules();
-  populateProfessors();
+  // Fetch fresh user session info in real-time
+  try {
+    const response = await fetch(`${API_BASE}/user-session`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (response.ok) {
+      const freshUser = await response.json();
+      localStorage.setItem('user', JSON.stringify(freshUser));
+      
+      // Only show the navbar if NOT the super admin (admin@gmail.com)
+      if (freshUser.email !== 'admin@gmail.com') {
+        const navbar = document.getElementById('admin-navbar');
+        if (navbar) {
+          navbar.style.display = 'flex';
+        }
+      }
+    } else {
+      // ONLY redirect if the server explicitly tells us the token is invalid (401 or 403)
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        redirectWithToken('../pages/login.html');
+        return;
+      }
+      // If it's a 404 or other server error, just fallback to localStorage/URL user!
+      console.warn('user-session endpoint not found or error, falling back to local session cache.');
+      fallbackNavbarToggle();
+    }
+  } catch (e) {
+    console.error('Error verifying admin session:', e);
+    fallbackNavbarToggle();
+  }
+
+  // Load the default tab
+  loadTab('users');
 });
 
-function switchTab(tabId) {
-  // Hide all contents
-  document.querySelectorAll('.admin-content').forEach(content => {
-    content.classList.remove('active');
-  });
-
-  // Remove active from all tabs
-  document.querySelectorAll('.admin-tab').forEach(tab => {
-    tab.classList.remove('active');
-  });
-
-  // Show selected content
-  document.getElementById(`${tabId}-tab`).classList.add('active');
-
-  // Activate selected tab
-  event.currentTarget.classList.add('active');
+function fallbackNavbarToggle() {
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      if (user.email !== 'admin@gmail.com') {
+        const navbar = document.getElementById('admin-navbar');
+        if (navbar) {
+          navbar.style.display = 'flex';
+        }
+      }
+    } catch (e) {}
+  }
 }
 
-function populateUsers() {
-  const users = [
-    { id: 'U001', name: 'Alice Johnson', email: 'alice@example.com', role: 'Student', status: 'Active' },
-    { id: 'U002', name: 'Bob Smith', email: 'bob@example.com', role: 'Student', status: 'Inactive' },
-    { id: 'U003', name: 'Charlie Davis', email: 'charlie@example.com', role: 'Admin', status: 'Active' },
-    { id: 'U004', name: 'Diana Prince', email: 'diana@example.com', role: 'Professor', status: 'Active' },
-  ];
+// Cache for selector values to keep constraints responsive
+let cachedTerms = [];
+let cachedCourses = [];
+let cachedProfessors = [];
 
+// Global active tab state
+let activeTab = 'users';
+
+// Switch tab layout handler
+function switchTab(tabId) {
+  activeTab = tabId;
+
+  // Deactivate all tabs and contents
+  document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
+
+  // Activate selected tab and content
+  // Find current tab button by text or event target
+  const tabButtons = Array.from(document.querySelectorAll('.admin-tab'));
+  const targetButton = tabButtons.find(btn => btn.getAttribute('onclick').includes(tabId));
+  if (targetButton) targetButton.classList.add('active');
+
+  const targetContent = document.getElementById(`${tabId}-tab`);
+  if (targetContent) targetContent.classList.add('active');
+
+  // Load fresh data
+  loadTab(tabId);
+}
+
+// Load data for a specific tab from backend
+async function loadTab(tabId) {
+  const token = getToken();
+  try {
+    const response = await fetch(`${API_BASE}/admin/${tabId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        alert('Access Denied: You must be logged in as an Admin.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        redirectWithToken('../pages/login.html');
+        return;
+      }
+      throw new Error('Failed to fetch data');
+    }
+
+    const data = await response.json();
+
+    if (tabId === 'users') {
+      renderUsers(data);
+    } else if (tabId === 'terms') {
+      cachedTerms = data; // Cache for dropdown select elements
+      renderTerms(data);
+    } else if (tabId === 'courses') {
+      cachedCourses = data; // Cache for dropdown select elements
+      renderCourses(data);
+    } else if (tabId === 'professors') {
+      cachedProfessors = data; // Cache for dropdown select elements
+      renderProfessors(data);
+    } else if (tabId === 'courseslots') {
+      renderCourseSlots(data);
+    } else if (tabId === 'schedules') {
+      renderSchedules(data);
+    }
+  } catch (err) {
+    console.error(`Error loading tab ${tabId}:`, err);
+    const tbody = document.getElementById(`${tabId}-tbody`);
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Error connecting to database: ${err.message}</td></tr>`;
+    }
+  }
+}
+
+// Render Users Table
+function renderUsers(users) {
   const tbody = document.getElementById('users-tbody');
-  tbody.innerHTML = users.map(user => `
+  tbody.innerHTML = users.map(user => {
+    const termLabel = user.termid ? `<span class="badge admin">${user.termid}</span>` : '<span style="color: #999;">None</span>';
+    const roleLabel = user.useraccess === 'Admin' ? `<span class="badge admin">Admin</span>` : `<span class="badge default">Default</span>`;
+    
+    return `
+      <tr>
+        <td>${user.userid}</td>
+        <td><strong>${escapeHtml(user.username || '')}</strong></td>
+        <td>${escapeHtml(user.useremail)}</td>
+        <td>${roleLabel}</td>
+        <td>${termLabel}</td>
+        <td>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-action edit-btn" onclick="openEditModal('users', ${JSON.stringify(user).replace(/"/g, '&quot;')})">Edit</button>
+            <button class="btn-action delete-btn" onclick="deleteRecord('users', ${user.userid})">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Render Terms Table
+function renderTerms(terms) {
+  const tbody = document.getElementById('terms-tbody');
+  tbody.innerHTML = terms.map(term => `
     <tr>
-      <td>${user.id}</td>
-      <td>${user.name}</td>
-      <td>${user.email}</td>
-      <td>${user.role}</td>
-      <td>${user.status}</td>
+      <td><strong>${escapeHtml(term.termid)}</strong></td>
+      <td>${escapeHtml(term.programid)}</td>
+      <td>Year ${term.yearlevel}</td>
+      <td>Semester ${term.semester}</td>
+      <td>${term.requnits} units</td>
+      <td>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn-action edit-btn" onclick="openEditModal('terms', ${JSON.stringify(term).replace(/"/g, '&quot;')})">Edit</button>
+          <button class="btn-action delete-btn" onclick="deleteRecord('terms', '${term.termid}')">Delete</button>
+        </div>
+      </td>
     </tr>
   `).join('');
 }
 
-function populateCourses() {
-  const courses = [
-    { code: 'CS101', title: 'Introduction to Computer Science', credits: 3, dept: 'Computer Science' },
-    { code: 'MATH201', title: 'Calculus I', credits: 4, dept: 'Mathematics' },
-    { code: 'ENG101', title: 'English Composition', credits: 3, dept: 'English' },
-    { code: 'PHYS101', title: 'Physics for Engineers', credits: 4, dept: 'Physics' },
-  ];
-
+// Render Courses Table
+function renderCourses(courses) {
   const tbody = document.getElementById('courses-tbody');
   tbody.innerHTML = courses.map(course => `
     <tr>
-      <td>${course.code}</td>
-      <td>${course.title}</td>
-      <td>${course.credits}</td>
-      <td>${course.dept}</td>
+      <td><strong>${escapeHtml(course.coursecode)}</strong></td>
+      <td>${escapeHtml(course.coursename)}</td>
+      <td>${course.courseunits} units</td>
+      <td><span class="badge default">${escapeHtml(course.termid)}</span></td>
+      <td>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn-action edit-btn" onclick="openEditModal('courses', ${JSON.stringify(course).replace(/"/g, '&quot;')})">Edit</button>
+          <button class="btn-action delete-btn" onclick="deleteRecord('courses', '${course.coursecode}')">Delete</button>
+        </div>
+      </td>
     </tr>
   `).join('');
 }
 
-function populateSchedules() {
-  const schedules = [
-    { id: 'S001', user: 'Alice Johnson', term: 'Fall 2026', courses: 4, date: '2026-05-10' },
-    { id: 'S002', user: 'Bob Smith', term: 'Fall 2026', courses: 3, date: '2026-05-12' },
-    { id: 'S003', user: 'Alice Johnson', term: 'Spring 2027', courses: 5, date: '2026-05-15' },
-  ];
-
-  const tbody = document.getElementById('schedules-tbody');
-  tbody.innerHTML = schedules.map(schedule => `
-    <tr>
-      <td>${schedule.id}</td>
-      <td>${schedule.user}</td>
-      <td>${schedule.term}</td>
-      <td>${schedule.courses}</td>
-      <td>${schedule.date}</td>
-    </tr>
-  `).join('');
-}
-
-function populateProfessors() {
-  const professors = [
-    { id: 'P001', name: 'Dr. Alan Turing', dept: 'Computer Science', email: 'alan@university.edu' },
-    { id: 'P002', name: 'Dr. Isaac Newton', dept: 'Mathematics', email: 'isaac@university.edu' },
-    { id: 'P003', name: 'Dr. Marie Curie', dept: 'Physics', email: 'marie@university.edu' },
-  ];
-
+// Render Professors Table
+function renderProfessors(professors) {
   const tbody = document.getElementById('professors-tbody');
   tbody.innerHTML = professors.map(prof => `
     <tr>
-      <td>${prof.id}</td>
-      <td>${prof.name}</td>
-      <td>${prof.dept}</td>
-      <td>${prof.email}</td>
+      <td>${prof.profid}</td>
+      <td><strong>${escapeHtml(prof.profname)}</strong></td>
+      <td>${escapeHtml(prof.profdepartment || 'N/A')}</td>
+      <td>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn-action edit-btn" onclick="openEditModal('professors', ${JSON.stringify(prof).replace(/"/g, '&quot;')})">Edit</button>
+          <button class="btn-action delete-btn" onclick="deleteRecord('professors', ${prof.profid})">Delete</button>
+        </div>
+      </td>
     </tr>
   `).join('');
+}
+
+// Render Course Slots Table
+function renderCourseSlots(slots) {
+  const tbody = document.getElementById('courseslots-tbody');
+  tbody.innerHTML = slots.map(slot => {
+    const profName = slot.profname ? escapeHtml(slot.profname) : '<span style="color: #999; font-style: italic;">Unassigned (NULL)</span>';
+    
+    // Trim times for better visibility
+    const startStr = slot.starttime ? slot.starttime.substring(0, 5) : '00:00';
+    const endStr = slot.endtime ? slot.endtime.substring(0, 5) : '00:00';
+
+    return `
+      <tr>
+        <td>${slot.courseslotid}</td>
+        <td><strong>${escapeHtml(slot.coursecode)}</strong><br><small style="color: #666;">${escapeHtml(slot.coursename || '')}</small></td>
+        <td>${profName}</td>
+        <td>${escapeHtml(slot.scheduleday)}</td>
+        <td><code>${startStr} - ${endStr}</code></td>
+        <td><span class="badge default">${escapeHtml(slot.roomcode)}</span></td>
+        <td>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-action edit-btn" onclick="openEditModal('courseslots', ${JSON.stringify(slot).replace(/"/g, '&quot;')})">Edit</button>
+            <button class="btn-action delete-btn" onclick="deleteRecord('courseslots', ${slot.courseslotid})">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Render Schedules Table
+function renderSchedules(schedules) {
+  const tbody = document.getElementById('schedules-tbody');
+  tbody.innerHTML = schedules.map(s => {
+    const statusBadge = s.regular 
+      ? '<span class="badge regular">Regular</span>' 
+      : '<span class="badge irregular">Irregular</span>';
+    
+    const formattedDate = s.createdat ? new Date(s.createdat).toLocaleString() : 'N/A';
+    const userLabel = `<strong>${escapeHtml(s.username || 'User')}</strong><br><small style="color: #666;">${escapeHtml(s.useremail || '')}</small>`;
+
+    return `
+      <tr>
+        <td>${s.scheduleid}</td>
+        <td>${userLabel}</td>
+        <td><strong>${escapeHtml(s.schedulename)}</strong></td>
+        <td><strong>${s.totalunits}</strong> units</td>
+        <td>${statusBadge}</td>
+        <td>${formattedDate}</td>
+        <td>
+          <button class="btn-action delete-btn" onclick="deleteRecord('schedules', ${s.scheduleid})">Delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Fetch all connecting tables in background to make sure selectors are up-to-date
+async function fetchDependencies() {
+  const token = localStorage.getItem('token');
+  try {
+    // 1. Fetch Terms
+    const termRes = await fetch(`${API_BASE}/admin/terms`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (termRes.ok) cachedTerms = await termRes.json();
+
+    // 2. Fetch Courses
+    const courseRes = await fetch(`${API_BASE}/admin/courses`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (courseRes.ok) cachedCourses = await courseRes.json();
+
+    // 3. Fetch Professors
+    const profRes = await fetch(`${API_BASE}/admin/professors`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (profRes.ok) cachedProfessors = await profRes.json();
+
+  } catch (err) {
+    console.error('Error fetching modal dependencies:', err);
+  }
+}
+
+// Modal Form Management
+function closeModal() {
+  const modal = document.getElementById('admin-modal');
+  modal.classList.remove('active');
+}
+
+async function openCreateModal(targetType) {
+  await fetchDependencies(); // Get latest dependencies
+
+  document.getElementById('modal-title').textContent = `Create New ${targetType.slice(0, -1).toUpperCase()}`;
+  document.getElementById('form-action').value = 'create';
+  document.getElementById('form-target-type').value = targetType;
+  document.getElementById('form-target-id').value = '';
+
+  const fieldsContainer = document.getElementById('modal-fields');
+  fieldsContainer.innerHTML = generateFormFields(targetType, null);
+
+  const modal = document.getElementById('admin-modal');
+  modal.classList.add('active');
+}
+
+async function openEditModal(targetType, record) {
+  await fetchDependencies(); // Get latest dependencies
+
+  const idVal = targetType === 'users' ? record.userid 
+              : targetType === 'terms' ? record.termid 
+              : targetType === 'courses' ? record.coursecode 
+              : targetType === 'professors' ? record.profid 
+              : targetType === 'courseslots' ? record.courseslotid
+              : '';
+
+  document.getElementById('modal-title').textContent = `Edit ${targetType.slice(0, -1).toUpperCase()}`;
+  document.getElementById('form-action').value = 'update';
+  document.getElementById('form-target-type').value = targetType;
+  document.getElementById('form-target-id').value = idVal;
+
+  const fieldsContainer = document.getElementById('modal-fields');
+  fieldsContainer.innerHTML = generateFormFields(targetType, record);
+
+  // Pre-fill form fields
+  preFillFormFields(targetType, record);
+
+  const modal = document.getElementById('admin-modal');
+  modal.classList.add('active');
+}
+
+// Generate HTML Form Fields based on table type
+function generateFormFields(targetType, record) {
+  const isEdit = record !== null;
+
+  // Generate selector options dynamically
+  const termOptionsHtml = cachedTerms.map(t => `<option value="${t.termid}">${t.termid} (${t.programid} Year ${t.yearlevel} Sem ${t.semester})</option>`).join('');
+  const courseOptionsHtml = cachedCourses.map(c => `<option value="${c.coursecode}">${c.coursecode} - ${escapeHtml(c.coursename)}</option>`).join('');
+  const professorOptionsHtml = cachedProfessors.map(p => `<option value="${p.profid}">${escapeHtml(p.profname)} (${escapeHtml(p.profdepartment || '')})</option>`).join('');
+
+  switch (targetType) {
+    case 'users':
+      return `
+        <div class="form-group-admin">
+          <label for="user-email">Email Address</label>
+          <input type="email" id="user-email" required placeholder="e.g. student@gmail.com">
+        </div>
+        ${isEdit ? '' : `
+        <div class="form-group-admin">
+          <label for="user-password">Password</label>
+          <input type="password" id="user-password" required placeholder="e.g. secretpassword">
+        </div>
+        `}
+        <div class="form-group-admin">
+          <label for="user-name">Full Profile Name</label>
+          <input type="text" id="user-name" required placeholder="e.g. Juan dela Cruz">
+        </div>
+        <div class="form-group-admin">
+          <label for="user-access">Access Role</label>
+          <select id="user-access">
+            <option value="Default">Default (Student)</option>
+            <option value="Admin">Admin (Full Access)</option>
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label for="user-term">Assigned Term Limit</label>
+          <select id="user-term">
+            <option value="None">None (Unassigned)</option>
+            ${termOptionsHtml}
+          </select>
+        </div>
+      `;
+    case 'terms':
+      return `
+        <div class="form-group-admin">
+          <label for="term-id">Term ID</label>
+          <input type="text" id="term-id" required placeholder="e.g. CS1" maxlength="4" ${isEdit ? 'disabled' : ''}>
+        </div>
+        <div class="form-group-admin">
+          <label for="program-id">Program ID</label>
+          <select id="program-id">
+            <option value="CS">CS (Computer Science)</option>
+            <option value="IT">IT (Information Technology)</option>
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label for="year-level">Year Level</label>
+          <select id="year-level">
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label for="semester">Semester</label>
+          <select id="semester">
+            <option value="1">1st Semester</option>
+            <option value="2">2nd Semester</option>
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label for="req-units">Required Units Limit</label>
+          <input type="number" id="req-units" required min="1" max="50" placeholder="e.g. 23">
+        </div>
+      `;
+    case 'courses':
+      return `
+        <div class="form-group-admin">
+          <label for="course-code">Course Code</label>
+          <input type="text" id="course-code" required placeholder="e.g. CS1-CS101" maxlength="11" ${isEdit ? 'disabled' : ''}>
+        </div>
+        <div class="form-group-admin">
+          <label for="course-name">Course Title</label>
+          <input type="text" id="course-name" required placeholder="e.g. Intro to Computing">
+        </div>
+        <div class="form-group-admin">
+          <label for="course-units">Academic Units</label>
+          <input type="number" id="course-units" required min="1" max="10" placeholder="e.g. 3">
+        </div>
+        <div class="form-group-admin">
+          <label for="course-term">Assigned Term</label>
+          <select id="course-term" required>
+            ${termOptionsHtml}
+          </select>
+        </div>
+      `;
+    case 'professors':
+      return `
+        <div class="form-group-admin">
+          <label for="prof-name">Professor Name</label>
+          <input type="text" id="prof-name" required placeholder="e.g. Dr. Isaac Newton">
+        </div>
+        <div class="form-group-admin">
+          <label for="prof-dept">Academic Department</label>
+          <input type="text" id="prof-dept" placeholder="e.g. Mathematics">
+        </div>
+      `;
+    case 'courseslots':
+      return `
+        <div class="form-group-admin">
+          <label for="slot-course">Select Existing Course</label>
+          <select id="slot-course" required>
+            ${courseOptionsHtml}
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label for="slot-prof">Select Existing Professor</label>
+          <select id="slot-prof">
+            <option value="None">None (Unassigned)</option>
+            ${professorOptionsHtml}
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label for="slot-day">Scheduled Day</label>
+          <select id="slot-day" required>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label for="slot-start">Start Time</label>
+          <input type="time" id="slot-start" required>
+        </div>
+        <div class="form-group-admin">
+          <label for="slot-end">End Time</label>
+          <input type="time" id="slot-end" required>
+        </div>
+        <div class="form-group-admin">
+          <label for="slot-room">Room Code</label>
+          <input type="text" id="slot-room" required placeholder="e.g. WH301" maxlength="20">
+        </div>
+      `;
+  }
+}
+
+// Populate input fields in the Edit Modal
+function preFillFormFields(targetType, record) {
+  if (targetType === 'users') {
+    document.getElementById('user-email').value = record.useremail || '';
+    document.getElementById('user-name').value = record.username || '';
+    document.getElementById('user-access').value = record.useraccess || 'Default';
+    document.getElementById('user-term').value = record.termid || 'None';
+  } else if (targetType === 'terms') {
+    document.getElementById('term-id').value = record.termid || '';
+    document.getElementById('program-id').value = record.programid || 'CS';
+    document.getElementById('year-level').value = record.yearlevel || '1';
+    document.getElementById('semester').value = record.semester || '1';
+    document.getElementById('req-units').value = record.requnits || '';
+  } else if (targetType === 'courses') {
+    document.getElementById('course-code').value = record.coursecode || '';
+    document.getElementById('course-name').value = record.coursename || '';
+    document.getElementById('course-units').value = record.courseunits || '';
+    document.getElementById('course-term').value = record.termid || '';
+  } else if (targetType === 'professors') {
+    document.getElementById('prof-name').value = record.profname || '';
+    document.getElementById('prof-dept').value = record.profdepartment || '';
+  } else if (targetType === 'courseslots') {
+    document.getElementById('slot-course').value = record.coursecode || '';
+    document.getElementById('slot-prof').value = record.profid || 'None';
+    document.getElementById('slot-day').value = record.scheduleday || 'Monday';
+    
+    // Handle formatting start/end times safely
+    const startClean = record.starttime ? record.starttime.substring(0, 5) : '';
+    const endClean = record.endtime ? record.endtime.substring(0, 5) : '';
+    document.getElementById('slot-start').value = startClean;
+    document.getElementById('slot-end').value = endClean;
+    document.getElementById('slot-room').value = record.roomcode || '';
+  }
+}
+
+// Handle Modal Form Submission (Create or Update)
+async function handleFormSubmit(event) {
+  event.preventDefault();
+  const token = localStorage.getItem('token');
+  const action = document.getElementById('form-action').value;
+  const targetType = document.getElementById('form-target-type').value;
+  const targetId = document.getElementById('form-target-id').value;
+
+  const payload = {};
+
+  // Build JSON payload dynamically based on active inputs
+  if (targetType === 'users') {
+    payload.email = document.getElementById('user-email').value.trim();
+    const pwdInput = document.getElementById('user-password');
+    if (pwdInput) {
+      payload.password = pwdInput.value;
+    }
+    payload.username = document.getElementById('user-name').value.trim();
+    payload.access = document.getElementById('user-access').value;
+    const termVal = document.getElementById('user-term').value;
+    payload.termid = termVal === 'None' ? null : termVal;
+  } else if (targetType === 'terms') {
+    payload.termid = document.getElementById('term-id').value.trim();
+    payload.programid = document.getElementById('program-id').value;
+    payload.yearlevel = parseInt(document.getElementById('year-level').value);
+    payload.semester = parseInt(document.getElementById('semester').value);
+    payload.requnits = parseInt(document.getElementById('req-units').value);
+  } else if (targetType === 'courses') {
+    payload.coursecode = document.getElementById('course-code').value.trim();
+    payload.coursename = document.getElementById('course-name').value.trim();
+    payload.courseunits = parseInt(document.getElementById('course-units').value);
+    payload.termid = document.getElementById('course-term').value;
+  } else if (targetType === 'professors') {
+    payload.profname = document.getElementById('prof-name').value.trim();
+    payload.profdepartment = document.getElementById('prof-dept').value.trim();
+  } else if (targetType === 'courseslots') {
+    payload.coursecode = document.getElementById('slot-course').value;
+    const profVal = document.getElementById('slot-prof').value;
+    payload.profid = profVal === 'None' ? null : profVal;
+    payload.scheduleday = document.getElementById('slot-day').value;
+    payload.starttime = document.getElementById('slot-start').value;
+    payload.endtime = document.getElementById('slot-end').value;
+    payload.roomcode = document.getElementById('slot-room').value.trim();
+  }
+
+  // Define route mapping
+  let url = `${API_BASE}/admin/${targetType}`;
+  let method = 'POST';
+
+  if (action === 'update') {
+    method = 'PUT';
+    url = `${url}/${encodeURIComponent(targetId)}`;
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      closeModal();
+      loadTab(activeTab); // Refresh table
+    } else {
+      alert(`Error: ${result.error || 'Server request failed'}`);
+    }
+  } catch (err) {
+    console.error('Submit error:', err);
+    alert(`Submit failed: ${err.message}`);
+  }
+}
+
+// Make user an Admin directly
+async function elevateToAdmin(userId) {
+  if (!confirm('Are you absolutely sure you want to elevate this user to Admin access?')) return;
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetch(`${API_BASE}/admin/users/${userId}/make-admin`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      loadTab('users');
+    } else {
+      const data = await response.json();
+      alert(`Elevate failed: ${data.error}`);
+    }
+  } catch (err) {
+    console.error(err);
+    alert(`Request error: ${err.message}`);
+  }
+}
+
+// Remove Admin privileges from a user
+async function removeAdmin(userId) {
+  if (!confirm('Are you sure you want to remove Admin access from this user?')) return;
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetch(`${API_BASE}/admin/users/${userId}/remove-admin`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      loadTab('users');
+    } else {
+      const data = await response.json();
+      alert(`Privilege removal failed: ${data.error}`);
+    }
+  } catch (err) {
+    console.error(err);
+    alert(`Request error: ${err.message}`);
+  }
+}
+
+// Delete Record
+async function deleteRecord(targetType, recordId) {
+  // Build customized confirmation message detailing cascade effects
+  let msg = `Are you sure you want to delete this ${targetType.slice(0, -1)}?`;
+  if (targetType === 'users') {
+    msg += '\n\nWARNING: Deleting a user will also delete their profile and ALL saved schedules!';
+  } else if (targetType === 'courses') {
+    msg += '\n\nWARNING: Deleting a course will cascade delete all scheduled course slots for it!';
+  } else if (targetType === 'professors') {
+    msg += '\n\nNote: Deleting a professor will unassign them from course slots, leaving slots intact.';
+  }
+
+  if (!confirm(msg)) return;
+
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetch(`${API_BASE}/admin/${targetType}/${encodeURIComponent(recordId)}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      loadTab(activeTab); // Refresh active table
+    } else {
+      alert(`Delete failed: ${result.error || 'Server error'}`);
+    }
+  } catch (err) {
+    console.error(err);
+    alert(`Delete failed: ${err.message}`);
+  }
+}
+
+// Utility to safely escape user strings to prevent XSS
+function escapeHtml(unsafe) {
+  if (!unsafe) return '';
+  return unsafe
+    .toString()
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

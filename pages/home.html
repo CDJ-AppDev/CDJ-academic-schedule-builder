@@ -22,7 +22,8 @@
       <button class="nav-button" onclick="window.location.href='plotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="profile-button">👤</button>
+    <button class="close-btn" style="position: static; margin-left: 0;"
+      onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">&times;</button>
   </header>
 
   <main class="page-content">
@@ -51,5 +52,6 @@
       </div>
     </section>
   </main>
+  <script src="../frontend/scripts/auth.js"></script>
 </body>
 </html>

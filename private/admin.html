@@ -17,97 +17,201 @@
       <span>Admin Dashboard</span>
     </div>
 
-    <nav class="app-nav">
+    <nav class="app-nav" id="admin-navbar" style="display: none; margin-left: 20px; margin-right: auto;">
+      <button class="nav-button" onclick="window.location.href='../pages/home.html'">Home</button>
+      <button class="nav-button" onclick="window.location.href='../pages/profile.html'">Profile</button>
+      <button class="nav-button" onclick="window.location.href='../pages/builder.html'">Schedule Picker</button>
+      <button class="nav-button" onclick="window.location.href='../pages/plotter.html'">Schedule Plotter</button>
     </nav>
 
-    <button class="profile-button">👤</button>
+    <button class="close-btn" style="position: static; margin-left: auto;"
+      onclick="if(confirm('Are you sure you want to log out and return to the main landing page?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../index.html'; }">&times;</button>
   </header>
 
   <main class="page-content">
     <div class="page-title">
       <h1>Admin Dashboard</h1>
-      <p>Manage users, courses, schedules, and professors.</p>
+      <p>Manage users, terms, courses, professors, course slots, and schedules.</p>
     </div>
 
     <section class="page-panel">
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="switchTab('users')">Users</button>
+        <button class="admin-tab" onclick="switchTab('terms')">Terms</button>
         <button class="admin-tab" onclick="switchTab('courses')">Courses</button>
-        <button class="admin-tab" onclick="switchTab('schedules')">Schedules</button>
         <button class="admin-tab" onclick="switchTab('professors')">Professors</button>
+        <button class="admin-tab" onclick="switchTab('courseslots')">Course Slots</button>
+        <button class="admin-tab" onclick="switchTab('schedules')">Schedules</button>
       </div>
 
+      <!-- Users Tab -->
       <div id="users-tab" class="admin-content active">
-        <h3>All Users</h3>
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="users-tbody">
-            <!-- Populated via JS -->
-          </tbody>
-        </table>
+        <div class="tab-header">
+          <h3>All Users</h3>
+          <button class="btn-primary" onclick="openCreateModal('users')">+ Create User</button>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Access Role</th>
+                <th>Assigned Term</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
+      <!-- Terms Tab -->
+      <div id="terms-tab" class="admin-content">
+        <div class="tab-header">
+          <h3>All Terms</h3>
+          <button class="btn-primary" onclick="openCreateModal('terms')">+ Create Term</button>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Term ID</th>
+                <th>Program</th>
+                <th>Year Level</th>
+                <th>Semester</th>
+                <th>Required Units</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="terms-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Courses Tab -->
       <div id="courses-tab" class="admin-content">
-        <h3>All Courses</h3>
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Title</th>
-              <th>Credits</th>
-              <th>Department</th>
-            </tr>
-          </thead>
-          <tbody id="courses-tbody">
-            <!-- Populated via JS -->
-          </tbody>
-        </table>
+        <div class="tab-header">
+          <h3>All Courses</h3>
+          <button class="btn-primary" onclick="openCreateModal('courses')">+ Create Course</button>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Units</th>
+                <th>Term ID</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="courses-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div id="schedules-tab" class="admin-content">
-        <h3>All Schedules</h3>
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>User</th>
-              <th>Term</th>
-              <th>Courses Included</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody id="schedules-tbody">
-            <!-- Populated via JS -->
-          </tbody>
-        </table>
-      </div>
-
+      <!-- Professors Tab -->
       <div id="professors-tab" class="admin-content">
-        <h3>All Professors</h3>
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Department</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody id="professors-tbody">
-            <!-- Populated via JS -->
-          </tbody>
-        </table>
+        <div class="tab-header">
+          <h3>All Professors</h3>
+          <button class="btn-primary" onclick="openCreateModal('professors')">+ Create Professor</button>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="professors-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Course Slots Tab -->
+      <div id="courseslots-tab" class="admin-content">
+        <div class="tab-header">
+          <h3>All Course Slots</h3>
+          <button class="btn-primary" onclick="openCreateModal('courseslots')">+ Create Course Slot</button>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Course</th>
+                <th>Professor</th>
+                <th>Day</th>
+                <th>Time Block</th>
+                <th>Room</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="courseslots-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Schedules Tab -->
+      <div id="schedules-tab" class="admin-content">
+        <div class="tab-header">
+          <h3>All User Schedules</h3>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>User (Name / Email)</th>
+                <th>Schedule Title</th>
+                <th>Total Units</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="schedules-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
+
+  <!-- Premium Modal Pop-up Container -->
+  <div id="admin-modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <h3 id="modal-title">Create Record</h3>
+      <form id="modal-form" onsubmit="handleFormSubmit(event)">
+        <input type="hidden" id="form-action" value="create">
+        <input type="hidden" id="form-target-type" value="">
+        <input type="hidden" id="form-target-id" value="">
+
+        <div id="modal-fields">
+          <!-- Populated dynamically based on target type -->
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">Save Record</button>
+      </form>
+    </div>
+  </div>
 
   <script src="admin.js"></script>
 </body>
