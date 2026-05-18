@@ -390,6 +390,8 @@ async function openCreateModal(targetType) {
     filterPopupCourseTerms();
   } else if (targetType === 'courseslots') {
     filterPopupSlotTerms();
+  } else if (targetType === 'terms') {
+    filterPopupTermSemesters();
   }
 
   const modal = document.getElementById('admin-modal');
@@ -506,7 +508,7 @@ function generateFormFields(targetType, record) {
         </div>
         <div class="form-group-admin">
           <label for="program-id">Program ID</label>
-          <select id="program-id">
+          <select id="program-id" onchange="filterPopupTermSemesters()">
             ${programOptionsHtml}
           </select>
         </div>
@@ -524,6 +526,7 @@ function generateFormFields(targetType, record) {
           <select id="semester">
             <option value="1">1st Semester</option>
             <option value="2">2nd Semester</option>
+            <option value="3">Summer Term</option>
           </select>
         </div>
         <div class="form-group-admin">
@@ -655,6 +658,7 @@ function preFillFormFields(targetType, record) {
   } else if (targetType === 'terms') {
     document.getElementById('term-id').value = record.termid || '';
     document.getElementById('program-id').value = record.programid || 'CS';
+    filterPopupTermSemesters();
     document.getElementById('year-level').value = record.yearlevel || '1';
     document.getElementById('semester').value = record.semester || '1';
     document.getElementById('req-units').value = record.requnits || '';
@@ -725,6 +729,35 @@ function filterPopupUserTerms() {
   }
 }
 window.filterPopupUserTerms = filterPopupUserTerms;
+
+function filterPopupTermSemesters() {
+  const progSelect = document.getElementById('program-id');
+  const semesterSelect = document.getElementById('semester');
+  if (!progSelect || !semesterSelect) return;
+
+  const selectedProg = progSelect.value;
+  const currentSemesterVal = semesterSelect.value;
+
+  const program = cachedPrograms.find(p => p.programid === selectedProg);
+  if (!program) return;
+
+  let html = '<option value="1">1st Semester</option>';
+  if (program.semestertype >= 2) {
+    html += '<option value="2">2nd Semester</option>';
+  }
+  if (program.semestertype >= 3) {
+    html += '<option value="3">Summer Term</option>';
+  }
+
+  semesterSelect.innerHTML = html;
+
+  if (semesterSelect.querySelector(`option[value="${currentSemesterVal}"]`)) {
+    semesterSelect.value = currentSemesterVal;
+  } else {
+    semesterSelect.value = '1';
+  }
+}
+window.filterPopupTermSemesters = filterPopupTermSemesters;
 
 function filterPopupCourseTerms() {
   const progSelect = document.getElementById('popup-course-program');
