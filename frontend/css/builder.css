@@ -389,3 +389,7 @@
 .text-muted-light {
   color: #999;
 }
+
+.page-panel h2 {
+  margin: 0;
+}
