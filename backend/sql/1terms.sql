@@ -1,3 +1,7 @@
+INSERT INTO PROGRAM (ProgramID, ProgramName, TotalYears, SemesterType) VALUES
+('CS', 'Computer Science', 4, 2),
+('IT', 'Information Technology', 4, 2);
+
 INSERT INTO TERM (TermID, ProgramID, YearLevel, Semester, ReqUnits) VALUES
 ('CS1', 'CS', 1, 1, 18),
 ('CS2', 'CS', 1, 2, 18),

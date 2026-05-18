@@ -36,11 +36,37 @@
     <section class="page-panel">
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="switchTab('users')">Users</button>
+        <button class="admin-tab" onclick="switchTab('programs')">Programs</button>
         <button class="admin-tab" onclick="switchTab('terms')">Terms</button>
         <button class="admin-tab" onclick="switchTab('courses')">Courses</button>
         <button class="admin-tab" onclick="switchTab('professors')">Professors</button>
         <button class="admin-tab" onclick="switchTab('courseslots')">Course Slots</button>
         <button class="admin-tab" onclick="switchTab('schedules')">Schedules</button>
+      </div>
+
+      <!-- Programs Tab -->
+      <div id="programs-tab" class="admin-content">
+        <div class="tab-header">
+          <h3>All Programs</h3>
+          <button class="btn-primary" onclick="openCreateModal('programs')">+ Create Program</button>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Program ID</th>
+                <th>Program Name</th>
+                <th>Total Years</th>
+                <th>Semester Type</th>
+                <th>Standard Units</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="programs-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Users Tab -->
@@ -72,6 +98,12 @@
       <div id="terms-tab" class="admin-content">
         <div class="tab-header">
           <h3>All Terms</h3>
+          <div class="filter-container">
+            <label for="filter-terms-program">Program:</label>
+            <select id="filter-terms-program" class="admin-filter-select" onchange="applyFilters('terms')">
+              <option value="All">Show All</option>
+            </select>
+          </div>
           <button class="btn-primary" onclick="openCreateModal('terms')">+ Create Term</button>
         </div>
         <div class="table-container">
@@ -97,6 +129,20 @@
       <div id="courses-tab" class="admin-content">
         <div class="tab-header">
           <h3>All Courses</h3>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <div class="filter-container compact">
+              <label for="filter-courses-program">Program:</label>
+              <select id="filter-courses-program" class="admin-filter-select compact select-program" onchange="onCoursesProgramChange()">
+                <option value="All">All Programs</option>
+              </select>
+            </div>
+            <div class="filter-container compact">
+              <label for="filter-courses-term">Term:</label>
+              <select id="filter-courses-term" class="admin-filter-select compact select-term" onchange="applyFilters('courses')">
+                <option value="All">All Terms</option>
+              </select>
+            </div>
+          </div>
           <button class="btn-primary" onclick="openCreateModal('courses')">+ Create Course</button>
         </div>
         <div class="table-container">
@@ -121,6 +167,12 @@
       <div id="professors-tab" class="admin-content">
         <div class="tab-header">
           <h3>All Professors</h3>
+          <div class="filter-container">
+            <label for="filter-professors-dept">Department:</label>
+            <select id="filter-professors-dept" class="admin-filter-select" onchange="applyFilters('professors')">
+              <option value="All">Show All</option>
+            </select>
+          </div>
           <button class="btn-primary" onclick="openCreateModal('professors')">+ Create Professor</button>
         </div>
         <div class="table-container">
@@ -144,6 +196,26 @@
       <div id="courseslots-tab" class="admin-content">
         <div class="tab-header">
           <h3>All Course Slots</h3>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <div class="filter-container compact">
+              <label for="filter-slots-program">Program:</label>
+              <select id="filter-slots-program" class="admin-filter-select compact select-program" onchange="onSlotsProgramChange()">
+                <option value="All">All Programs</option>
+              </select>
+            </div>
+            <div class="filter-container compact">
+              <label for="filter-slots-term">Term:</label>
+              <select id="filter-slots-term" class="admin-filter-select compact select-term" onchange="onSlotsTermChange()">
+                <option value="All">All Terms</option>
+              </select>
+            </div>
+            <div class="filter-container compact">
+              <label for="filter-slots-course">Course:</label>
+              <select id="filter-slots-course" class="admin-filter-select compact select-course" onchange="applyFilters('courseslots')">
+                <option value="All">All Courses</option>
+              </select>
+            </div>
+          </div>
           <button class="btn-primary" onclick="openCreateModal('courseslots')">+ Create Course Slot</button>
         </div>
         <div class="table-container">

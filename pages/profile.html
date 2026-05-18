@@ -34,58 +34,26 @@
     </div>
 
     <section class="page-panel">
-      <h2>Available Courses</h2>
-      <p>Select your course track below:</p>
-
-      <div class="course-selection">
-        <label class="course-checkbox">
-          <input type="radio" name="course-picker" id="cs-course" value="CS">
-          <span>Computer Science</span>
+      <div class="form-group-profile">
+        <label class="field">
+          <span>Select Track / Program</span>
+          <select id="program-select" class="premium-select" aria-label="Select program">
+            <option value="">-- Loading programs --</option>
+          </select>
         </label>
 
-        <label class="course-checkbox">
-          <input type="radio" name="course-picker" id="it-course" value="IT">
-          <span>Information Technology</span>
-        </label>
-      </div>
-
-      <h2>Select Year</h2>
-      <p>Choose your academic year:</p>
-
-      <div class="course-selection">
-        <label class="course-checkbox">
-          <input type="radio" name="year-picker" id="year-1" value="1">
-          <span>1st Year</span>
+        <label class="field">
+          <span>Select Year Level</span>
+          <select id="year-select" class="premium-select" aria-label="Select year level" disabled>
+            <option value="">-- Select program first --</option>
+          </select>
         </label>
 
-        <label class="course-checkbox">
-          <input type="radio" name="year-picker" id="year-2" value="2">
-          <span>2nd Year</span>
-        </label>
-
-        <label class="course-checkbox">
-          <input type="radio" name="year-picker" id="year-3" value="3">
-          <span>3rd Year</span>
-        </label>
-
-        <label class="course-checkbox">
-          <input type="radio" name="year-picker" id="year-4" value="4">
-          <span>4th Year</span>
-        </label>
-      </div>
-
-      <h2>Select Semester</h2>
-      <p>Choose your semester:</p>
-
-      <div class="course-selection">
-        <label class="course-checkbox">
-          <input type="radio" name="semester-picker" id="semester-1" value="1">
-          <span>1st Semester</span>
-        </label>
-
-        <label class="course-checkbox">
-          <input type="radio" name="semester-picker" id="semester-2" value="2">
-          <span>2nd Semester</span>
+        <label class="field">
+          <span>Select Semester</span>
+          <select id="semester-select" class="premium-select" aria-label="Select semester" disabled>
+            <option value="">-- Select program first --</option>
+          </select>
         </label>
       </div>
 

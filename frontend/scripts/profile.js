@@ -18,10 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Course, Year, and Semester Picker Functionality - Single Selection Only
-const courseRadios = document.getElementsByName('course-picker');
-const yearRadios = document.getElementsByName('year-picker');
-const semesterRadios = document.getElementsByName('semester-picker');
+// Course, Year, and Semester Picker Functionality - Dropdowns
+let programsList = [];
+const programSelect = document.getElementById('program-select');
+const yearSelect = document.getElementById('year-select');
+const semesterSelect = document.getElementById('semester-select');
 const applyBtn = document.getElementById('apply-courses-btn');
 const selectedCoursesDisplay = document.getElementById('selected-courses');
 const schedulePickerBtn = document.getElementById('schedule-picker-btn');
@@ -121,26 +122,59 @@ function saveToLocalStorage(course, year, semester) {
   localStorage.setItem('courseSelection', JSON.stringify(data));
 }
 
+// ---------------- DROPDOWN SELECTORS IMPLEMENTATION ----------------
+
+function updateDropdownOptions(progId) {
+  if (!progId) {
+    yearSelect.innerHTML = '<option value="">-- Select year level --</option>';
+    yearSelect.disabled = true;
+    semesterSelect.innerHTML = '<option value="">-- Select semester --</option>';
+    semesterSelect.disabled = true;
+    return;
+  }
+
+  const prog = programsList.find(p => p.programid === progId);
+  if (!prog) return;
+
+  // Populate Year Levels
+  let yearHtml = '<option value="">-- Select year level --</option>';
+  for (let i = 1; i <= prog.totalyears; i++) {
+    yearHtml += `<option value="${i}">Year ${i}</option>`;
+  }
+  yearSelect.innerHTML = yearHtml;
+  yearSelect.disabled = false;
+
+  // Populate Semesters
+  let semHtml = '<option value="">-- Select semester --</option>';
+  const semLabels = ['First Semester', 'Second Semester', 'Summer Term'];
+  for (let i = 1; i <= prog.semestertype; i++) {
+    semHtml += `<option value="${i}">${semLabels[i - 1]}</option>`;
+  }
+  semesterSelect.innerHTML = semHtml;
+  semesterSelect.disabled = false;
+}
+
 // ---------------- UI UPDATE ----------------
 
 function applySelectionToUI(course, year, semester) {
   console.log('applySelectionToUI called with:', { course, year, semester });
 
-  const courseRadio = Array.from(courseRadios).find(r => r.value === course);
-  const yearRadio = Array.from(yearRadios).find(r => r.value === year);
-  const semesterRadio = Array.from(semesterRadios).find(r => r.value === semester);
-
-  console.log('Found radios:', { courseRadio: !!courseRadio, yearRadio: !!yearRadio, semesterRadio: !!semesterRadio });
-
-  if (courseRadio) courseRadio.checked = true;
-  if (yearRadio) yearRadio.checked = true;
-  if (semesterRadio) semesterRadio.checked = true;
+  if (programSelect) programSelect.value = course;
+  updateDropdownOptions(course);
+  if (yearSelect) yearSelect.value = year;
+  if (semesterSelect) semesterSelect.value = semester;
 
   const ord = ['st', 'nd', 'rd', 'th'];
-  const courseLabel =
-    course === 'CS' ? 'Computer Science' : 'Information Technology';
-  const yearLabel = `${year}${ord[year - 1]} Year`;
-  const semesterLabel = `${semester}${ord[semester - 1]} Semester`;
+  const prog = programsList.find(p => p.programid === course);
+  const courseLabel = prog ? prog.programname : course;
+  
+  const yearNum = parseInt(year);
+  const semNum = parseInt(semester);
+  const yearLabel = `${yearNum}${ord[yearNum - 1] || 'th'} Year`;
+  
+  const semLabels = ['First Semester', 'Second Semester', 'Summer Term'];
+  const semesterLabel = semLabels[semNum - 1] || `${semNum} Semester`;
+  
   const displayText = `Selected: ${courseLabel} - ${yearLabel} - ${semesterLabel}`;
 
   console.log('Setting display text to:', displayText);
@@ -148,26 +182,24 @@ function applySelectionToUI(course, year, semester) {
   schedulePickerBtn.removeAttribute('hidden');
 
   // URL normalization (keeps backward compatibility)
-  const courseForUrl = course;
   window.history.replaceState(
     {},
     document.title,
-    `coursepicker.html?course=${courseForUrl}&year=${year}&semester=${semester}`
+    `profile.html?course=${course}&year=${year}&semester=${semester}`
   );
 }
 
 // ---------------- APPLY BUTTON ----------------
 
 applyBtn.addEventListener('click', async () => {
-  const selectedCourse = Array.from(courseRadios).find(r => r.checked);
-  const selectedYear = Array.from(yearRadios).find(r => r.checked);
-  const selectedSemester = Array.from(semesterRadios).find(r => r.checked);
+  const course = programSelect.value;
+  const year = yearSelect.value;
+  const semester = semesterSelect.value;
 
-  if (!selectedCourse || !selectedYear || !selectedSemester) return;
-
-  const course = selectedCourse.value;
-  const year = selectedYear.value;
-  const semester = selectedSemester.value;
+  if (!course || !year || !semester) {
+    alert('Please select a program, year level, and semester.');
+    return;
+  }
 
   saveToLocalStorage(course, year, semester);
 
@@ -189,9 +221,29 @@ applyBtn.addEventListener('click', async () => {
 window.addEventListener('load', async () => {
   let course, year, semester;
 
+  // 1. Fetch programs list
+  try {
+    const response = await fetch(`${API_BASE}/programs`);
+    if (response.ok) {
+      programsList = await response.json();
+      if (programSelect) {
+        programSelect.innerHTML = '<option value="">-- Select a program --</option>' + 
+          programsList.map(p => `<option value="${p.programid}">${p.programname}</option>`).join('');
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching programs:', error);
+  }
+
+  if (programSelect) {
+    programSelect.addEventListener('change', () => {
+      updateDropdownOptions(programSelect.value);
+    });
+  }
+
   console.log('Profile page loading...');
 
-  // 1. Try server FIRST
+  // 2. Try server FIRST
   const serverData = await loadFromServer();
   console.log('Server data:', serverData);
   if (serverData) {
@@ -204,7 +256,7 @@ window.addEventListener('load', async () => {
     }
   }
 
-  // 2. If no server data → try localStorage
+  // 3. If no server data → try localStorage
   if (!course || !year || !semester) {
     const savedData = localStorage.getItem('courseSelection');
     console.log('LocalStorage data:', savedData);
@@ -220,7 +272,7 @@ window.addEventListener('load', async () => {
     }
   }
 
-  // 3. If still nothing → try URL parameters
+  // 4. If still nothing → try URL parameters
   if (!course || !year || !semester) {
     const params = new URLSearchParams(window.location.search);
     const urlCourse = params.get('course');
@@ -232,7 +284,7 @@ window.addEventListener('load', async () => {
     if (!semester) semester = urlSemester;
   }
 
-  // 4. Apply UI if any data found
+  // 5. Apply UI if any data found
   console.log('Final selection to apply:', { course, year, semester });
   if (course && year && semester) {
     applySelectionToUI(course, year, semester);
