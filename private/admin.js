@@ -693,7 +693,8 @@ function preFillFormFields(targetType, record) {
     // Auto-resolve course slots program and term
     const courseObj = cachedCourses.find(c => c.coursecode === record.coursecode);
     if (courseObj) {
-      const termObj = cachedTerms.find(t => t.termid === courseObj.termid);
+      const firstTermId = courseObj.termids && courseObj.termids.length > 0 ? courseObj.termids[0] : null;
+      const termObj = firstTermId ? cachedTerms.find(t => t.termid === firstTermId) : null;
       if (termObj) {
         document.getElementById('popup-slot-program').value = termObj.programid;
         filterPopupSlotTerms();
@@ -839,10 +840,10 @@ function filterPopupSlotCourses() {
   let filteredCourses = cachedCourses;
 
   if (selectedTerm !== 'All') {
-    filteredCourses = cachedCourses.filter(c => c.termid === selectedTerm);
+    filteredCourses = cachedCourses.filter(c => c.termids && c.termids.includes(selectedTerm));
   } else if (selectedProg !== 'All') {
     const matchingTerms = cachedTerms.filter(t => t.programid === selectedProg).map(t => t.termid);
-    filteredCourses = cachedCourses.filter(c => matchingTerms.includes(c.termid));
+    filteredCourses = cachedCourses.filter(c => c.termids && c.termids.some(tid => matchingTerms.includes(tid)));
   }
 
   const currentCourseVal = courseSelect.value;
