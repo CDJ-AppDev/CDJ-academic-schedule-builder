@@ -598,12 +598,6 @@ async function loadUserSchedule() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = 'login.html';
-    return;
-  }
-
   // Fetch term data as soon as the page opens, even if courses are not added yet
   getTermData(token).then(termData => {
     if (termData && termData.req_units) {
