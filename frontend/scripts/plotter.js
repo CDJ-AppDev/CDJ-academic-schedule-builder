@@ -1,3 +1,8 @@
+/**
+ * @file plotter.js
+ * @description Controls the Timetable Visualizer workspace. Fetches saved schedules, generates absolute-positioned timeline grid overlays, supports custom background/font themes, and exports timetables as PNG images using html2canvas.
+ */
+
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -5,13 +10,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-
     const scheduleListContainer = document.getElementById('plotter-schedule-list');
     const btnGenerate = document.getElementById('btn-generate');
     const btnSavePng = document.getElementById('btn-save-png');
     const blocksContainer = document.getElementById('blocks-container');
 
-    // Checkboxes
+    // UI Option Toggle Nodes
     const hideProf = document.getElementById('hide-prof');
     const hideCode = document.getElementById('hide-code');
     const hideName = document.getElementById('hide-name');
@@ -21,10 +25,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const customColor = document.getElementById('custom-color');
     const customFontColor = document.getElementById('custom-font-color');
 
+    /** @type {Array<Object>} */
     let schedules = [];
+    /** @type {Object|null} */
     let selectedSchedule = null;
 
-    // Fetch schedules from database
+    // Fetch active schedule lists on page initialization
     try {
         const response = await fetch(`${API_BASE}/schedule`, {
             headers: {
@@ -43,6 +49,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         scheduleListContainer.innerHTML = '<div class="plotter-schedule-item"><span>Error connecting to server.</span></div>';
     }
 
+    /**
+     * Renders user schedules inside the selection side-bar panel.
+     */
     function renderScheduleList() {
         scheduleListContainer.innerHTML = '';
         if (schedules.length === 0) {
@@ -62,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             btnAdd.textContent = 'ADD';
 
             btnAdd.addEventListener('click', () => {
-                // Deselect all others
+                // Clear selection on other listings
                 document.querySelectorAll('.plotter-schedule-item .btn-green').forEach(btn => {
                     btn.classList.remove('selected');
                     btn.textContent = 'ADD';
@@ -79,95 +88,112 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    btnGenerate.addEventListener('click', () => {
-        if (!selectedSchedule) {
-            alert('Please select a schedule first.');
-            return;
-        }
+    // Timetable Plot Trigger
+    if (btnGenerate) {
+        btnGenerate.addEventListener('click', () => {
+            if (!selectedSchedule) {
+                alert('Please select a schedule first.');
+                return;
+            }
 
-        // Show the timetable canvas and save button
-        const captureArea = document.getElementById('capture-area');
-        captureArea.classList.add('visible');
-        btnSavePng.classList.add('visible');
+            const captureArea = document.getElementById('capture-area');
+            if (captureArea) captureArea.classList.add('visible');
+            if (btnSavePng) btnSavePng.classList.add('visible');
 
-        blocksContainer.innerHTML = ''; // Clear previous
+            blocksContainer.innerHTML = ''; // Clear previous grids
 
-        // Get custom colors, with defaults
-        const bgColor = customColor.value || '#000000';
-        const fontColor = customFontColor.value || '#FFFFFF';
+            // Resolve color selection presets
+            const bgColor = customColor.value || '#000000';
+            const fontColor = customFontColor.value || '#FFFFFF';
 
-        // Plot all courses in the selected schedule
-        if (selectedSchedule.courses && selectedSchedule.courses.length > 0) {
-            selectedSchedule.courses.forEach(course => {
-                // Extract course data with proper field mapping
-                // Handle both API courses and manual courses
-                let startTime, endTime, day, room, courseCode, courseName, profName;
-                const isIrregular = !course.courseslot_id;
+            // Loop through all courses inside the active schedule
+            if (selectedSchedule.courses && selectedSchedule.courses.length > 0) {
+                selectedSchedule.courses.forEach(course => {
+                    let startTime, endTime, day, room, courseCode, courseName, profName;
+                    const isIrregular = !course.courseslot_id;
 
-                if (course.schedule) {
-                    // API courses have schedule object
-                    startTime = course.schedule.startTime || '09:00:00';
-                    endTime = course.schedule.endTime || '11:00:00';
-                    day = course.schedule.day || 'Monday';
-                    room = course.schedule.room || 'TBA';
-                    courseCode = course.code || course.course_id || 'TBA';
-                    courseName = course.name || 'TBA';
-                    profName = course.teacher_name || 'Prof. TBA';
-                } else if (course.slots && course.slots.length > 0) {
-                    // Manual courses have slots array
-                    const slot = course.slots[0];
-                    startTime = slot.startTime || '09:00:00';
-                    endTime = slot.endTime || '11:00:00';
-                    day = slot.day || 'Monday';
-                    room = slot.room || 'TBA';
-                    courseCode = course.courseCode || 'TBA';
-                    courseName = course.name || 'TBA';
-                    profName = (slot.profId?.name) || 'Prof. TBA';
-                } else {
-                    // Fallback if structure is unclear
-                    startTime = course.startTime || course.start_time || '09:00:00';
-                    endTime = course.endTime || course.end_time || '11:00:00';
-                    day = course.day || course.schedule_day || 'Monday';
-                    room = course.room || course.room_code || 'TBA';
-                    courseCode = course.code || course.courseCode || course.course_id || 'TBA';
-                    courseName = course.name || 'TBA';
-                    profName = course.teacher_name || course.profName || 'Prof. TBA';
-                }
+                    if (course.schedule) {
+                        // Standard API curriculum path
+                        startTime = course.schedule.startTime || '09:00:00';
+                        endTime = course.schedule.endTime || '11:00:00';
+                        day = course.schedule.day || 'Monday';
+                        room = course.schedule.room || 'TBA';
+                        courseCode = course.code || course.course_id || 'TBA';
+                        courseName = course.name || 'TBA';
+                        profName = course.teacher_name || 'Prof. TBA';
+                    } else if (course.slots && course.slots.length > 0) {
+                        // Manual irregular schedule path
+                        const slot = course.slots[0];
+                        startTime = slot.startTime || '09:00:00';
+                        endTime = slot.endTime || '11:00:00';
+                        day = slot.day || 'Monday';
+                        room = slot.room || 'TBA';
+                        courseCode = course.courseCode || 'TBA';
+                        courseName = course.name || 'TBA';
+                        profName = (slot.profId?.name) || 'Prof. TBA';
+                    } else {
+                        // Unified offline properties path
+                        startTime = course.startTime || course.start_time || '09:00:00';
+                        endTime = course.endTime || course.end_time || '11:00:00';
+                        day = course.day || course.schedule_day || 'Monday';
+                        room = course.room || course.room_code || 'TBA';
+                        courseCode = course.code || course.courseCode || course.course_id || 'TBA';
+                        courseName = course.name || 'TBA';
+                        profName = course.teacher_name || course.profName || 'Prof. TBA';
+                    }
 
-                plotBlock({
-                    code: courseCode,
-                    name: courseName,
-                    teacher_name: profName
-                }, day, startTime, endTime, room, bgColor, fontColor, isIrregular);
-            });
-        } else {
-            alert('This schedule has no courses.');
-        }
-    });
-
-    function parseTime(timeString) {
-        // timeString format "HH:MM:SS" or "HH:MM"
-        const parts = timeString.split(':');
-        return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+                    plotBlock({
+                        code: courseCode,
+                        name: courseName,
+                        teacher_name: profName
+                    }, day, startTime, endTime, room, bgColor, fontColor, isIrregular);
+                });
+            } else {
+                alert('This schedule has no courses.');
+            }
+        });
     }
 
+    /**
+     * Resolves a time string into minutes.
+     * @param {string} timeString - Format "HH:MM:SS" or "HH:MM"
+     * @returns {number|null} Decoded minutes count
+     */
+    function parseTime(timeString) {
+        return window.APP_UTILS ? window.APP_UTILS.timeStringToMinutes(timeString) : null;
+    }
+
+    /**
+     * Resolves a weekday string to its index in the schedule grid.
+     * @param {string} dayStr - Day string (e.g. 'Monday')
+     * @returns {number} 0-indexed column offset
+     */
     function getDayIndex(dayStr) {
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const index = days.findIndex(d => d.toLowerCase() === dayStr.toLowerCase());
         return index >= 0 ? index : 0;
     }
 
+    /**
+     * Draws an absolute positioned course block on the timetable grid canvas.
+     * Renders parameters through .textContent properties natively protecting against XSS scripts.
+     * @param {Object} course - Decoded course info
+     * @param {string} day - Day label
+     * @param {string} startTime - Slot start time
+     * @param {string} endTime - Slot end time
+     * @param {string} room - Room label
+     * @param {string} bgColor - Hex/HSL color
+     * @param {string} fontColor - Hex/HSL color
+     * @param {boolean} [isIrregular] - Irregular schedule flag
+     */
     function plotBlock(course, day, startTime, endTime, room, bgColor, fontColor, isIrregular = false) {
         const startMins = parseTime(startTime);
         const endMins = parseTime(endTime);
+        const dayStartMins = 7 * 60; // Grid origin starts at 7:00 AM
 
-        // Grid starts at 7:00 AM (7 * 60 = 420 mins)
-        const dayStartMins = 7 * 60;
-
-        // Ensure within bounds
         if (startMins < dayStartMins) return;
 
-        // Each hour = 60px, so minutes and pixels are 1:1
+        // Mathematical conversion: 1 minute = 1 pixel vertical height
         const topPx = startMins - dayStartMins;
         const heightPx = endMins - startMins;
 
@@ -192,8 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             block.style.boxShadow = 'inset 0 0 12px rgba(0,0,0,0.15), 0 6px 16px rgba(0,0,0,0.12)';
         }
 
-        // Add course info to block based on checkbox states
-        // Course Code
+        // 1. Course Code
         if (!hideCode.checked) {
             const codeEl = document.createElement('div');
             codeEl.className = 'subject-code';
@@ -201,7 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             block.appendChild(codeEl);
         }
 
-        // Course Name
+        // 2. Course Name
         if (!hideName.checked) {
             const nameEl = document.createElement('div');
             nameEl.className = 'subject-name';
@@ -209,7 +234,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             block.appendChild(nameEl);
         }
 
-        // Professor Name
+        // 3. Professor Name
         if (!hideProf.checked) {
             const profEl = document.createElement('div');
             profEl.className = 'prof-name';
@@ -218,7 +243,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             block.appendChild(profEl);
         }
 
-        // Schedule Day and Room (combined format)
+        // 4. Schedule Day and Room
         if (!hideDay.checked || !hideRoom.checked) {
             const dayRoomEl = document.createElement('div');
             dayRoomEl.className = 'day-room-text';
@@ -236,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             block.appendChild(dayRoomEl);
         }
 
-        // Time
+        // 5. Time
         if (!hideTime.checked) {
             const timeEl = document.createElement('div');
             timeEl.className = 'time-text';
@@ -247,28 +272,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         blocksContainer.appendChild(block);
     }
 
-    // Save as PNG logic
-    btnSavePng.addEventListener('click', async () => {
-        if (typeof html2canvas === 'undefined') {
-            alert('html2canvas library is not loaded.');
-            return;
-        }
-        const captureArea = document.getElementById('capture-area');
+    // Save PNG exporter click event listener
+    if (btnSavePng) {
+        btnSavePng.addEventListener('click', async () => {
+            if (typeof html2canvas === 'undefined') {
+                alert('html2canvas library is not loaded.');
+                return;
+            }
+            const captureArea = document.getElementById('capture-area');
 
-        try {
-            const canvas = await html2canvas(captureArea, {
-                backgroundColor: null,
-                scale: 2 // better quality
-            });
+            try {
+                const canvas = await html2canvas(captureArea, {
+                    backgroundColor: null,
+                    scale: 2 // High Resolution scaling
+                });
 
-            const image = canvas.toDataURL("image/png");
-            const link = document.createElement('a');
-            link.href = image;
-            link.download = 'My_Schedule.png';
-            link.click();
-        } catch (err) {
-            console.error('Failed to capture PNG:', err);
-            alert('Failed to save as PNG. Please try again.');
-        }
-    });
+                const image = canvas.toDataURL("image/png");
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = 'My_Schedule.png';
+                link.click();
+            } catch (err) {
+                console.error('Failed to capture PNG:', err);
+                alert('Failed to save as PNG. Please try again.');
+            }
+        });
+    }
 });

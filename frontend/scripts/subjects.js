@@ -1,4 +1,9 @@
-// Schedule Plotter Functionality
+/**
+ * @file subjects.js
+ * @description Coordinates the Schedule Builder workspace. Manages course selection, time conflict audits, irregular manual course entries, and synchronization of academic schedule lists with the backend.
+ */
+
+// DOM Interface Controls
 const addCourseBtn = document.getElementById('add-course-btn');
 const coursesList = document.getElementById('scheduledList');
 const availableCoursesList = document.getElementById('availableCourses');
@@ -10,21 +15,23 @@ const roomCodeInput = document.getElementById('room-code');
 const scheduleDayInput = document.getElementById('schedule-day');
 const startTimeInput = document.getElementById('start-time');
 const endTimeInput = document.getElementById('end-time');
-const courseUnitsInput = document.getElementById('course-units'); // Add this for irregular units
+const courseUnitsInput = document.getElementById('course-units');
 
-// Detect API base URL based on environment
+// Local application states
 let courses = [];
 let availableCourses = [];
-let currentTermId = null; // Track the current term for filtering
+let currentTermId = null;
 let userSchedules = [];
 let activeScheduleId = 'new';
 
-// Get or fetch term data (cached in localStorage)
+/**
+ * Fetches academic term settings (cached locally by active Term ID).
+ * @param {string} token - Session authorization token
+ * @param {string} [termId] - Optional active Term ID filter
+ * @returns {Promise<Object>} Academic term details
+ */
 async function getTermData(token, termId) {
-  // Fetch units according to the user's termID (stored in localStorage or from user profile)
   const activeTermId = termId || localStorage.getItem('termId');
-
-  // Use a term-specific cache key to prevent stale cache when switching programs
   const cacheKey = activeTermId ? `termData_${activeTermId}` : 'termData';
   const cachedTermData = localStorage.getItem(cacheKey);
 
@@ -49,7 +56,6 @@ async function getTermData(token, termId) {
     const termData = await termResponse.json();
     if (termData) {
       localStorage.setItem(cacheKey, JSON.stringify(termData));
-      // Store required units for display
       if (termData.req_units) {
         localStorage.setItem('reqUnits', termData.req_units);
       }
@@ -61,7 +67,9 @@ async function getTermData(token, termId) {
   }
 }
 
-// Clear term data cache (useful when user changes term/program)
+/**
+ * Purges cached academic program term settings from local storage.
+ */
 function clearTermCache() {
   const activeTermId = localStorage.getItem('termId');
   if (activeTermId) {
@@ -71,14 +79,23 @@ function clearTermCache() {
   localStorage.removeItem('reqUnits');
 }
 
-// Function to parse time string to minutes
+/**
+ * Parses a standard 24-hour time string into integer minutes since midnight.
+ * @param {string} timeStr - Time string ("HH:MM" or "HH:MM:SS")
+ * @returns {number|null} Minutes since midnight, or null if invalid
+ */
 function timeStringToMinutes(timeStr) {
-  if (!timeStr) return null;
-  const parts = timeStr.split(':');
-  return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  return window.APP_UTILS ? window.APP_UTILS.timeStringToMinutes(timeStr) : null;
 }
 
-// Function to check if two time ranges overlap
+/**
+ * Checks if two daily time blocks overlap.
+ * @param {string} start1 - Slot 1 start time
+ * @param {string} end1 - Slot 1 end time
+ * @param {string} start2 - Slot 2 start time
+ * @param {string} end2 - Slot 2 end time
+ * @returns {boolean} True if the time ranges overlap
+ */
 function doTimesOverlap(start1, end1, start2, end2) {
   const start1Min = timeStringToMinutes(start1);
   const end1Min = timeStringToMinutes(end1);
@@ -86,23 +103,28 @@ function doTimesOverlap(start1, end1, start2, end2) {
   const end2Min = timeStringToMinutes(end2);
 
   if (!start1Min || !end1Min || !start2Min || !end2Min) return false;
-
   return start1Min < end2Min && start2Min < end1Min;
 }
 
-// Function to check for scheduling conflicts
+/**
+ * Audits the schedule to determine if a new time slot conflicts with existing entries.
+ * Evaluates both formal curriculum sections and manual irregular entries.
+ * @param {string} newDay - Day label (e.g. 'Monday')
+ * @param {string} newStartTime - Time string
+ * @param {string} newEndTime - Time string
+ * @returns {Object} Conflict status object with descriptive fields
+ */
 function checkScheduleConflict(newDay, newStartTime, newEndTime) {
   for (let course of courses) {
-    // Get the course's schedule information
     let courseDay, courseStartTime, courseEndTime;
 
     if (course.schedule) {
-      // API course format
+      // Formal API curriculum schedule layout
       courseDay = course.schedule.day;
       courseStartTime = course.schedule.startTime;
       courseEndTime = course.schedule.endTime;
     } else if (course.slots && course.slots.length > 0) {
-      // Manual course format
+      // Manual irregular schedule layout
       courseDay = course.slots[0].day;
       courseStartTime = course.slots[0].startTime;
       courseEndTime = course.slots[0].endTime;
@@ -110,9 +132,7 @@ function checkScheduleConflict(newDay, newStartTime, newEndTime) {
       continue;
     }
 
-    // Check if days match (case-insensitive)
     if (courseDay && courseDay.toLowerCase() === newDay.toLowerCase()) {
-      // Check if times overlap
       if (doTimesOverlap(courseStartTime, courseEndTime, newStartTime, newEndTime)) {
         return {
           conflict: true,
@@ -127,7 +147,10 @@ function checkScheduleConflict(newDay, newStartTime, newEndTime) {
   return { conflict: false };
 }
 
-// Load available courses from API
+/**
+ * Fetches available program courses from the backend database.
+ * Filters matching the user's active Term ID.
+ */
 async function loadAvailableCourses() {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -151,13 +174,14 @@ async function loadAvailableCourses() {
 
     const allCourses = await response.json();
 
+    // Limit visibility to matching year/course tracks
     availableCourses = allCourses.filter(course => `${course.program_id}${course.year_level}` === termId);
 
-    // Filter out course codes that are already added (deduplication by code)
+    // Filter out course slots that have already been scheduled
     const addedCourseCodes = new Set();
     courses.forEach(c => {
-      if (c.courseCode) addedCourseCodes.add(c.courseCode); // manual
-      else if (c.code) addedCourseCodes.add(c.code); // api
+      if (c.courseCode) addedCourseCodes.add(c.courseCode);
+      else if (c.code) addedCourseCodes.add(c.code);
     });
 
     availableCourses = availableCourses.filter(c => !addedCourseCodes.has(c.code));
@@ -169,6 +193,10 @@ async function loadAvailableCourses() {
   }
 }
 
+/**
+ * Renders available courses inside dynamic card groups.
+ * Handles dropdown toggles and morphs borders dynamically for a cohesive UI.
+ */
 function displayAvailableCourses() {
   availableCoursesList.innerHTML = '';
 
@@ -204,9 +232,9 @@ function displayAvailableCourses() {
     courseHeader.style.display = 'flex';
     courseHeader.style.justifyContent = 'space-between';
     courseHeader.style.alignItems = 'center';
-    courseHeader.style.background = '#8b5cf6'; // Premium solid violet/indigo color matching the mockup!
+    courseHeader.style.background = '#8b5cf6'; // Dark purple mockup theme color
     courseHeader.style.color = 'white';
-    courseHeader.style.borderRadius = '12px'; // Beautiful rounded corners matching the mockup!
+    courseHeader.style.borderRadius = '12px';
     courseHeader.style.padding = '14px 20px';
     courseHeader.style.borderBottom = 'none';
     courseHeader.style.fontWeight = 'bolder';
@@ -242,8 +270,6 @@ function displayAvailableCourses() {
       const isOpen = dropdown.classList.toggle('active');
       arrowEl.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
       dropdown.style.maxHeight = isOpen ? `${dropdown.scrollHeight}px` : '0';
-
-      // Dynamic border-radius morphing to align with expanded dropdown body
       courseHeader.style.borderRadius = isOpen ? '12px 12px 0 0' : '12px';
     });
 
@@ -283,14 +309,18 @@ function displayAvailableCourses() {
   }
 }
 
+/**
+ * Transfers a formal department course from the available repository to the user's active schedule workspace.
+ * Audits time bounds to prevent overlapping slot selections.
+ * @param {number} courseslotId - Unique key of the section
+ */
 function addAvailableCourse(courseslotId) {
   const courseData = availableCourses.find(c => c.courseslot_id == courseslotId);
   if (!courseData) {
-    console.error('Course not found:', courseslotId);
+    console.error('Target course section not found:', courseslotId);
     return;
   }
 
-  // Check for scheduling conflicts
   const conflictCheck = checkScheduleConflict(
     courseData.schedule?.day,
     courseData.schedule?.startTime,
@@ -326,18 +356,20 @@ function addAvailableCourse(courseslotId) {
   };
 
   courses.push(formattedCourse);
-
-  // Remove entire course (all sections) from available courses by course code
   availableCourses = availableCourses.filter(c => c.code !== courseData.code);
   displayAvailableCourses();
   displayCourses();
 }
 
+/**
+ * Renders the scheduled courses list.
+ * Evaluates units totals, validates "Regular / Irregular" tags, and formats listings.
+ * Employs APP_UTILS HTML-escaping to secure against XSS.
+ */
 function displayCourses() {
   coursesList.innerHTML = '';
 
   const unitsDisplay = document.getElementById('schedule-units-display');
-  const nameInput = document.getElementById('schedule-name-input');
   const statusBadge = document.getElementById('regular-status-badge');
 
   if (!courses || courses.length === 0) {
@@ -349,13 +381,15 @@ function displayCourses() {
     return;
   }
 
+  const esc = window.APP_UTILS ? window.APP_UTILS.escapeHtml : (s => s);
+
   let totalUnits = 0;
   let hasIrregular = false;
   const coursesByCode = {};
 
   courses.forEach((course) => {
     if (!course.courseslot_id) {
-      // Manual irregular course
+      // Manual irregular schedule parsing
       totalUnits += parseInt(course.units || 0, 10);
       hasIrregular = true;
 
@@ -374,16 +408,16 @@ function displayCourses() {
       courseCard.innerHTML = `
          <div class="course-card-body card-body-flex">
            <div>
-             <h3 class="card-title-sm">${displayCode} - ${course.name}</h3>
-             <p class="card-text-main">${displayProf}</p>
-             <p class="card-text-sub">${displayDay} | ${displayStart} - ${displayEnd} ${displayRoom ? `| Room: ${displayRoom}` : ''}</p>
+             <h3 class="card-title-sm">${esc(displayCode)} - ${esc(course.name)}</h3>
+             <p class="card-text-main">${esc(displayProf)}</p>
+             <p class="card-text-sub">${esc(displayDay)} | ${esc(displayStart)} - ${esc(displayEnd)} ${displayRoom ? `| Room: ${esc(displayRoom)}` : ''}</p>
            </div>
-           <button class="btn-remove btn-remove-inline" onclick="removeManualCourse('${displayCode}')">REMOVE</button>
+           <button class="btn-remove btn-remove-inline" data-manual-code="${esc(displayCode)}">REMOVE</button>
          </div>
        `;
       coursesList.appendChild(courseCard);
     } else {
-      // API course - only one per course code (deduplication by code)
+      // Formal API curriculum section
       if (!coursesByCode[course.code]) {
         coursesByCode[course.code] = course;
         totalUnits += parseInt(course.units || 0, 10);
@@ -391,20 +425,27 @@ function displayCourses() {
     }
   });
 
-  // Display API courses
+  // Render formal API program courses
   Object.values(coursesByCode).forEach((course) => {
     const courseCard = document.createElement('div');
     courseCard.className = 'course-card irregular-course-card';
     courseCard.style.marginBottom = '12px';
 
+    const displayCode = course.code || course.course_id;
+    const displayProf = course.teacher_name || 'TBD';
+    const displayDay = course.schedule?.day || course.day || 'TBD';
+    const displayStart = course.schedule?.startTime || course.startTime || '';
+    const displayEnd = course.schedule?.endTime || course.endTime || '';
+    const displayRoom = course.schedule?.room || course.room || '';
+
     courseCard.innerHTML = `
       <div class="course-card-body card-body-flex">
         <div>
-          <h3 class="card-title-sm">${course.code || course.course_id} - ${course.name}</h3>
-          <p class="card-text-main">${course.teacher_name || 'TBD'}</p>
-          <p class="card-text-sub">${course.schedule?.day || course.day || 'TBD'} ${course.schedule?.startTime || course.startTime ? `| ${course.schedule?.startTime || course.startTime} - ${course.schedule?.endTime || course.endTime}` : ''} ${course.schedule?.room || course.room ? `| Room: ${course.schedule?.room || course.room}` : ''}</p>
+          <h3 class="card-title-sm">${esc(displayCode)} - ${esc(course.name)}</h3>
+          <p class="card-text-main">${esc(displayProf)}</p>
+          <p class="card-text-sub">${esc(displayDay)} ${displayStart ? `| ${esc(displayStart)} - ${esc(displayEnd)}` : ''} ${displayRoom ? `| Room: ${esc(displayRoom)}` : ''}</p>
         </div>
-        <button class="btn-remove btn-remove-inline" onclick="removeCourse(${course.courseslot_id})">REMOVE</button>
+        <button class="btn-remove btn-remove-inline" data-courseslot-id="${course.courseslot_id}">REMOVE</button>
       </div>
     `;
     coursesList.appendChild(courseCard);
@@ -416,6 +457,7 @@ function displayCourses() {
     unitsDisplay.textContent = `Units: ${totalUnits} / ${reqUnits}`;
   }
 
+  // Evaluate "Regular" status - must meet unit totals exactly and contain no manually entered slots
   const isRegular = (totalUnits === reqUnits) && !hasIrregular;
 
   if (statusBadge) {
@@ -437,18 +479,44 @@ function displayCourses() {
   window.isRegular = isRegular;
 }
 
-window.removeManualCourse = function (courseCode) {
+/**
+ * Removes an irregular manual course from the workspace state.
+ * @param {string} courseCode - Unique target code
+ */
+function removeManualCourse(courseCode) {
   courses = courses.filter(c => (c.courseCode || c.code || c.course_id) !== courseCode);
   displayCourses();
   loadAvailableCourses();
-};
+}
 
-window.removeCourse = function (courseslotId) {
+/**
+ * Removes a formal API course section from the active scheduled state.
+ * @param {string|number} courseslotId - Unique section key
+ */
+function removeCourse(courseslotId) {
   courses = courses.filter(c => c.courseslot_id !== parseInt(courseslotId));
   displayCourses();
   loadAvailableCourses();
 }
 
+// 🌟 Efficient Event Delegation for dynamic deletion buttons
+if (coursesList) {
+  coursesList.addEventListener('click', (event) => {
+    const removeBtn = event.target.closest('.btn-remove-inline');
+    if (!removeBtn) return;
+
+    const manualCode = removeBtn.getAttribute('data-manual-code');
+    const slotId = removeBtn.getAttribute('data-courseslot-id');
+
+    if (manualCode) {
+      removeManualCourse(manualCode);
+    } else if (slotId) {
+      removeCourse(slotId);
+    }
+  });
+}
+
+// Event handler for adding irregular courses manually
 if (addCourseBtn) {
   addCourseBtn.addEventListener('click', () => {
     const code = courseCodeInput.value.trim();
@@ -465,11 +533,11 @@ if (addCourseBtn) {
       return;
     }
 
-    // Time validation (7:00 AM - 8:00 PM limit)
+    // Time validation (7:00 AM - 8:00 PM limit checks)
     const startMins = timeStringToMinutes(start);
     const endMins = timeStringToMinutes(end);
-    const limitStart = 7 * 60; // 7:00 AM
-    const limitEnd = 20 * 60;  // 8:00 PM
+    const limitStart = 7 * 60;
+    const limitEnd = 20 * 60;
 
     if (startMins === null || endMins === null) {
       alert("Please enter valid start and end times.");
@@ -488,7 +556,6 @@ if (addCourseBtn) {
       return;
     }
 
-    // Check for scheduling conflicts
     const conflictCheck = checkScheduleConflict(day, start, end);
 
     if (conflictCheck.conflict) {
@@ -518,7 +585,7 @@ if (addCourseBtn) {
 
     courses.push(newCourse);
 
-    // Clear inputs
+    // Reset input fields
     courseCodeInput.value = '';
     courseNameInput.value = '';
     teacherNameInput.value = '';
@@ -530,7 +597,7 @@ if (addCourseBtn) {
 
     displayCourses();
 
-    // Auto-close irregular section after adding
+    // Auto-collapse irregular section dropdown panel
     const header = addCourseBtn.closest('.dropdown').previousElementSibling;
     if (header && header.classList.contains('course-card-header')) {
       header.click();
@@ -538,6 +605,11 @@ if (addCourseBtn) {
   });
 }
 
+/**
+ * Switches the active timetable template in the workspace editor.
+ * Resets fields or parses selection courses dynamically.
+ * @param {string|number} id - Database schedule key or 'new'
+ */
 window.switchActiveSchedule = function (id) {
   activeScheduleId = id;
   const nameInput = document.getElementById('schedule-name-input');
@@ -561,6 +633,10 @@ window.switchActiveSchedule = function (id) {
   loadAvailableCourses();
 };
 
+/**
+ * Fetches all saved schedules for the currently authenticated user.
+ * Dynamically renders curriculum selectors.
+ */
 async function loadUserSchedule() {
   const token = localStorage.getItem('token');
   if (!token) return;
@@ -597,6 +673,7 @@ async function loadUserSchedule() {
   }
 }
 
+// Initialise settings and fetch active details
 document.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -604,11 +681,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Fetch term data as soon as the page opens, even if courses are not added yet
+  // Pre-load curriculum bounds
   getTermData(token).then(termData => {
     if (termData && termData.req_units) {
       localStorage.setItem('reqUnits', termData.req_units);
-      // Force rendering the UI to reflect the fetched required units immediately
       displayCourses();
     }
   }).catch(error => {
@@ -624,6 +700,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadAvailableCourses();
   loadUserSchedule();
 
+  // Save Schedule Event Trigger
   const saveBtn = document.querySelector('.btn-save');
   if (saveBtn) {
     saveBtn.addEventListener('click', async () => {
@@ -643,9 +720,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const scheduleList = [];
       courses.forEach(c => {
         if (c.courseCode) {
-          scheduleList.push(c); // Irregular manual course
+          scheduleList.push(c);
         } else {
-          // API Course - prevent duplicates
           const exists = scheduleList.find(item => item.courseslot_id === c.courseslot_id);
           if (!exists) {
             scheduleList.push({ courseslot_id: c.courseslot_id });
@@ -675,7 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (data.schedule_id) {
             window.currentScheduleId = data.schedule_id;
             activeScheduleId = data.schedule_id;
-            loadUserSchedule(); // Reload to sync with DB and update selector
+            loadUserSchedule();
           }
         } else {
           alert('Failed to save schedule.');
@@ -687,6 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Delete Schedule Event Trigger
   const deleteBtn = document.getElementById('delete-schedule-btn');
   if (deleteBtn) {
     deleteBtn.addEventListener('click', () => {

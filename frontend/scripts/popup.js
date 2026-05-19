@@ -1,10 +1,16 @@
-// ============================================================
-// Global Custom Popup Dialog Helper
-// Replaces browser alert() / confirm() with premium purple modals
-// ============================================================
+/**
+ * @file popup.js
+ * @description Injects high-fidelity custom modal dialogs that override native browser alert() and confirm() APIs. Provides CSS-animated overlays with tailored thematic styling.
+ */
+
 (function () {
 
-  // ── Custom Alert ────────────────────────────────────────────
+  /**
+   * Overrides the window.alert method.
+   * Dynamically formats title headers, CSS theme boundaries, and icon markers based on the message string contents.
+   * @param {string} message - Dialogue description
+   * @param {string} [title] - Header title override
+   */
   window.alert = function (message, title) {
     let icon = '🔔';
     let defaultTitle = 'Notice';
@@ -14,13 +20,14 @@
 
     const msgLower = (message || '').toLowerCase();
     
+    // Classify modal based on threat level or validation state
     if (msgLower.includes('conflict') || msgLower.includes('⚠️') || msgLower.includes('please') || msgLower.includes('must') || msgLower.includes('expired') || msgLower.includes('no courses')) {
       icon = '⚠️';
       defaultTitle = 'Warning';
       typeClass = 'warning';
       iconClass = 'warning';
       titleClass = 'warning-text';
-      // remove the duplicate emoji from message if it exists
+      // Format out the raw emojis from the description string
       message = (message || '').replace('⚠️ ', '').replace('⚠️', '');
     } else if (msgLower.includes('error') || msgLower.includes('invalid') || msgLower.includes('failed') || msgLower.includes('cannot') || msgLower.includes('do not match') || msgLower.includes('not loaded') || msgLower.includes('not found')) {
       icon = '❌';
@@ -35,7 +42,7 @@
 
     title = title || defaultTitle;
 
-    // Destroy any stale overlay
+    // Purge outdated modal components
     const existing = document.querySelector('.custom-modal-overlay');
     if (existing) existing.remove();
 
@@ -63,10 +70,17 @@
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
   };
 
-  // ── Custom Confirm (callback-based) ─────────────────────────
-  // Usage: confirmPopup('message', onConfirmFn, onCancelFn?, 'Title')
+  /**
+   * Spawns a custom confirmation dialog.
+   * Fires the appropriate callback depending on user interaction.
+   * @param {string} message - Dialogue description
+   * @param {Function} onConfirm - Callback trigger when accepted
+   * @param {Function} [onCancel] - Optional cancel trigger when closed
+   * @param {string} [title] - Header title
+   */
   window.confirmPopup = function (message, onConfirm, onCancel, title) {
     title = title || 'Confirmation';
+    
     const existing = document.querySelector('.custom-modal-overlay');
     if (existing) existing.remove();
 
@@ -100,8 +114,11 @@
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close(false); });
   };
 
-  // ── Shared Logout Handler ───────────────────────────────────
-  // Used by all pages' close/logout buttons via onclick="handleLogout('../index.html')"
+  /**
+   * Unified Account Logout Handler.
+   * Cleans security credentials and redirects users back to the landing screen.
+   * @param {string} [redirectPath] - Target path redirect key
+   */
   window.handleLogout = function (redirectPath) {
     redirectPath = redirectPath || '../index.html';
     window.confirmPopup(

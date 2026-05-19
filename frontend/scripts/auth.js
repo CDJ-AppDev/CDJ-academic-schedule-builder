@@ -1,16 +1,16 @@
-// Detect API base URL based on environment
-const API_BASE = (() => {
-  const hostname = window.location.hostname;
-  const protocol = window.location.protocol;
-  if (protocol === 'file:' || hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:3000/api';
-  }
-  // In Kubernetes/production, use same hostname with /api path
-  const port = window.location.port ? ':' + window.location.port : '';
-  return `${protocol}//${hostname}${port}/api`;
-})();
+/**
+ * @file auth.js
+ * @description Manages user authentication, route guards, token extraction, navigation updates, and login/signup flows.
+ */
 
-// URL-based token propagation helper for file:// protocols crossing directory sandboxes
+// Detect API base URL from centralized configuration
+const API_BASE = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3000/api';
+
+/**
+ * Retrieves the session token from either URL search parameters or standard local storage.
+ * URL-based extraction is required for dynamic protocol sandboxing (e.g. file:// protocols crossing directory scopes).
+ * @returns {string|null} The current session token
+ */
 function getToken() {
   const urlParams = new URLSearchParams(window.location.search);
   const urlToken = urlParams.get('token');
@@ -20,13 +20,19 @@ function getToken() {
     if (urlUser) {
       try {
         localStorage.setItem('user', decodeURIComponent(urlUser));
-      } catch (e) { }
+      } catch (e) {
+        console.error('Failed to parse cached user data from URL parameters:', e);
+      }
     }
     return urlToken;
   }
   return localStorage.getItem('token');
 }
 
+/**
+ * Redirects to a target page while propagating security tokens if running under local sandboxed file protocols.
+ * @param {string} targetUrl - Target path of the page to redirect to
+ */
 function redirectWithToken(targetUrl) {
   const token = localStorage.getItem('token');
   const user = localStorage.getItem('user');
@@ -40,7 +46,11 @@ function redirectWithToken(targetUrl) {
 }
 window.redirectWithToken = redirectWithToken;
 
-// Helper to get the correct path to admin.html from any location
+/**
+ * Computes the relative file path to the secure admin page.
+ * Detects if the current document is inside pages directory or root directory.
+ * @returns {string} Relative path to admin.html
+ */
 function getAdminPath() {
   const pathname = window.location.pathname;
   if (pathname.includes('/pages/')) {
@@ -49,7 +59,10 @@ function getAdminPath() {
   return './private/admin.html';
 }
 
-// Inject Admin Dashboard button in navbar if they are a promoted Admin
+/**
+ * Dynamic Navbar Modifier.
+ * Inspects user credentials and injects the 'Admin' navigation panel button if they possess admin access roles.
+ */
 function injectAdminNavbarButton() {
   const userStr = localStorage.getItem('user');
   if (userStr) {
@@ -61,14 +74,14 @@ function injectAdminNavbarButton() {
           const adminBtn = document.createElement('button');
           adminBtn.id = 'nav-admin-btn';
           adminBtn.className = 'nav-button';
-          adminBtn.style.backgroundColor = '#00cc66'; // Premium styling
+          adminBtn.style.backgroundColor = '#00cc66'; // Distinct green theme for Admin Portal
           adminBtn.style.color = '#fff';
           adminBtn.innerHTML = '<img src="../assets/admin.png" alt="Admin" class="nav-icon"> Admin';
           adminBtn.onclick = () => {
             const isInsidePages = window.location.pathname.includes('/pages/');
             const isAlreadyAtAdmin = window.location.pathname.includes('/private/') && window.location.pathname.includes('admin.html');
             if (isAlreadyAtAdmin) {
-              return; // Already at admin page, no redirect needed
+              return;
             }
             redirectWithToken(isInsidePages ? '../private/admin.html' : './private/admin.html');
           };
@@ -81,14 +94,20 @@ function injectAdminNavbarButton() {
   }
 }
 
-// Autologin Route Guard: Catch already logged-in users/admins and redirect immediately
+/**
+ * Core Authentication Guard.
+ * Evaluated on page initialization:
+ * 1. Synchronizes token status with backend real-time database schema.
+ * 2. Diverts authenticated users from authentication landing screens to proper home screens.
+ * 3. Injects custom navigational buttons for admins.
+ * 4. Limits UI administrative settings access if matching standard super admin accounts.
+ */
 async function initAuth() {
   const token = getToken();
-  const userStr = localStorage.getItem('user');
 
   if (token) {
-    // 1. Fetch real-time user session status from backend to keep it perfectly sync'd!
     try {
+      // Keep local session status completely synchronized with real-time backend updates
       const response = await fetch(`${API_BASE}/user-session`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -98,16 +117,13 @@ async function initAuth() {
         const freshUser = await response.json();
         localStorage.setItem('user', JSON.stringify(freshUser));
 
-        // 2. Redirect check
         const pathname = window.location.pathname;
         const isLandingOrAuth = pathname.endsWith('/') || pathname.includes('index.html') || pathname.includes('login.html') || pathname.includes('signup.html');
 
         if (isLandingOrAuth) {
           if (freshUser.email === 'admin@gmail.com') {
-            // Super Admin always goes to Admin Dashboard
             redirectWithToken(getAdminPath());
           } else {
-            // Regular user/promoted admin goes to Home
             redirectWithToken('./home.html');
           }
         }
@@ -116,8 +132,7 @@ async function initAuth() {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
         } else {
-          // If 404 or other server error, fallback to existing local storage session
-          console.warn('user-session endpoint not found or error, falling back to local session cache.');
+          console.warn('Backend session check error. Falling back to local offline session cache.');
           fallbackAutologinRedirect();
         }
       }
@@ -127,28 +142,36 @@ async function initAuth() {
     }
   }
 
-  // 3. Inject Admin Dashboard button in navbar if they are a promoted Admin
+  // Inject panel navigation hooks
   injectAdminNavbarButton();
 
-  // 4. Populate header profile name
+  // Populate navigation bar metadata
   const currentUserStr = localStorage.getItem('user');
   if (currentUserStr) {
     try {
       const u = JSON.parse(currentUserStr);
       populateHeaderUsername(u);
-    } catch (e) { }
+    } catch (e) {
+      console.error('Error loading current user details for headers:', e);
+    }
   }
 }
 
+/**
+ * Formats and inserts the username in the upper-right navigational header panel.
+ * Safeguards layout bounds by truncating names exceeding character limits.
+ * Additionally disables edit privileges for standard super admin accounts.
+ * @param {Object} user - User metadata object
+ */
 function populateHeaderUsername(user) {
   const display = document.getElementById('header-username-display');
   if (display && user) {
     const rawName = user.username || user.name || user.email || 'User';
     display.textContent = rawName.length > 16 ? rawName.slice(0, 16) + '…' : rawName;
-    display.title = rawName; // show full name on hover
+    display.title = rawName;
   }
 
-  // Disable settings button for super admin account
+  // Hard security: Disable profile edits on the super admin account
   if (user && user.email === 'admin@gmail.com') {
     const settingsBtn = document.querySelector('.header-controls .header-icon-btn[onclick*="profile.html"]');
     if (settingsBtn) {
@@ -160,12 +183,17 @@ function populateHeaderUsername(user) {
   }
 }
 
+// Attach lifecycle events
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initAuth);
 } else {
   initAuth();
 }
 
+/**
+ * Fallback Route Guard.
+ * Executed if the backend server is temporarily offline. Prevents page hanging by using cached local user state.
+ */
 function fallbackAutologinRedirect() {
   const userStr = localStorage.getItem('user');
   if (userStr) {
@@ -181,9 +209,15 @@ function fallbackAutologinRedirect() {
           redirectWithToken('./home.html');
         }
       }
-    } catch (e) { }
+    } catch (e) {
+      console.error('Offline fallback redirection parsing error:', e);
+    }
   }
 }
+
+// -------------------------------------------------------------
+// USER ACCESS EVENT INTERFACES
+// -------------------------------------------------------------
 
 const loginButton = document.querySelector('.login-btn');
 const signupButton = document.querySelector('.signup-btn');
@@ -192,6 +226,7 @@ const signupLinkButton = document.getElementById('signup');
 const loginLinkButton = document.getElementById('login');
 const closeButton = document.querySelector('.close-btn');
 
+// Login Event Trigger
 if (loginButton) {
   loginButton.addEventListener('click', async () => {
     const email = document.querySelector('input[type="email"]').value.trim();
@@ -226,6 +261,7 @@ if (loginButton) {
   });
 }
 
+// Signup Event Trigger
 if (signupButton) {
   signupButton.addEventListener('click', async () => {
     const email = document.querySelector('input[type="email"]').value.trim();
@@ -261,7 +297,7 @@ if (signupButton) {
         return;
       }
 
-      // Auto-login to get token
+      // Automatically trigger backend login routine on successful registration
       const loginResponse = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -270,13 +306,11 @@ if (signupButton) {
       const loginData = await loginResponse.json();
 
       if (loginResponse.ok) {
-        // Store user info and token
         localStorage.setItem('token', loginData.token);
         localStorage.setItem('user', JSON.stringify(loginData.user));
-        // Redirect to setup page
         redirectWithToken(`./setup.html`);
       } else {
-        alert(loginData.error || 'Login failed');
+        alert(loginData.error || 'Login verification failed post-signup');
       }
     } catch (error) {
       alert('Signup failed: ' + error.message);
@@ -284,12 +318,14 @@ if (signupButton) {
   });
 }
 
+// Password Reset Prompt
 if (forgotButton) {
   forgotButton.addEventListener('click', () => {
     alert('Password reset instructions will be sent to your email.');
   });
 }
 
+// Redirections between Login and Signup screens
 if (signupLinkButton) {
   signupLinkButton.addEventListener('click', () => {
     window.location.href = './signup.html';
@@ -302,6 +338,7 @@ if (loginLinkButton) {
   });
 }
 
+// Redirections to main splash page
 if (closeButton) {
   if (window.location.pathname.includes('login.html') || window.location.pathname.includes('signup.html')) {
     closeButton.addEventListener('click', () => {
