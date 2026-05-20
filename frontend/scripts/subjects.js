@@ -232,13 +232,13 @@ function displayAvailableCourses() {
     courseHeader.style.display = 'flex';
     courseHeader.style.justifyContent = 'space-between';
     courseHeader.style.alignItems = 'center';
-    courseHeader.style.background = '#8b5cf6'; // Dark purple mockup theme color
+    courseHeader.style.background = '#4543AB'; // Classes dropdown theme color
     courseHeader.style.color = 'white';
     courseHeader.style.borderRadius = '12px';
     courseHeader.style.padding = '14px 20px';
     courseHeader.style.borderBottom = 'none';
     courseHeader.style.fontWeight = 'bolder';
-    courseHeader.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.15)';
+    courseHeader.style.boxShadow = '0 4px 12px rgba(69, 67, 171, 0.15)';
     courseHeader.style.transition = 'all 0.3s ease';
 
     const titleEl = document.createElement('h3');
@@ -651,7 +651,7 @@ window.switchActiveSchedule = function (id) {
       window.currentScheduleId = sched.schedule_id;
       if (nameInput) nameInput.value = sched.schedule_name;
       courses = sched.courses || [];
-      if (deleteBtn) deleteBtn.style.display = 'block';
+      if (deleteBtn) deleteBtn.style.display = 'inline-flex';
     }
   }
   displayCourses();
