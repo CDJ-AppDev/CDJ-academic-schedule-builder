@@ -318,10 +318,164 @@ if (signupButton) {
   });
 }
 
-// Password Reset Prompt
+// Password Reset Page Navigation
 if (forgotButton) {
   forgotButton.addEventListener('click', () => {
-    alert('Password reset instructions will be sent to your email.');
+    const pathname = window.location.pathname;
+    if (pathname.includes('/pages/')) {
+      window.location.href = './forgot-password.html';
+    } else {
+      window.location.href = './pages/forgot-password.html';
+    }
+  });
+}
+
+// Helper to display premium inline success/error alerts
+function showMessage(text, isError = false) {
+  const banner = document.getElementById('message-banner');
+  if (banner) {
+    banner.textContent = text;
+    banner.style.display = 'block';
+    if (isError) {
+      banner.style.backgroundColor = '#ffebee';
+      banner.style.color = '#d32f2f';
+      banner.style.borderColor = '#f5c6cb';
+    } else {
+      banner.style.backgroundColor = '#e8f5e9';
+      banner.style.color = '#2e7d32';
+      banner.style.borderColor = '#c3e6cb';
+    }
+  } else {
+    alert(text);
+  }
+}
+
+// Forgot Password Form Submit
+const forgotSubmitBtn = document.getElementById('forgot-submit-btn');
+if (forgotSubmitBtn) {
+  forgotSubmitBtn.addEventListener('click', async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const emailInput = document.getElementById('reset-email');
+    const email = emailInput.value.trim();
+    if (!email) {
+      showMessage('Please enter your email address.', true);
+      return;
+    }
+
+    try {
+      forgotSubmitBtn.disabled = true;
+      forgotSubmitBtn.textContent = 'Sending...';
+
+      const response = await fetch(`${API_BASE}/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      
+      if (response.status === 404 || (data && data.exists === false)) {
+        forgotSubmitBtn.disabled = false;
+        forgotSubmitBtn.textContent = 'Send Reset PIN →';
+        if (window.confirmPopup) {
+          window.confirmPopup(
+            'This email address is not registered in our database. Would you like to sign up for a new account?',
+            () => {
+              window.location.href = './signup.html';
+            },
+            null,
+            'Account Not Found'
+          );
+        } else {
+          showMessage(data.error || 'This email address is not registered.', true);
+        }
+        return;
+      }
+
+      if (response.ok) {
+        // Switch page layout state dynamically
+        document.getElementById('forgot-title').textContent = 'Enter PIN';
+        document.getElementById('forgot-subtitle').textContent = `A 6-digit verification PIN has been sent to ${email}.`;
+
+        showMessage('A 6-digit verification PIN has been sent to your email address.', false);
+
+        // Lock the email input field and switch views
+        emailInput.disabled = true;
+        document.getElementById('request-pin-section').style.display = 'none';
+        document.getElementById('reset-password-section').style.display = 'block';
+      } else {
+        showMessage(data.error || 'Failed to submit reset request.', true);
+        forgotSubmitBtn.disabled = false;
+        forgotSubmitBtn.textContent = 'Send Reset PIN →';
+      }
+    } catch (err) {
+      showMessage('An error occurred. Please try again.', true);
+      forgotSubmitBtn.disabled = false;
+      forgotSubmitBtn.textContent = 'Send Reset PIN →';
+    }
+  });
+}
+
+// Reset Password Form Submit
+const resetSubmitBtn = document.getElementById('reset-submit-btn');
+if (resetSubmitBtn) {
+  resetSubmitBtn.addEventListener('click', async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const email = document.getElementById('reset-email').value.trim();
+    const pin = document.getElementById('reset-pin').value.trim();
+    const password = document.getElementById('new-password').value.trim();
+    const confirmPassword = document.getElementById('confirm-password').value.trim();
+
+    if (!pin || pin.length !== 6) {
+      showMessage('Please enter the 6-digit verification PIN.', true);
+      return;
+    }
+
+    if (!password || !confirmPassword) {
+      showMessage('Please fill in both password fields.', true);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showMessage('Passwords do not match.', true);
+      return;
+    }
+
+    if (password.length < 6) {
+      showMessage('Password must be at least 6 characters long.', true);
+      return;
+    }
+
+    try {
+      resetSubmitBtn.disabled = true;
+      resetSubmitBtn.textContent = 'Resetting Password...';
+
+      const response = await fetch(`${API_BASE}/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, pin, password })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        showMessage('Your password has been successfully reset! Redirecting to login...', false);
+        setTimeout(() => {
+          window.location.href = './login.html';
+        }, 2000);
+      } else {
+        showMessage(data.error || 'Failed to reset password.', true);
+        resetSubmitBtn.disabled = false;
+        resetSubmitBtn.textContent = 'Reset Password →';
+      }
+    } catch (err) {
+      showMessage('An error occurred. Please try again.', true);
+      resetSubmitBtn.disabled = false;
+      resetSubmitBtn.textContent = 'Reset Password →';
+    }
   });
 }
 
