@@ -70,6 +70,22 @@
           const arrow = document.getElementById(arrowId);
 
           if (dropdown.style.maxHeight === "0px" || dropdown.style.maxHeight === "") {
+            // Close other available course dropdowns to reduce clutter
+            const availableCoursesList = document.getElementById('availableCourses');
+            if (availableCoursesList) {
+              const otherCards = availableCoursesList.querySelectorAll('.course-card');
+              otherCards.forEach(card => {
+                const otherDropdown = card.querySelector('.dropdown');
+                const otherHeader = card.querySelector('.course-card-header');
+                const otherArrow = card.querySelector('.arrow');
+                if (otherDropdown && otherDropdown.classList.contains('active')) {
+                  otherDropdown.classList.remove('active');
+                  otherDropdown.style.maxHeight = '0';
+                  if (otherHeader) otherHeader.style.borderRadius = '12px';
+                  if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
+                }
+              });
+            }
             dropdown.style.maxHeight = dropdown.scrollHeight + "px";
             arrow.style.transform = "rotate(180deg)";
           } else {

@@ -267,10 +267,35 @@ function displayAvailableCourses() {
     dropdown.style.transition = 'max-height 0.4s ease';
 
     courseHeader.addEventListener('click', () => {
-      const isOpen = dropdown.classList.toggle('active');
-      arrowEl.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-      dropdown.style.maxHeight = isOpen ? `${dropdown.scrollHeight}px` : '0';
-      courseHeader.style.borderRadius = isOpen ? '12px 12px 0 0' : '12px';
+      const isOpen = dropdown.classList.contains('active');
+      if (!isOpen) {
+        // Close other available course dropdowns to reduce clutter
+        const otherCards = availableCoursesList.querySelectorAll('.course-card');
+        otherCards.forEach(card => {
+          const otherDropdown = card.querySelector('.dropdown');
+          const otherHeader = card.querySelector('.course-card-header');
+          const otherArrow = card.querySelector('.arrow');
+          if (otherDropdown && otherDropdown !== dropdown && otherDropdown.classList.contains('active')) {
+            otherDropdown.classList.remove('active');
+            otherDropdown.style.maxHeight = '0';
+            if (otherHeader) otherHeader.style.borderRadius = '12px';
+            if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
+          }
+        });
+
+        // Also close the irregular course dropdown if open
+        const irregularDropdown = document.getElementById('irregularDropdown');
+        const irregularArrow = document.getElementById('irregularArrow');
+        if (irregularDropdown && irregularDropdown.style.maxHeight !== '0px' && irregularDropdown.style.maxHeight !== '') {
+          irregularDropdown.style.maxHeight = '0';
+          if (irregularArrow) irregularArrow.style.transform = 'rotate(0deg)';
+        }
+      }
+
+      const newOpenState = dropdown.classList.toggle('active');
+      arrowEl.style.transform = newOpenState ? 'rotate(180deg)' : 'rotate(0deg)';
+      dropdown.style.maxHeight = newOpenState ? `${dropdown.scrollHeight}px` : '0';
+      courseHeader.style.borderRadius = newOpenState ? '12px 12px 0 0' : '12px';
     });
 
     course.sections.forEach((section, index) => {
