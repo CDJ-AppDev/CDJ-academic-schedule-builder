@@ -232,13 +232,13 @@ function displayAvailableCourses() {
     courseHeader.style.display = 'flex';
     courseHeader.style.justifyContent = 'space-between';
     courseHeader.style.alignItems = 'center';
-    courseHeader.style.background = '#8b5cf6'; // Dark purple mockup theme color
+    courseHeader.style.background = '#4543AB'; // Classes dropdown theme color
     courseHeader.style.color = 'white';
     courseHeader.style.borderRadius = '12px';
     courseHeader.style.padding = '14px 20px';
     courseHeader.style.borderBottom = 'none';
     courseHeader.style.fontWeight = 'bolder';
-    courseHeader.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.15)';
+    courseHeader.style.boxShadow = '0 4px 12px rgba(69, 67, 171, 0.15)';
     courseHeader.style.transition = 'all 0.3s ease';
 
     const titleEl = document.createElement('h3');
@@ -267,10 +267,35 @@ function displayAvailableCourses() {
     dropdown.style.transition = 'max-height 0.4s ease';
 
     courseHeader.addEventListener('click', () => {
-      const isOpen = dropdown.classList.toggle('active');
-      arrowEl.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-      dropdown.style.maxHeight = isOpen ? `${dropdown.scrollHeight}px` : '0';
-      courseHeader.style.borderRadius = isOpen ? '12px 12px 0 0' : '12px';
+      const isOpen = dropdown.classList.contains('active');
+      if (!isOpen) {
+        // Close other available course dropdowns to reduce clutter
+        const otherCards = availableCoursesList.querySelectorAll('.course-card');
+        otherCards.forEach(card => {
+          const otherDropdown = card.querySelector('.dropdown');
+          const otherHeader = card.querySelector('.course-card-header');
+          const otherArrow = card.querySelector('.arrow');
+          if (otherDropdown && otherDropdown !== dropdown && otherDropdown.classList.contains('active')) {
+            otherDropdown.classList.remove('active');
+            otherDropdown.style.maxHeight = '0';
+            if (otherHeader) otherHeader.style.borderRadius = '12px';
+            if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
+          }
+        });
+
+        // Also close the irregular course dropdown if open
+        const irregularDropdown = document.getElementById('irregularDropdown');
+        const irregularArrow = document.getElementById('irregularArrow');
+        if (irregularDropdown && irregularDropdown.style.maxHeight !== '0px' && irregularDropdown.style.maxHeight !== '') {
+          irregularDropdown.style.maxHeight = '0';
+          if (irregularArrow) irregularArrow.style.transform = 'rotate(0deg)';
+        }
+      }
+
+      const newOpenState = dropdown.classList.toggle('active');
+      arrowEl.style.transform = newOpenState ? 'rotate(180deg)' : 'rotate(0deg)';
+      dropdown.style.maxHeight = newOpenState ? `${dropdown.scrollHeight}px` : '0';
+      courseHeader.style.borderRadius = newOpenState ? '12px 12px 0 0' : '12px';
     });
 
     course.sections.forEach((section, index) => {
@@ -626,7 +651,7 @@ window.switchActiveSchedule = function (id) {
       window.currentScheduleId = sched.schedule_id;
       if (nameInput) nameInput.value = sched.schedule_name;
       courses = sched.courses || [];
-      if (deleteBtn) deleteBtn.style.display = 'block';
+      if (deleteBtn) deleteBtn.style.display = 'inline-flex';
     }
   }
   displayCourses();
