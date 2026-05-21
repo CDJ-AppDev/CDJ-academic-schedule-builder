@@ -1,14 +1,14 @@
 ## PostgreSQL
-- docker build -t jjtschooldlsud/builder-postgres:v4 -f backend/sql/Dockerfile backend/sql
-- docker push jjtschooldlsud/builder-postgres:v4
+- docker build -t jjtschooldlsud/builder-postgres:v5 -f backend/sql/Dockerfile backend/sql
+- docker push jjtschooldlsud/builder-postgres:v5
 
 ## Backend
-- docker build -t jjtschooldlsud/builder-backend:v4 -f backend/Dockerfile backend
-- docker push jjtschooldlsud/builder-backend:v4
+- docker build -t jjtschooldlsud/builder-backend:v5 -f backend/Dockerfile backend
+- docker push jjtschooldlsud/builder-backend:v5
 
 ## Frontend
-- docker build -t jjtschooldlsud/builder-frontend:v4 -f Dockerfile .
-- docker push jjtschooldlsud/builder-frontend:v4
+- docker build -t jjtschooldlsud/builder-frontend:v5 -f Dockerfile .
+- docker push jjtschooldlsud/builder-frontend:v5
 
 ## Apply Configurations
 - kubectl apply -f k8s/secret.yaml
@@ -48,7 +48,7 @@
 - kubectl delete deployment backend-deployment
 - kubectl delete deployment postgres-deployment
 
-- kubectl delete svc frontend-service
+- kubectl delete svc frontend-lb-service
 - kubectl delete svc backend-service
 - kubectl delete svc postgres-service
 
