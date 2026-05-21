@@ -34,17 +34,17 @@ Here are the three standard architectures you can choose from depending on your 
 
 ```mermaid
 graph TD
-    subgraph Option A: Hybrid (Multi-Domain)
+    subgraph "Option A: Hybrid (Multi-Domain)"
         A1[GitHub Pages <br> username.github.io] -->|HTTPS Requests| A2[Hosted Backend <br> render.com/railway.app]
         A2 -->|Queries| A3[(Cloud PostgreSQL <br> Neon / Aiven)]
     end
 
-    subgraph Option B: Monolith (Single Custom Domain)
+    subgraph "Option B: Monolith (Single Custom Domain)"
         B1[Custom Domain <br> my-schedule-builder.com] -->|Routes /| B2[Hosted Express Server <br> Serves Frontend & API]
         B2 -->|Queries| B3[(Cloud PostgreSQL <br> Neon / Aiven)]
     end
 
-    subgraph Option C: Kubernetes (Enterprise Single Domain)
+    subgraph "Option C: Kubernetes (Enterprise Single Domain)"
         C1[Custom Domain <br> scheduler.com] -->|Ingress Rule: /| C2[Frontend Nginx Pod]
         C1 -->|Ingress Rule: /api| C3[Backend Node Pod]
         C3 -->|Queries| C4[(PostgreSQL Pod / Service)]

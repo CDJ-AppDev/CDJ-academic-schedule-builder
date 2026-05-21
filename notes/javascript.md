@@ -10,7 +10,7 @@ Below is a system interaction diagram illustrating how the frontend scripts comm
 
 ```mermaid
 graph TD
-    subgraph Frontend (Browser client)
+    subgraph "Frontend (Browser client)"
         A[auth.js] -->|Authenticates & Guards Routes| B[setup.js]
         B -->|Curriculum Onboarding| C[profile.js]
         C -->|Credentials & Selection Edit| D[subjects.js]
@@ -18,14 +18,14 @@ graph TD
         E -->|Timeline Plotter & PNG Export| F[popup.js & utils.js]
     end
 
-    subgraph Backend API (Node.js/Express)
+    subgraph "Backend API (Node.js/Express)"
         G[db-server.js] -->|JWT Verification| H[Middlewares]
         G -->|Cryptographic Engine| I[AES-256-CBC Enc/Dec]
         G -->|SMTP Transporter| J[Email Dispatch]
         G -->|Database Gateway| K[PostgreSQL Pool]
     end
 
-    subgraph Database (PostgreSQL)
+    subgraph "Database (PostgreSQL)"
         L[(USER_CREDENTIALS)]
         M[(USER_PROFILE)]
         N[(TERM)]
