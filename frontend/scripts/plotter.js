@@ -103,8 +103,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             blocksContainer.innerHTML = ''; // Clear previous grids
 
             // Resolve color selection presets
-            const bgColor = customColor.value || '#000000';
-            const fontColor = customFontColor.value || '#FFFFFF';
+            const bgColor = customColor.value || '#FFFFFF';
+            const fontColor = customFontColor.value || '#000000';
 
             // Loop through all courses inside the active schedule
             if (selectedSchedule.courses && selectedSchedule.courses.length > 0) {

@@ -1,41 +1,36 @@
-/* Course Picker Styles */
-.course-selection {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 24px 0;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  border: 1px solid var(--border);
-}
+/* ═══════════════════════════════════════════════════════════════
+   profile.css — Glassmorphic Dark Profile Page
+   ═══════════════════════════════════════════════════════════════ */
 
+/* ── Selected course info strip ─────────────────────────────── */
 .selected-courses {
   margin: 16px 0;
-  padding: 12px;
-  background: rgba(139, 92, 246, 0.1);
-  border-left: 4px solid #8b5cf6;
-  border-radius: 4px;
-  color: #8b5cf6;
-  font-weight: 500;
+  padding: 12px 16px;
+  background: rgba(139, 92, 246, 0.12);
+  border-left: 3px solid #8b5cf6;
+  border-radius: 10px;
+  color: #a78bfa;
+  font-weight: 600;
   display: block;
   width: 100%;
+  font-size: 0.92rem;
 }
 
+/* ── Legacy .course-checkbox (builder compat) ──────────────── */
 .course-checkbox {
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
   font-size: 1rem;
-  color: #000000;
+  color: var(--text, #f4f4f5);
   transition: all 0.2s ease;
   padding: 12px;
   border-radius: 8px;
 }
 
 .course-checkbox:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .course-checkbox input[type="checkbox"],
@@ -47,7 +42,7 @@
   flex-shrink: 0;
 }
 
-/* Premium Form Container */
+/* ── Form container ─────────────────────────────────────────── */
 .form-group-profile {
   display: flex;
   flex-direction: column;
@@ -55,7 +50,6 @@
   margin-bottom: 24px;
 }
 
-/* Premium Select Labels */
 .form-group-profile .field {
   display: flex;
   flex-direction: column;
@@ -63,66 +57,62 @@
 }
 
 .form-group-profile .field span {
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #a1a1aa;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
-/* Premium Dropdown Select Element */
+/* ── Premium Select (legacy) ─────────────────────────────────── */
 .premium-select {
   width: 100%;
-  padding: 14px 40px 14px 16px;
+  padding: 13px 40px 13px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: #fafafb;
-  color: #151515;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f4f4f5;
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
   cursor: pointer;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02), 0 2px 5px rgba(0, 0, 0, 0.02);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: all 0.25s ease;
   appearance: none;
-  /* Reset standard browser arrow */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b5cf6' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 16px center;
-  background-size: 16px;
+  background-position: right 14px center;
+  background-size: 14px;
 }
 
 .premium-select:hover:not(:disabled) {
-  border-color: #8b5cf6;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .premium-select:focus {
   border-color: #8b5cf6;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12), 0 4px 12px rgba(139, 92, 246, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
 }
 
 .premium-select:disabled {
-  background-color: #f3f4f6;
-  color: #9ca3af;
-  border-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.02);
+  color: #52525b;
+  border-color: rgba(255, 255, 255, 0.04);
   cursor: not-allowed;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2352525b' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 16px center;
-  background-size: 16px;
+  background-position: right 14px center;
+  background-size: 14px;
 }
 
-/* Option Styles */
 .premium-select option {
-  background: #ffffff;
-  color: #151515;
+  background: #18181b;
+  color: #f4f4f5;
   padding: 12px;
 }
 
-/* Profile Info Panel Styles */
+/* ── Profile Info Panel (legacy flat) ───────────────────────── */
 .profile-info-panel {
   margin-top: 20px;
   margin-bottom: 20px;
@@ -144,16 +134,16 @@
 .profile-info-icon {
   width: 24px;
   height: 24px;
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 .profile-info-input {
   width: 33.33%;
   padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #fafafb;
-  color: #151515;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f4f4f5;
   font-family: inherit;
   font-size: 0.95rem;
   outline: none;
@@ -162,14 +152,14 @@
 
 .profile-info-input:focus:not(:disabled) {
   border-color: #8b5cf6;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }
 
 .profile-info-input:disabled {
-  background: #f3f4f6;
-  color: #6b7280;
-  border-color: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  color: #52525b;
+  border-color: rgba(255, 255, 255, 0.04);
   cursor: not-allowed;
 }
 
@@ -186,7 +176,7 @@
 }
 
 .profile-edit-btn:hover {
-  background: rgba(139, 92, 246, 0.08);
+  background: rgba(139, 92, 246, 0.12);
   transform: scale(1.05);
 }
 
@@ -195,28 +185,28 @@
   height: 24px;
 }
 
-/* Side-by-side 2-column Layout */
+/* ── Two-column layout ──────────────────────────────────────── */
 .profile-container-two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  margin-top: 25px;
-  background: #d4cbe1;
-  /* Premium background color matching the image! */
-  padding: 40px;
+  gap: 36px;
+  margin-top: 24px;
+  background: rgba(255, 255, 255, 0.025);
+  padding: 36px;
   border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.04);
 }
 
 @media (max-width: 768px) {
   .profile-container-two-col {
     grid-template-columns: 1fr;
-    gap: 30px;
-    padding: 20px;
+    gap: 28px;
+    padding: 22px;
   }
 }
 
-/* Left Column Styles */
+/* ── Left Column ────────────────────────────────────────────── */
 .profile-info-panel-col {
   background: transparent;
   box-shadow: none;
@@ -224,113 +214,101 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .profile-info-panel-col h2 {
-  font-size: 1.35rem;
-  color: #1e293b;
-  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  color: #f4f4f5;
+  margin: 0 0 8px 0;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .profile-info-list-col {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .profile-info-row-col {
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: rgba(255, 255, 255, 0.5);
-  /* Frosted glass look */
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.035);
   padding: 16px 20px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: all 0.25s ease;
 }
 
 .profile-info-row-col:hover {
-  background: rgba(255, 255, 255, 0.75);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(139, 92, 246, 0.2);
 }
 
 .profile-info-icon-col {
-  width: 28px;
-  height: 28px;
-  opacity: 0.8;
+  width: 26px;
+  height: 26px;
+  opacity: 0.75;
+  flex-shrink: 0;
 }
 
 .profile-info-field-wrapper {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 4px;
-}
-
-.profile-info-field-wrapper {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  gap: 6px;
-  margin-right: 20px;
-  /* Generous separation from the edit button */
+  gap: 5px;
+  margin-right: 16px;
 }
 
 .profile-info-field-wrapper label {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: #475569;
+  color: #71717a;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 2px;
+  letter-spacing: 0.08em;
 }
 
 .profile-info-input-col {
   border: none;
   background: transparent;
-  color: #1e293b;
+  color: #f4f4f5;
   font-family: inherit;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   outline: none;
   width: 100%;
-  padding: 8px 4px;
-  /* Generous vertical padding so full text is clearly visible */
-  border-bottom: 2px dashed rgba(139, 92, 246, 0.35);
-  /* Elegant soft purple dashed line when disabled */
+  padding: 6px 2px;
+  border-bottom: 1.5px dashed rgba(139, 92, 246, 0.3);
   border-radius: 0;
-  /* Ensures a perfectly straight horizontal dashed bottom border */
   transition: all 0.2s ease;
 }
 
 .profile-info-input-col:not(:disabled) {
-  border-bottom: 2px dashed #8b5cf6;
-  /* Strong purple dashed border when editing */
-  color: #000000;
+  border-bottom: 2px solid #8b5cf6;
+  color: #f4f4f5;
 }
 
 .profile-edit-btn-col {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  width: 44px;
-  height: 44px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  width: 42px;
+  height: 42px;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .profile-edit-btn-col:hover {
   background: #8b5cf6;
   border-color: #8b5cf6;
-  transform: scale(1.08);
+  transform: scale(1.06);
 }
 
 .profile-edit-btn-col:hover .profile-edit-icon-col {
@@ -347,12 +325,13 @@
 }
 
 .profile-edit-icon-col {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   transition: all 0.2s ease;
+  filter: invert(1) brightness(0.75);
 }
 
-/* Right Column Styles */
+/* ── Right Column ───────────────────────────────────────────── */
 .profile-selection-panel-col {
   background: transparent;
   box-shadow: none;
@@ -360,75 +339,75 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .profile-selection-panel-col h2 {
-  font-size: 1.35rem;
-  color: #1e293b;
-  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  color: #f4f4f5;
+  margin: 0 0 8px 0;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .profile-select-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .profile-select-group label {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-/* Styled Premium Dropdown Selectors */
+/* ── Profile Dropdown ───────────────────────────────────────── */
 .profile-dropdown-select {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #1e293b;
+  padding: 13px 40px 13px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #f4f4f5;
   font-family: inherit;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
   outline: none;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b5cf6' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 16px center;
-  background-size: 16px;
+  background-position: right 14px center;
+  background-size: 14px;
   transition: all 0.25s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .profile-dropdown-select:hover:not(:disabled) {
-  border-color: #8b5cf6;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.35);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .profile-dropdown-select:focus {
   border-color: #8b5cf6;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12), 0 4px 12px rgba(139, 92, 246, 0.08);
+  background-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
 }
 
 .profile-dropdown-select:disabled {
-  background-color: rgba(255, 255, 255, 0.4);
-  color: #94a3b8;
-  border-color: rgba(0, 0, 0, 0.04);
+  background-color: rgba(255, 255, 255, 0.02);
+  color: #3f3f46;
+  border-color: rgba(255, 255, 255, 0.04);
   cursor: not-allowed;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233f3f46' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
 }
 
 .profile-dropdown-select option {
-  background-color: #ffffff;
-  color: #1e293b;
+  background-color: #18181b;
+  color: #f4f4f5;
   font-weight: 500;
   padding: 10px;
 }
