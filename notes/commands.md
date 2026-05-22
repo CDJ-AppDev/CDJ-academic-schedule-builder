@@ -7,8 +7,8 @@
 - docker push jjtschooldlsud/builder-backend:v5
 
 ## Frontend
-- docker build -t jjtschooldlsud/builder-frontend:v5 -f Dockerfile .
-- docker push jjtschooldlsud/builder-frontend:v5
+- docker build -t jjtschooldlsud/builder-frontend:v6 -f Dockerfile .
+- docker push jjtschooldlsud/builder-frontend:v6
 
 ## Apply Configurations
 - kubectl apply -f k8s/secret.yaml

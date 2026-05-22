@@ -389,10 +389,55 @@ async function openCreateModal(targetType) {
   if (targetType === 'users') {
     filterPopupUserTerms();
   } else if (targetType === 'courses') {
+    const pageProg = document.getElementById('filter-courses-program')?.value || 'All';
+    const pageTerm = document.getElementById('filter-courses-term')?.value || 'All';
+    
+    const popupProg = document.getElementById('popup-course-program');
+    if (popupProg) {
+      popupProg.value = pageProg;
+    }
     filterPopupCourseTerms();
+
+    if (pageTerm !== 'All') {
+      const cb = document.querySelector(`input[name="course_term_cb"][value="${pageTerm}"]`);
+      if (cb) {
+        cb.checked = true;
+      }
+    }
   } else if (targetType === 'courseslots') {
+    const pageProg = document.getElementById('filter-slots-program')?.value || 'All';
+    const pageTerm = document.getElementById('filter-slots-term')?.value || 'All';
+    const pageCourse = document.getElementById('filter-slots-course')?.value || 'All';
+    const pageDept = document.getElementById('filter-professors-dept')?.value || 'All';
+
+    const popupProg = document.getElementById('popup-slot-program');
+    if (popupProg) {
+      popupProg.value = pageProg;
+    }
     filterPopupSlotTerms();
+
+    const popupTerm = document.getElementById('popup-slot-term');
+    if (popupTerm && (pageTerm === 'All' || Array.from(popupTerm.options).some(opt => opt.value === pageTerm))) {
+      popupTerm.value = pageTerm;
+    }
+    filterPopupSlotCourses();
+
+    const slotCourse = document.getElementById('slot-course');
+    if (slotCourse && pageCourse !== 'All' && Array.from(slotCourse.options).some(opt => opt.value === pageCourse)) {
+      slotCourse.value = pageCourse;
+    }
+
+    const popupDept = document.getElementById('popup-slot-prof-dept');
+    if (popupDept) {
+      popupDept.value = pageDept;
+    }
+    filterPopupSlotProfessors();
   } else if (targetType === 'terms') {
+    const pageProg = document.getElementById('filter-terms-program')?.value || 'All';
+    const popupProg = document.getElementById('program-id');
+    if (popupProg && pageProg !== 'All') {
+      popupProg.value = pageProg;
+    }
     filterPopupTermSemesters();
   }
 
@@ -576,6 +621,9 @@ function generateFormFields(targetType, record) {
         </div>
       `;
     case 'courseslots':
+      const uniqueDepts = [...new Set(cachedProfessors.map(p => p.profdepartment || 'N/A'))].filter(d => d !== '').sort();
+      const deptOptionsHtml = uniqueDepts.map(d => `<option value="${d}">${escapeHtml(d)}</option>`).join('');
+
       return `
         <div class="form-group-admin">
           <label for="popup-slot-program">Filter Courses by Program</label>
@@ -595,6 +643,13 @@ function generateFormFields(targetType, record) {
           <label for="slot-course">Select Existing Course</label>
           <select id="slot-course" required>
             ${courseOptionsHtml}
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label for="popup-slot-prof-dept">Filter Professors by Department</label>
+          <select id="popup-slot-prof-dept" onchange="filterPopupSlotProfessors()">
+            <option value="All">All Departments</option>
+            ${deptOptionsHtml}
           </select>
         </div>
         <div class="form-group-admin">
@@ -703,6 +758,19 @@ function preFillFormFields(targetType, record) {
       }
     }
     document.getElementById('slot-course').value = record.coursecode || '';
+
+    // Auto-resolve professor department filter in edit modal
+    if (record.profid && record.profid !== 'None') {
+      const profObj = cachedProfessors.find(p => p.profid.toString() === record.profid.toString());
+      if (profObj) {
+        document.getElementById('popup-slot-prof-dept').value = profObj.profdepartment || 'N/A';
+      } else {
+        document.getElementById('popup-slot-prof-dept').value = 'All';
+      }
+    } else {
+      document.getElementById('popup-slot-prof-dept').value = 'All';
+    }
+    filterPopupSlotProfessors();
     document.getElementById('slot-prof').value = record.profid || 'None';
     document.getElementById('slot-day').value = record.scheduleday || 'Monday';
 
@@ -858,6 +926,33 @@ function filterPopupSlotCourses() {
   }
 }
 window.filterPopupSlotCourses = filterPopupSlotCourses;
+
+function filterPopupSlotProfessors() {
+  const deptSelect = document.getElementById('popup-slot-prof-dept');
+  const profSelect = document.getElementById('slot-prof');
+  if (!profSelect) return;
+
+  const selectedDept = deptSelect ? deptSelect.value : 'All';
+  const currentProfVal = profSelect.value;
+
+  let filteredProfs = cachedProfessors;
+  if (selectedDept !== 'All') {
+    filteredProfs = cachedProfessors.filter(p => (p.profdepartment || 'N/A') === selectedDept);
+  }
+
+  // Re-populate profSelect
+  let html = '<option value="None">None (Unassigned)</option>';
+  html += filteredProfs.map(p => `<option value="${p.profid}">${escapeHtml(p.profname)} (${escapeHtml(p.profdepartment || 'N/A')})</option>`).join('');
+  profSelect.innerHTML = html;
+
+  // Restore selection if possible, otherwise default to None
+  if (currentProfVal === 'None' || (currentProfVal && filteredProfs.some(p => p.profid.toString() === currentProfVal.toString()))) {
+    profSelect.value = currentProfVal;
+  } else {
+    profSelect.value = 'None';
+  }
+}
+window.filterPopupSlotProfessors = filterPopupSlotProfessors;
 
 // Handle Modal Form Submission (Create or Update)
 async function handleFormSubmit(event) {
