@@ -75,8 +75,15 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .page-title-header {
@@ -297,7 +304,7 @@
   gap: 6px;
 }
 
-.form-group-admin > label {
+.form-group-admin>label {
   font-size: 0.72rem;
   font-weight: 600;
   color: #71717a;
@@ -340,21 +347,28 @@
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes modalSlideUp {
-  from { transform: translateY(24px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* ── Admin Navbar override ──────────────────────────────────── */
-#admin-navbar {
-  display: none;
-  margin-left: 20px;
-  margin-right: auto;
-}
 
 .close-btn-admin {
   position: static !important;
@@ -458,58 +472,37 @@
   min-width: auto;
 }
 
-.admin-filter-select.select-program { width: 135px; }
-.admin-filter-select.select-term    { width: 110px; }
-.admin-filter-select.select-course  { width: 170px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
-.admin-filter-select.select-dept    { width: 155px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.admin-filter-select.select-program {
+  width: 135px;
+}
 
-/* ── Layout Overrides (locked viewport, scrollable content) ─── */
-html,
-body {
-  height: 100vh;
-  margin: 0;
-  padding: 0;
+.admin-filter-select.select-term {
+  width: 110px;
+}
+
+.admin-filter-select.select-course {
+  width: 170px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   overflow: hidden;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  background-attachment: fixed;
+.admin-filter-select.select-dept {
+  width: 155px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.app-header {
-  position: relative !important;
-  top: 0 !important;
-  margin: 0 auto 16px !important;
-  width: 100% !important;
-  flex: 0 0 auto !important;
-}
-
-.page-content {
-  flex: 1 1 0 !important;
-  min-height: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  margin: 0 auto !important;
-  width: 100% !important;
-  padding: 20px 28px 28px 28px !important;
-}
+/* ── Layout Overrides (locked viewport, scrollable content) ─── */
 
 .page-title {
-  flex: 0 0 auto !important;
   margin-top: 0 !important;
   margin-bottom: 16px !important;
   margin-left: 0 !important;
 }
 
 .page-panel {
-  flex: 1 1 0 !important;
-  min-height: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
   padding: 24px !important;
 }
 
