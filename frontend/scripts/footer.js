@@ -31,45 +31,45 @@
     terms: {
       title: 'Terms and Conditions',
       body: `
-        <h4>1. Acceptance</h4>
+        <h4>1. ACCEPTANCE</h4>
         <p>By using Academic Schedule Builder, you agree to these Terms and Conditions. If you do not agree, please discontinue use of the service.</p>
-        <h4>2. Educational use</h4>
+        <h4>2. EDUCATIONAL USE</h4>
         <p>Academic Schedule Builder is provided to help students plan academic schedules. Course data, availability, and institutional policies may change without notice. Always verify your final schedule with your registrar or academic office.</p>
-        <h4>3. Accounts</h4>
+        <h4>3. ACCOUNTS</h4>
         <p>You are responsible for maintaining the confidentiality of your login credentials and for all activity under your account. Notify us promptly if you suspect unauthorized access.</p>
-        <h4>4. Acceptable use</h4>
+        <h4>4. ACCEPTABLE USE</h4>
         <p>You agree not to misuse the platform, attempt unauthorized access, interfere with service operation, or use the tool for unlawful purposes.</p>
-        <h4>5. Disclaimer</h4>
+        <h4>5. DISCLAIMER</h4>
         <p>The service is provided &ldquo;as is&rdquo; without warranties of any kind. CDJ: Academic Schedule Builders is not liable for scheduling conflicts, registration errors, or academic outcomes resulting from use of this tool.</p>
-        <h4>6. Changes</h4>
+        <h4>6. CHANGES</h4>
         <p>We may update these terms from time to time. Continued use after changes are posted constitutes acceptance of the revised terms.</p>
-        <h4>7. Contact</h4>
+        <h4>7. CONTACT</h4>
         <p><a href="mailto:academicschedulebuilder@gmail.com">academicschedulebuilder@gmail.com</a>.</p>
       `,
     },
     privacy: {
       title: 'Privacy Policy',
       body: `
-        <h4>Information we collect</h4>
+        <h4>INFORMATION WE COLLECT</h4>
         <p>We collect information you provide when creating an account (such as email address), profile and program preferences, and schedule data you save within the application.</p>
-        <h4>How we use information</h4>
+        <h4>HOW WE USE YOUR INFORMATION</h4>
         <p>Your information is used to authenticate your account, store your schedules, personalize your experience, and improve the reliability of the service.</p>
-        <h4>Data storage and security</h4>
+        <h4>DATA STORAGE AND SECURITY</h4>
         <p>We take reasonable measures to protect your data. No method of transmission or storage is completely secure, and we cannot guarantee absolute security.</p>
-        <h4>Sharing</h4>
+        <h4>SHARING</h4>
         <p>We do not sell your personal information. We may share data only when required by law or to protect the rights and safety of users and the service.</p>
-        <h4>Your choices</h4>
-        <p>You may update profile information within the app. For data inquiries, contact us at the email address listed in the site footer.</p>
-        <h4>Updates</h4>
+        <h4>YOUR CHOICES/h4>
+        <p>You may update and delete profile information within the app. For data inquiries, contact us at the email address listed in the site footer.</p>
+        <h4>UPDATES</h4>
         <p>This Privacy Policy may be updated periodically. Material changes will be reflected on this page when you view the policy from the footer.</p>
-        <h4>Contact</h4>
+        <h4>CONTACT</h4>
         <p><a href="mailto:academicschedulebuilder@gmail.com">academicschedulebuilder@gmail.com</a>.</p>
       `,
     },
     about: {
       title: 'About',
       body: `
-        <h4>Academic Schedule Builder</h4>
+        <h4>ACADEMIC SCHEDULE BUILDER</h4>
         <p>Academic Schedule Builder (ASB) is a student-first web application by <strong>CDJ: Academic Schedule Builders</strong> as a join group project for the courses <strong>Application Development and Emerging Technologies</strong>, <strong> Information Management </strong> and <strong>Programming Languages</strong> at <strong>De La Salle University - Dasmarinas</strong>.</p>
         <h4>What you can do</h4>
         <ul>
@@ -77,9 +77,9 @@
           <li>Plot your week visually with the timeline plotter</li>
           <li>Save, restore, and manage multiple schedule versions</li>
         </ul>
-        <h4>Our mission</h4>
+        <h4>OUR MISSION</h4>
         <p>We built ASB to make semester planning faster, clearer, and less stressful - so you can focus on learning instead of spreadsheet gymnastics.</p>
-        <h4>Get in touch</h4>
+        <h4>GET IN TOUCH</h4>
         <p><a href="mailto:academicschedulebuilder@gmail.com">academicschedulebuilder@gmail.com</a>.</p>
       `,
     },
