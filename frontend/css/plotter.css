@@ -59,9 +59,8 @@
 
 .plotter-schedule-item:hover {
   background: var(--surface);
-  border-color: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 .plotter-schedule-item button {
@@ -227,7 +226,6 @@
 .btn-green:hover {
   background: #059669;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
 }
 
 .btn-green:active {
@@ -363,7 +361,6 @@
   font-size: 0.7rem;
   font-weight: 600;
   text-align: center;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -371,12 +368,11 @@
   overflow: hidden;
   pointer-events: auto;
   box-sizing: border-box;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .course-block:hover {
   transform: scale(1.03);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
 }
 
 .course-block .subject-code {

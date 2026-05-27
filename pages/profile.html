@@ -23,9 +23,12 @@
     </div>
 
     <nav class="app-nav">
-      <button class="nav-button" onclick="window.location.href='home.html'"><img src="../assets/home.png" alt="Home" class="nav-icon"> Home</button>
-      <button class="nav-button" onclick="window.location.href='builder.html'"><img src="../assets/builder.png" alt="Builder" class="nav-icon"> Builder</button>
-      <button class="nav-button" onclick="window.location.href='plotter.html'"><img src="../assets/plotter.png" alt="Plotter" class="nav-icon"> Plotter</button>
+      <button class="nav-button" onclick="window.location.href='home.html'"><img src="../assets/home.png" alt="Home"
+          class="nav-icon"> Home</button>
+      <button class="nav-button" onclick="window.location.href='builder.html'"><img src="../assets/builder.png"
+          alt="Builder" class="nav-icon"> Builder</button>
+      <button class="nav-button" onclick="window.location.href='plotter.html'"><img src="../assets/plotter.png"
+          alt="Plotter" class="nav-icon"> Plotter</button>
     </nav>
 
     <div class="header-profile">
@@ -103,6 +106,11 @@
             </button>
           </div>
         </div>
+        <div class="danger-zone-col">
+          <h3>Danger Zone</h3>
+          <p>Permanently delete your account and all associated schedule data. This action is irreversible.</p>
+          <button id="delete-account-btn" class="btn-danger">Delete Account</button>
+        </div>
       </section>
 
       <!-- Right Column: Course Selection Panel -->
@@ -132,8 +140,6 @@
 
         <button id="apply-courses-btn" class="btn-primary profile-apply-btn">Apply Selection</button>
         <p id="selected-courses" class="selected-courses"></p>
-        <button id="schedule-picker-btn" class="btn-primary" onclick="window.location.href='builder.html'" hidden>Go to
-          Schedule Builder</button>
       </section>
     </div>
   </main>

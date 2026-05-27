@@ -432,4 +432,71 @@ window.addEventListener('load', async () => {
   if (course && year && semester) {
     applySelectionToUI(course, year, semester);
   }
+
+  // Disable account deletion if logged in as super admin
+  const userObjStr = localStorage.getItem('user');
+  if (userObjStr) {
+    try {
+      const u = JSON.parse(userObjStr);
+      if (u.email === 'admin@gmail.com') {
+        const deleteBtn = document.getElementById('delete-account-btn');
+        if (deleteBtn) {
+          deleteBtn.disabled = true;
+          deleteBtn.title = "Super Admin account cannot be deleted.";
+        }
+      }
+    } catch (_) {}
+  }
 });
+
+// Account Deletion Handler
+const deleteAccountBtn = document.getElementById('delete-account-btn');
+if (deleteAccountBtn) {
+  deleteAccountBtn.addEventListener('click', () => {
+    const userObjStr = localStorage.getItem('user');
+    let email = '';
+    if (userObjStr) {
+      try {
+        const u = JSON.parse(userObjStr);
+        email = u.email;
+      } catch (_) {}
+    }
+    
+    if (email === 'admin@gmail.com') {
+      alert('The Super Admin account cannot be deleted.');
+      return;
+    }
+
+    window.promptPopup(
+      'Are you absolutely sure you want to permanently delete your account? All your schedules and details will be deleted forever. To proceed, please type <strong>DELETE</strong> in all caps.',
+      async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await fetch(`${API_BASE}/user/profile`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (response.ok) {
+            localStorage.clear();
+            // Show alert then redirect
+            alert('Your account has been successfully deleted.', 'Account Deleted');
+            setTimeout(() => {
+              window.location.href = '../index.html';
+            }, 1500);
+          } else {
+            const errData = await response.json();
+            alert(errData.error || 'Failed to delete account.');
+          }
+        } catch (error) {
+          alert('Error deleting account: ' + error.message);
+        }
+      },
+      null,
+      'Confirm Account Deletion',
+      'DELETE'
+    );
+  });
+}
+

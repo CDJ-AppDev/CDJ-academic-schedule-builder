@@ -568,3 +568,29 @@ body {
 [data-theme="light"] .form-group-admin select:focus {
   background: var(--panel);
 }
+
+/* ─── Light mode icon fixes ─── */
+/* White page-title icons need to be inverted dark in light mode */
+[data-theme="light"] .page-title-icon {
+  filter: invert(1) brightness(0) saturate(0) invert(0.3);
+}
+/* Nav icons in the navbar (excluding the explicitly-coloured admin button) */
+[data-theme="light"] .app-nav .nav-button:not(#nav-admin-btn) .nav-icon {
+  filter: invert(1) brightness(0) saturate(0) invert(0.3);
+}
+/* Admin nav button hover fix for light mode */
+[data-theme="light"] .nav-button {
+  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.15);
+  color: var(--text);
+}
+[data-theme="light"] .nav-button:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: var(--accent);
+}
+/* Admin tab hover fix for light mode */
+[data-theme="light"] .admin-tab:hover {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--accent);
+}

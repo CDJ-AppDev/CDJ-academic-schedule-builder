@@ -416,4 +416,54 @@
   margin-top: 10px;
 }
 
+/* Danger Zone Account Deletion Styling */
+.danger-zone-col {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.danger-zone-col h3 {
+  color: #ef4444;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.danger-zone-col p {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  border: 1px solid #ef4444;
+  color: white;
+  padding: 12px 20px;
+  border-radius: var(--radius-button, 8px);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 /* Light mode handled via CSS vars above */

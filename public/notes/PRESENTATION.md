@@ -46,7 +46,7 @@ The entry point of the application. Users authenticate using their registered em
 ### Key behaviors:
 - On successful login, the JWT token is stored in `localStorage` and the user is redirected to `home.html`
 - If the user is already logged in (token present), they are automatically redirected away from this page
-- Admin accounts are redirected to `private/admin.html`
+- Admin accounts are redirected to `admin/admin.html`
 
 > [!NOTE]
 > The login card uses glassmorphism with a `backdrop-filter: blur` panel on a dark animated grid background.
@@ -357,7 +357,7 @@ Users can change their enrolled academic term at any time from the Profile page.
 
 ## Step 16: Admin Dashboard — Users
 
-**Page:** `private/admin.html` → **Users** tab
+**Page:** `admin/admin.html` → **Users** tab
 
 The Admin Dashboard is accessible only to users with the `admin` role.
 
@@ -378,7 +378,7 @@ The Admin Dashboard is accessible only to users with the `admin` role.
 
 ## Step 17: Admin Dashboard — Programs
 
-**Page:** `private/admin.html` → **Programs** tab
+**Page:** `admin/admin.html` → **Programs** tab
 
 Manage academic programs (e.g., BSCS, BSIT, BSBA).
 
@@ -396,7 +396,7 @@ Manage academic programs (e.g., BSCS, BSIT, BSBA).
 
 ## Step 18: Admin Dashboard — Terms
 
-**Page:** `private/admin.html` → **Terms** tab
+**Page:** `admin/admin.html` → **Terms** tab
 
 Terms represent a specific year level + semester combination within a program.
 
@@ -414,7 +414,7 @@ Terms represent a specific year level + semester combination within a program.
 
 ## Step 19: Admin Dashboard — Courses
 
-**Page:** `private/admin.html` → **Courses** tab
+**Page:** `admin/admin.html` → **Courses** tab
 
 Courses are the individual subjects offered under each term.
 
@@ -432,7 +432,7 @@ Courses are the individual subjects offered under each term.
 
 ## Step 20: Admin Dashboard — Professors
 
-**Page:** `private/admin.html` → **Professors** tab
+**Page:** `admin/admin.html` → **Professors** tab
 
 Manage the faculty members who teach the courses.
 
@@ -449,7 +449,7 @@ Manage the faculty members who teach the courses.
 
 ## Step 21: Admin Dashboard — Course Slots
 
-**Page:** `private/admin.html` → **Course Slots** tab
+**Page:** `admin/admin.html` → **Course Slots** tab
 
 Course Slots are the actual schedulable class instances — a course taught by a professor at a specific time and room.
 
@@ -471,7 +471,7 @@ Course Slots are the actual schedulable class instances — a course taught by a
 
 ## Step 22: Admin Dashboard — Schedules
 
-**Page:** `private/admin.html` → **Schedules** tab
+**Page:** `admin/admin.html` → **Schedules** tab
 
 A read-only administrative view of all schedules saved by all users.
 
@@ -496,7 +496,7 @@ A read-only administrative view of all schedules saved by all users.
 Landing (index.html)
     │
     ├─▶ Login (login.html)
-    │       ├─▶ [Admin] ──────────────────▶ Admin Dashboard (private/admin.html)
+    │       ├─▶ [Admin] ──────────────────▶ Admin Dashboard (admin/admin.html)
     │       └─▶ [Student] ──────────────▶ Home (home.html)
     │
     ├─▶ Sign Up (signup.html)

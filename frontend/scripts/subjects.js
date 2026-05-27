@@ -403,6 +403,9 @@ function addAvailableCourse(courseslotId) {
   availableCourses = availableCourses.filter(c => c.code !== courseData.code);
   displayAvailableCourses();
   displayCourses();
+
+  // Show success confirmation popup
+  alert(`${courseData.code} — ${courseData.name} has been added to your schedule.`, 'Course Added!');
 }
 
 /**
@@ -456,7 +459,7 @@ function displayCourses() {
              <p class="card-text-main">${esc(displayProf)}</p>
              <p class="card-text-sub">${esc(displayDay)} | ${esc(displayStart)} - ${esc(displayEnd)} ${displayRoom ? `| Room: ${esc(displayRoom)}` : ''}</p>
            </div>
-           <button class="btn-remove btn-remove-inline" data-manual-code="${esc(displayCode)}"><svg class="btn-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px; margin-right: 4px; display: inline-block; vertical-align: -1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>REMOVE</button>
+           <button class="btn-remove btn-remove-inline" data-manual-code="${esc(displayCode)}" data-course-name="${esc(displayCode)} - ${esc(course.name)}"><svg class="btn-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px; margin-right: 4px; display: inline-block; vertical-align: -1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>REMOVE</button>
          </div>
        `;
       coursesList.appendChild(courseCard);
@@ -489,7 +492,7 @@ function displayCourses() {
           <p class="card-text-main">${esc(displayProf)}</p>
           <p class="card-text-sub">${esc(displayDay)} ${displayStart ? `| ${esc(displayStart)} - ${esc(displayEnd)}` : ''} ${displayRoom ? `| Room: ${esc(displayRoom)}` : ''}</p>
         </div>
-        <button class="btn-remove btn-remove-inline" data-courseslot-id="${course.courseslot_id}"><svg class="btn-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px; margin-right: 4px; display: inline-block; vertical-align: -1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>REMOVE</button>
+        <button class="btn-remove btn-remove-inline" data-courseslot-id="${course.courseslot_id}" data-course-name="${esc(displayCode)} - ${esc(course.name)}"><svg class="btn-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px; margin-right: 4px; display: inline-block; vertical-align: -1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>REMOVE</button>
       </div>
     `;
     coursesList.appendChild(courseCard);
@@ -551,12 +554,20 @@ if (coursesList) {
 
     const manualCode = removeBtn.getAttribute('data-manual-code');
     const slotId = removeBtn.getAttribute('data-courseslot-id');
+    const courseName = removeBtn.getAttribute('data-course-name') || 'this course';
 
-    if (manualCode) {
-      removeManualCourse(manualCode);
-    } else if (slotId) {
-      removeCourse(slotId);
-    }
+    confirmPopup(
+      `Remove <strong>${courseName}</strong> from your schedule?`,
+      () => {
+        if (manualCode) {
+          removeManualCourse(manualCode);
+        } else if (slotId) {
+          removeCourse(slotId);
+        }
+      },
+      null,
+      'Remove Course'
+    );
   });
 }
 

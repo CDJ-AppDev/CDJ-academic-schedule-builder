@@ -54,9 +54,9 @@ window.redirectWithToken = redirectWithToken;
 function getAdminPath() {
   const pathname = window.location.pathname;
   if (pathname.includes('/pages/')) {
-    return '../private/admin.html';
+    return '../admin/admin.html';
   }
-  return './private/admin.html';
+  return './admin/admin.html';
 }
 
 /**
@@ -79,20 +79,20 @@ function injectAdminNavbarButton() {
           adminBtn.innerHTML = '<img src="../assets/admin.png" alt="Admin" class="nav-icon"> Admin';
           adminBtn.onclick = () => {
             const isInsidePages = window.location.pathname.includes('/pages/');
-            const isAlreadyAtAdmin = window.location.pathname.includes('/private/') && window.location.pathname.includes('admin.html');
+            const isAlreadyAtAdmin = window.location.pathname.includes('/admin/') && window.location.pathname.includes('admin.html');
             if (isAlreadyAtAdmin) {
               return;
             }
-            redirectWithToken(isInsidePages ? '../private/admin.html' : './private/admin.html');
+            redirectWithToken(isInsidePages ? '../admin/admin.html' : './admin/admin.html');
           };
-          
+
           if (user.email === 'admin@gmail.com') {
             // Super admin should not have access to standard navbar buttons
             Array.from(nav.children).forEach(child => {
               child.style.display = 'none';
             });
           }
-          
+
           nav.appendChild(adminBtn);
         }
       }
@@ -281,6 +281,12 @@ if (signupButton) {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Invalid email address format.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       alert('Passwords do not match.');
       return;
@@ -383,7 +389,7 @@ if (forgotSubmitBtn) {
         body: JSON.stringify({ email })
       });
       const data = await response.json();
-      
+
       if (response.status === 404 || (data && data.exists === false)) {
         forgotSubmitBtn.disabled = false;
         forgotSubmitBtn.textContent = 'Send Reset PIN →';

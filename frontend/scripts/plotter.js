@@ -212,10 +212,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         block.style.width = `${widthPercent}%`;
         block.style.backgroundColor = bgColor;
         block.style.color = fontColor;
+        block.style.border = `2px solid ${fontColor}`;
 
         if (isIrregular) {
             block.style.border = `2px dashed ${fontColor || 'rgba(255,255,255,0.85)'}`;
-            block.style.boxShadow = 'inset 0 0 12px rgba(0,0,0,0.15), 0 6px 16px rgba(0,0,0,0.12)';
         }
 
         // 1. Course Code

@@ -114,21 +114,45 @@ if (setupButton) {
         return;
       }
 
-      const response = await fetch(`${API_BASE}/term`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      const programText = programSelect.options[programSelect.selectedIndex]?.text || '';
+      const yearText = yearSelect.options[yearSelect.selectedIndex]?.text || '';
+      const semesterText = semesterSelect.options[semesterSelect.selectedIndex]?.text || '';
+
+      const confirmMessage = `
+        Please confirm your setup details:<br><br>
+        <strong>Full Name:</strong> ${escapeHtml(name)}<br>
+        <strong>Program:</strong> ${escapeHtml(programText)}<br>
+        <strong>Year Level:</strong> ${escapeHtml(yearText)}<br>
+        <strong>Semester:</strong> ${escapeHtml(semesterText)}<br><br>
+        Are you sure you want to save these details and proceed?
+      `;
+
+      confirmPopup(
+        confirmMessage,
+        async () => {
+          try {
+            const response = await fetch(`${API_BASE}/term`, {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ name, program_id, year_level, semester })
+            });
+            const data = await response.json();
+            if (response.ok) {
+              localStorage.setItem('termId', data.term_id);
+              window.location.href = './home.html';
+            } else {
+              alert(data.error || 'Setup failed');
+            }
+          } catch (error) {
+            alert('Setup failed: ' + error.message);
+          }
         },
-        body: JSON.stringify({ name, program_id, year_level, semester })
-      });
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem('termId', data.term_id);
-        window.location.href = './home.html';
-      } else {
-        alert(data.error || 'Setup failed');
-      }
+        null,
+        'Confirm Setup Details'
+      );
     } catch (error) {
       alert('Setup failed: ' + error.message);
     }
