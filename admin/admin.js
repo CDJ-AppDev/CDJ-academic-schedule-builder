@@ -723,8 +723,8 @@ function generateFormFields(targetType, record) {
         </div>
         <div class="form-group-admin">
           <label>Assigned Term(s)</label>
-          <div id="course-terms-container" style="max-height: 140px; overflow-y: auto; border: 1px solid rgba(0,0,0,0.1); padding: 6px; border-radius: 8px; background: #fafafa;">
-            ${cachedTerms.map(t => `<div style="padding: 4px 6px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.04)'" onmouseout="this.style.background='transparent'"><label style="display:flex; align-items:center; gap: 10px; font-weight: 500; cursor: pointer; color: #333; margin: 0; text-transform: none; justify-content: flex-start;"><input type="checkbox" name="course_term_cb" value="${t.termid}" style="width: 16px !important; height: 16px !important; margin: 0 !important; flex-shrink: 0;"> <span>${t.termid} <span style="color:#888; font-size: 0.85em; font-weight: normal;">(${t.programid} Y${t.yearlevel} S${t.semester})</span></span></label></div>`).join('')}
+          <div id="course-terms-container" class="course-terms-container">
+            ${cachedTerms.map(t => `<div class="course-term-row" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'"><label class="course-term-label"><input type="checkbox" name="course_term_cb" value="${t.termid}"> <span>${t.termid} <span class="course-term-meta">(${t.programid} Y${t.yearlevel} S${t.semester})</span></span></label></div>`).join('')}
           </div>
         </div>
       `;
@@ -974,7 +974,7 @@ function filterPopupCourseTerms() {
   }
 
   // Re-populate termContainer
-  let html = filteredTerms.map(t => `<div style="padding: 4px 6px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.04)'" onmouseout="this.style.background='transparent'"><label style="display:flex; align-items:center; gap: 10px; font-weight: 500; cursor: pointer; color: #333; margin: 0; text-transform: none; justify-content: flex-start;"><input type="checkbox" name="course_term_cb" value="${t.termid}" style="width: 16px !important; height: 16px !important; margin: 0 !important; flex-shrink: 0;"> <span>${t.termid} <span style="color:#888; font-size: 0.85em; font-weight: normal;">(${t.programid} Y${t.yearlevel} S${t.semester})</span></span></label></div>`).join('');
+  let html = filteredTerms.map(t => `<div class="course-term-row" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'"><label class="course-term-label"><input type="checkbox" name="course_term_cb" value="${t.termid}"> <span>${t.termid} <span class="course-term-meta">(${t.programid} Y${t.yearlevel} S${t.semester})</span></span></label></div>`).join('');
   termContainer.innerHTML = html;
 
   // Restore selections

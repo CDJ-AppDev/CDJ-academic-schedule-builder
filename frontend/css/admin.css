@@ -130,7 +130,7 @@
   vertical-align: middle;
 }
 
-..admin-table tr:last-child td {
+.admin-table tr:last-child td {
   border-bottom: none;
 }
 
