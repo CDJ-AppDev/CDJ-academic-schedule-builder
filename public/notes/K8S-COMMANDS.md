@@ -3,8 +3,8 @@
 - docker push jjtschooldlsud/builder-postgres:v3.1.1
 
 ## Backend
-- docker build -t jjtschooldlsud/builder-backend:v3.1.1 -f backend/Dockerfile backend
-- docker push jjtschooldlsud/builder-backend:v3.1.1
+- docker build -t jjtschooldlsud/builder-backend:v3.1.2 -f backend/Dockerfile backend
+- docker push jjtschooldlsud/builder-backend:v3.1.2
 
 ## Frontend
 - docker build -t jjtschooldlsud/builder-frontend:v3.1.4 -f Dockerfile .
