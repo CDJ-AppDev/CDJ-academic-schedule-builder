@@ -67,12 +67,8 @@
 }
 
 .admin-content.active {
-  display: flex !important;
-  flex-direction: column;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow-y: auto;
-  max-height: 65vh;
+  display: block;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes fadeIn {
@@ -495,33 +491,20 @@
   overflow: hidden;
 }
 
-/* ── Layout Overrides (locked viewport, scrollable content) ─── */
-body {
-  height: 100vh;
-  overflow: hidden !important;
-}
-
+/* ── Layout Overrides ─────────────────────────────────────────── */
 .page-title {
   margin-top: 28px !important;
   margin-bottom: 28px !important;
   margin-left: 28px !important;
-  flex-shrink: 0;
 }
 
 .page-content {
-  min-height: calc(100vh - 120px);
   margin-top: 36px !important;
   margin-bottom: 36px !important;
-  display: flex;
-  flex-direction: column;
 }
 
 .page-panel {
   padding: 24px !important;
-  flex: 1 1 0;
-  min-height: 500px;
-  display: flex;
-  flex-direction: column;
 }
 
 /* ── Custom Scrollbar ───────────────────────────────────────── */
@@ -570,14 +553,9 @@ body {
   background: var(--panel);
 }
 
-/* ─── Light mode icon fixes ─── */
-/* White page-title icons need to be inverted dark in light mode */
+/* Title panel shield — white on light theme */
 [data-theme="light"] .page-title-icon {
-  filter: invert(1) brightness(0) saturate(0) invert(0.3);
-}
-/* Nav icons in the navbar (excluding the explicitly-coloured admin button) */
-[data-theme="light"] .app-nav .nav-button:not(#nav-admin-btn) .nav-icon {
-  filter: invert(1) brightness(0) saturate(0) invert(0.3);
+  filter: brightness(0) invert(0);
 }
 /* Admin nav button hover fix for light mode */
 [data-theme="light"] .nav-button {

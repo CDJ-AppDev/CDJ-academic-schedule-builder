@@ -26,6 +26,10 @@
   --grid-line: rgba(255, 255, 255, 0.015);
   --radial-glow: rgba(139, 92, 246, 0.08);
   --center-glow: rgba(139, 92, 246, 0.04);
+
+  --app-chrome-max: 1200px;
+  --app-chrome-gutter: 24px;
+  --app-chrome-width: min(var(--app-chrome-max), calc(100% - 2 * var(--app-chrome-gutter)));
 }
 
 [data-theme="light"] {
@@ -469,9 +473,10 @@ select option {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  width: var(--app-chrome-width);
+  max-width: var(--app-chrome-max);
   padding: 14px 24px;
   margin: 0 auto;
-  max-width: 1200px;
   background: var(--panel-glass);
   border: 1px solid var(--border);
   border-radius: var(--radius-container);
@@ -574,7 +579,8 @@ select option {
 }
 
 .page-content {
-  max-width: 1200px;
+  width: var(--app-chrome-width);
+  max-width: var(--app-chrome-max);
   margin: 36px auto 48px;
   padding: 0 24px 24px 24px;
   background: var(--panel-glass);

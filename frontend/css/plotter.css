@@ -2,10 +2,6 @@
    plotter.css — Glassmorphic Dark Schedule Plotter
    ═══════════════════════════════════════════════════════════════ */
 
-.plotter-main {
-  max-width: 1200px;
-}
-
 /* ── Main Plotter Panel ─────────────────────────────────────── */
 .plotter-panel {
   background: var(--surface);
@@ -88,6 +84,8 @@
 
 /* ── Options Box ────────────────────────────────────────────── */
 .plotter-options-box {
+  margin-top: 20px;
+  margin-bottom: 20px;
   background: var(--surface);
   border-radius: var(--radius-container);
   padding: 20px;
