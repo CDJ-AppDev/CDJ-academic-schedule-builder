@@ -1,32 +1,8 @@
-// URL-based token propagation helper for file:// protocols crossing directory sandboxes
-function getToken() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const urlToken = urlParams.get('token');
-  if (urlToken) {
-    localStorage.setItem('token', urlToken);
-    const urlUser = urlParams.get('user');
-    if (urlUser) {
-      try {
-        localStorage.setItem('user', decodeURIComponent(urlUser));
-      } catch (e) { }
-    }
-    return urlToken;
-  }
-  return localStorage.getItem('token');
-}
-
-function redirectWithToken(targetUrl) {
-  const token = localStorage.getItem('token');
-  const user = localStorage.getItem('user');
-  if (window.location.protocol === 'file:' && token) {
-    const separator = targetUrl.includes('?') ? '&' : '?';
-    const params = `token=${encodeURIComponent(token)}` + (user ? `&user=${encodeURIComponent(user)}` : '');
-    window.location.href = targetUrl + separator + params;
-  } else {
-    window.location.href = targetUrl;
-  }
-}
-window.redirectWithToken = redirectWithToken;
+// Admin portal relies on shared auth helpers from `frontend/scripts/auth.js`:
+// - getToken()
+// - redirectWithToken()
+// - API_BASE
+// Keeping these centralized avoids divergence between admin and non-admin flows.
 
 // Route guard: check for token and sync user session on load
 document.addEventListener('DOMContentLoaded', async () => {
@@ -79,6 +55,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load the default tab
   loadTab('users');
 });
+
+// Shared utilities (loaded via `frontend/scripts/utils.js` in admin.html)
+const escapeHtml = (value) => {
+  if (window.APP_UTILS && typeof window.APP_UTILS.escapeHtml === 'function') {
+    return window.APP_UTILS.escapeHtml(value);
+  }
+  // Fallback (should only happen if utils.js fails to load)
+  if (!value) return '';
+  return value
+    .toString()
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
+const timeStringToMinutes = (timeStr) => {
+  if (window.APP_UTILS && typeof window.APP_UTILS.timeStringToMinutes === 'function') {
+    return window.APP_UTILS.timeStringToMinutes(timeStr);
+  }
+  if (!timeStr) return null;
+  const parts = timeStr.split(':');
+  if (parts.length < 2) return null;
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+  if (isNaN(hours) || isNaN(minutes)) return null;
+  return hours * 60 + minutes;
+};
 
 function fallbackNavbarToggle() {
   const userStr = localStorage.getItem('user');
@@ -345,7 +350,7 @@ function renderSchedules(schedules) {
 
 // Fetch all connecting tables in background to make sure selectors are up-to-date
 async function fetchDependencies() {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   try {
     // 0. Fetch Programs
     const progRes = await fetch(`${API_BASE}/admin/programs`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -957,7 +962,7 @@ window.filterPopupSlotProfessors = filterPopupSlotProfessors;
 // Handle Modal Form Submission (Create or Update)
 async function handleFormSubmit(event) {
   event.preventDefault();
-  const token = localStorage.getItem('token');
+  const token = getToken();
   const action = document.getElementById('form-action').value;
   const targetType = document.getElementById('form-target-type').value;
   const targetId = document.getElementById('form-target-id').value;
@@ -1006,14 +1011,8 @@ async function handleFormSubmit(event) {
     const startStr = document.getElementById('slot-start').value;
     const endStr = document.getElementById('slot-end').value;
 
-    const parseTimeToMins = (str) => {
-      if (!str) return null;
-      const parts = str.split(':');
-      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-    };
-
-    const startMins = parseTimeToMins(startStr);
-    const endMins = parseTimeToMins(endStr);
+    const startMins = timeStringToMinutes(startStr);
+    const endMins = timeStringToMinutes(endStr);
     const limitStart = 7 * 60; // 7:00 AM
     const limitEnd = 20 * 60;  // 8:00 PM
 
@@ -1093,7 +1092,7 @@ async function elevateToAdmin(userId) {
   confirmPopup(
     'Are you absolutely sure you want to elevate this user to Admin access?',
     async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       try {
         const response = await fetch(`${API_BASE}/admin/users/${userId}/make-admin`, {
           method: 'PUT',
@@ -1120,7 +1119,7 @@ async function removeAdmin(userId) {
   confirmPopup(
     'Are you sure you want to remove Admin access from this user?',
     async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       try {
         const response = await fetch(`${API_BASE}/admin/users/${userId}/remove-admin`, {
           method: 'PUT',
@@ -1156,7 +1155,7 @@ async function deleteRecord(targetType, recordId) {
   confirmPopup(
     msg,
     async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       try {
         const response = await fetch(`${API_BASE}/admin/${targetType}/${encodeURIComponent(recordId)}`, {
           method: 'DELETE',
@@ -1179,18 +1178,6 @@ async function deleteRecord(targetType, recordId) {
     null,
     'Confirm Delete'
   );
-}
-
-// Utility to safely escape user strings to prevent XSS
-function escapeHtml(unsafe) {
-  if (!unsafe) return '';
-  return unsafe
-    .toString()
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }
 
 // Fetch lists required for selectors/filters globally

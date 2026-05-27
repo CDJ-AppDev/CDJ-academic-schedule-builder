@@ -1,14 +1,14 @@
 ## PostgreSQL
-- docker build -t jjtschooldlsud/builder-postgres:v5 -f backend/sql/Dockerfile backend/sql
-- docker push jjtschooldlsud/builder-postgres:v5
+- docker build -t jjtschooldlsud/builder-postgres:v3.1.1 -f backend/sql/Dockerfile backend/sql
+- docker push jjtschooldlsud/builder-postgres:v3.1.1
 
 ## Backend
-- docker build -t jjtschooldlsud/builder-backend:v5 -f backend/Dockerfile backend
-- docker push jjtschooldlsud/builder-backend:v5
+- docker build -t jjtschooldlsud/builder-backend:v3.1.1 -f backend/Dockerfile backend
+- docker push jjtschooldlsud/builder-backend:v3.1.1
 
 ## Frontend
-- docker build -t jjtschooldlsud/builder-frontend:v7 -f Dockerfile .
-- docker push jjtschooldlsud/builder-frontend:v7
+- docker build -t jjtschooldlsud/builder-frontend:v3.1.1 -f Dockerfile .
+- docker push jjtschooldlsud/builder-frontend:v3.1.1
 
 ## Apply Configurations
 - kubectl apply -f k8s/secret.yaml

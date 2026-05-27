@@ -96,3 +96,15 @@ CREATE TABLE PASSWORD_RESET_TOKEN (
     ExpiresAt TIMESTAMP NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- -------------------------------------------------------------------
+-- Indexes (performance + foreign-key join support)
+-- -------------------------------------------------------------------
+-- FK indexes are not created automatically in Postgres; add them explicitly to avoid slow joins / deletes.
+CREATE INDEX IF NOT EXISTS idx_term_programid ON TERM(ProgramID);
+CREATE INDEX IF NOT EXISTS idx_user_profile_termid ON USER_PROFILE(TermID);
+CREATE INDEX IF NOT EXISTS idx_course_term_termid ON COURSE_TERM(TermID);
+CREATE INDEX IF NOT EXISTS idx_courseslot_coursecode ON COURSESLOT(CourseCode);
+CREATE INDEX IF NOT EXISTS idx_courseslot_profid ON COURSESLOT(ProfID);
+CREATE INDEX IF NOT EXISTS idx_schedule_userid ON SCHEDULE(UserID);
+CREATE INDEX IF NOT EXISTS idx_password_reset_token_useremail ON PASSWORD_RESET_TOKEN(UserEmail);
