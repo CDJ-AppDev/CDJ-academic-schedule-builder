@@ -4,16 +4,55 @@
 :root {
   color-scheme: dark;
   --bg: #09090b;
-  --panel: rgba(20, 20, 25, 0.65);
-  --panel-shadow: 0 32px 64px rgba(0, 0, 0, 0.6);
-  --border: rgba(255, 255, 255, 0.08);
+  --panel: #0f0f13;
+  --panel-glass: rgba(15, 15, 19, 0.85);
+  --panel-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --border: rgba(255, 255, 255, 0.06);
   --text: #f4f4f5;
   --muted: #a1a1aa;
   --accent: #8b5cf6;
   --accent-rgb: 139, 92, 246;
   --accent-gradient: linear-gradient(135deg, #a78bfa, #8b5cf6);
-  --surface: rgba(255, 255, 255, 0.03);
-  --input-bg: rgba(255, 255, 255, 0.04);
+  --surface: #15151a;
+  --input-bg: #18181e;
+  
+  --radius-container: 16px;
+  --radius-button: 10px;
+  --radius-inline: 8px;
+  
+  --transition-fast: 150ms cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-normal: 250ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  --grid-line: rgba(255, 255, 255, 0.015);
+  --radial-glow: rgba(139, 92, 246, 0.08);
+  --center-glow: rgba(139, 92, 246, 0.04);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-glass: rgba(255, 255, 255, 0.85);
+  --panel-shadow: 0 16px 40px rgba(139, 92, 246, 0.08);
+  --border: rgba(139, 92, 246, 0.12);
+  --text: #0f172a;
+  --muted: #475569;
+  --accent: #7c3aed;
+  --accent-rgb: 124, 58, 237;
+  --accent-gradient: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  --surface: #f1f5f9;
+  --input-bg: #ffffff;
+
+  --grid-line: rgba(139, 92, 246, 0.04);
+  --radial-glow: rgba(124, 58, 237, 0.04);
+  --center-glow: rgba(124, 58, 237, 0.02);
+}
+
+body, header, main, section, div, input, select, button, span, h1, h2, h3, p, a {
+  transition: background-color 200ms cubic-bezier(0.23, 1, 0.32, 1), 
+              border-color 200ms cubic-bezier(0.23, 1, 0.32, 1), 
+              color 200ms cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 * {
@@ -25,10 +64,10 @@ body {
   min-height: 100vh;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at top, rgba(139, 92, 246, 0.08), transparent 30%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    #09090b;
+  background: radial-gradient(circle at top, var(--radial-glow), transparent 30%),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(180deg, var(--grid-line) 1px, transparent 1px),
+    var(--bg);
   background-size: 100% 100%, 40px 40px, 40px 40px;
 }
 
@@ -36,7 +75,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.04), transparent 35%);
+  background: radial-gradient(circle at center, var(--center-glow), transparent 35%);
   pointer-events: none;
 }
 
@@ -46,13 +85,134 @@ body::before {
   display: grid;
   place-items: center;
   padding: 32px;
+  padding-top: calc(72px + 32px);
+}
+
+/* ── Auth Header (Login / Signup) ────────────────────────────── */
+.auth-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 200ms cubic-bezier(0.23, 1, 0.32, 1), border-color 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+  transition: opacity 0.2s ease;
+}
+
+.auth-brand:hover {
+  opacity: 0.8;
+}
+
+.auth-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.auth-brand-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.auth-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.auth-theme-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] .auth-theme-btn {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .auth-theme-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(124, 58, 237, 0.25);
+}
+
+.auth-back-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 36px;
+}
+
+.auth-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .auth-back-btn {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .auth-back-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(124, 58, 237, 0.25);
+}
+
+@media (max-width: 600px) {
+  .auth-brand-text {
+    display: none;
+  }
+  .auth-header {
+    padding: 12px 18px;
+  }
 }
 
 .page-header {
   position: absolute;
   top: 24px;
   left: 32px;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--muted);
   letter-spacing: 0.32em;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -63,11 +223,11 @@ body::before {
   position: relative;
   width: min(460px, calc(100vw - 48px));
   background: var(--panel);
-  border-radius: 28px;
+  border-radius: var(--radius-container);
   box-shadow: var(--panel-shadow);
   border: 1px solid var(--border);
   overflow: hidden;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(8px);
 }
 
 .login-card::before {
@@ -119,7 +279,7 @@ h1 {
   font-weight: 700;
   font-size: clamp(2rem, 3vw, 2.75rem);
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--text);
 }
 
 .subtitle {
@@ -150,14 +310,14 @@ h1 {
 
 input {
   width: 100%;
-  padding: 16px 18px;
-  border-radius: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-button);
   border: 1px solid var(--border);
   background: var(--input-bg);
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--text);
   outline: none;
-  transition: all 0.25s ease;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
 }
 
 input:focus {
@@ -168,14 +328,14 @@ input:focus {
 
 select {
   width: 100%;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 14px;
-  font-size: 1rem;
+  border-radius: var(--radius-button);
+  font-size: 0.95rem;
   color: var(--text);
   background-color: var(--input-bg);
   outline: none;
-  transition: all 0.25s ease;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
   font-family: inherit;
   cursor: pointer;
   appearance: none;
@@ -194,7 +354,7 @@ select:focus {
 }
 
 select option {
-  background: #18181b;
+  background: var(--input-bg);
   color: var(--text);
 }
 
@@ -204,17 +364,21 @@ select option {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border-radius: 14px;
+  border-radius: var(--radius-button);
   border: 1px solid transparent;
-  padding: 16px 18px;
+  padding: 14px 16px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
 }
 
 .button:hover {
   transform: translateY(-1px);
+}
+
+.button:active {
+  transform: scale(0.97);
 }
 
 .primary {
@@ -305,14 +469,15 @@ select option {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 16px 28px;
+  padding: 14px 24px;
   margin: 0 auto;
   max-width: 1200px;
-  background: rgba(15, 15, 20, 0.7);
+  background: var(--panel-glass);
   border: 1px solid var(--border);
-  border-radius: 22px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(16px);
+  border-radius: var(--radius-container);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position: sticky;
   top: 16px;
   z-index: 10;
@@ -335,7 +500,7 @@ select option {
   text-transform: uppercase;
   line-height: 1.35;
   margin-right: 2em;
-  color: #fff;
+  color: var(--text);
 }
 
 .brand-icon {
@@ -360,21 +525,25 @@ select option {
   align-items: center;
   gap: 8px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-button);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
-  padding: 10px 18px;
-  font-size: 0.92rem;
+  padding: 8px 14px;
+  font-size: 0.9rem;
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .nav-button:hover {
   transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.nav-button:active {
+  transform: scale(0.97);
 }
 
 .nav-button img.nav-icon {
@@ -400,19 +569,20 @@ select option {
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  background: #27272a;
+  background: var(--surface);
   border: 1px solid var(--border);
 }
 
 .page-content {
   max-width: 1200px;
   margin: 36px auto 48px;
-  padding: 0 28px 28px 28px;
-  background: rgba(20, 20, 25, 0.4);
-  border-radius: 22px;
+  padding: 0 24px 24px 24px;
+  background: var(--panel-glass);
+  border-radius: var(--radius-container);
   border: 1px solid var(--border);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(16px);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .page-title {
@@ -437,11 +607,11 @@ select option {
 }
 
 .page-panel {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.015);
+  border-radius: var(--radius-container);
   border: 1px solid var(--border);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
-  padding: 32px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.03);
+  padding: 24px;
 }
 
 
@@ -479,39 +649,44 @@ select option {
 
 
 .btn-primary {
-  padding: 12px 24px;
+  padding: 10px 20px;
   background: #8b5cf6;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: var(--radius-button);
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
   margin: 16px 0;
 }
 
 .btn-primary:hover {
   background: #7c3aed;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(139, 92, 246, 0.2);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: scale(0.97);
 }
 
 .btn-save {
-  background-color: #00cc66;
-  box-shadow: 0 4px 12px rgba(0, 204, 102, 0.3);
-  padding: 12px 32px;
-  border-radius: 24px;
+  background-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  padding: 10px 24px;
+  border-radius: var(--radius-button);
   margin: 0;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .btn-save:hover {
-  background-color: #00b359;
-  box-shadow: 0 6px 16px rgba(0, 204, 102, 0.4);
+  background-color: #059669;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.btn-save:active {
+  transform: scale(0.97);
 }
 
 /* Close Button Helper Class */
@@ -539,16 +714,16 @@ select option {
 }
 
 .custom-modal {
-  background: rgba(26, 21, 36, 0.95);
-  border: 1px solid rgba(139, 92, 246, 0.35);
-  box-shadow: 0 20px 50px rgba(139, 92, 246, 0.15), inset 0 0 15px rgba(139, 92, 246, 0.1);
-  border-radius: 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--panel-shadow);
+  border-radius: var(--radius-container);
   width: min(440px, calc(100vw - 32px));
   padding: 30px;
   text-align: center;
-  color: #fff;
-  transform: translateY(20px) scale(0.95);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: var(--text);
+  transform: translateY(12px) scale(0.97);
+  transition: transform var(--transition-normal), background-color var(--transition-normal);
 }
 
 .custom-modal-overlay.active .custom-modal {
@@ -573,13 +748,13 @@ select option {
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0 0 12px;
-  color: #fff;
+  color: var(--text);
   font-family: 'Inter', sans-serif;
 }
 
 .custom-modal-body {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--muted);
   line-height: 1.6;
   margin-bottom: 24px;
   white-space: pre-line;
@@ -592,13 +767,17 @@ select option {
 }
 
 .custom-modal-btn {
-  padding: 12px 24px;
-  border-radius: 12px;
+  padding: 10px 20px;
+  border-radius: var(--radius-button);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: all 0.2s ease;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.custom-modal-btn:active {
+  transform: scale(0.97);
 }
 
 .custom-modal-btn.primary {
@@ -802,4 +981,33 @@ select option {
     width: 16px;
     height: 16px;
   }
+}
+
+/* ─── Premium Light Mode Polishes ─── */
+[data-theme="light"] .close-btn {
+  background: rgba(0, 0, 0, 0.04);
+}
+[data-theme="light"] .close-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .header-icon-btn:hover {
+  background: rgba(139, 92, 246, 0.08);
+}
+[data-theme="light"] input:focus,
+[data-theme="light"] select:focus {
+  background: #ffffff;
+}
+[data-theme="light"] .separator span {
+  background: var(--panel);
+}
+[data-theme="light"] .page-panel {
+  background: rgba(139, 92, 246, 0.02);
+}
+[data-theme="light"] .custom-modal-btn.secondary {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .custom-modal-btn.secondary:hover {
+  background: rgba(0, 0, 0, 0.1);
 }

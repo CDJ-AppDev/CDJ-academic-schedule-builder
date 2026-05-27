@@ -85,6 +85,14 @@ function injectAdminNavbarButton() {
             }
             redirectWithToken(isInsidePages ? '../private/admin.html' : './private/admin.html');
           };
+          
+          if (user.email === 'admin@gmail.com') {
+            // Super admin should not have access to standard navbar buttons
+            Array.from(nav.children).forEach(child => {
+              child.style.display = 'none';
+            });
+          }
+          
           nav.appendChild(adminBtn);
         }
       }
@@ -167,7 +175,7 @@ function populateHeaderUsername(user) {
   const display = document.getElementById('header-username-display');
   if (display && user) {
     const rawName = user.username || user.name || user.email || 'User';
-    display.textContent = rawName.length > 16 ? rawName.slice(0, 16) + '…' : rawName;
+    display.textContent = rawName.length > 50 ? rawName.slice(0, 50) + '…' : rawName;
     display.title = rawName;
   }
 

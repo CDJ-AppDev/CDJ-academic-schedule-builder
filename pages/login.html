@@ -3,16 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Academic Schedule Builder</title>
+  <title>Login - Academic Schedule Builder</title>
   <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="stylesheet" href="../frontend/css/main.css">
+  <script src="../frontend/scripts/theme.js"></script>
 </head>
 <body>
-  <div class="page-shell">
-    <div class="page-header">LOGIN</div>
 
+  <!-- Mini Navbar matching landing page style -->
+  <header class="auth-header">
+    <a class="auth-brand" href="../index.html" aria-label="Academic Schedule Builder home">
+      <img src="../assets/logo.png" alt="Logo" class="auth-logo">
+      <span class="auth-brand-text">Academic Schedule Builder</span>
+    </a>
+    <nav class="auth-nav">
+      <button class="theme-toggle auth-theme-btn" aria-label="Toggle theme"></button>
+      <button class="auth-back-btn" id="close-login-btn" aria-label="Back to home" onclick="window.location.href='../index.html'">← Back</button>
+    </nav>
+  </header>
+
+  <div class="page-shell">
     <div class="login-card">
-      <button class="close-btn" aria-label="Close login form">×</button>
+      <button class="close-btn" aria-label="Close form" onclick="window.location.href='../index.html'">×</button>
       <div class="card-content">
         <h1>Welcome!</h1>
         <p class="subtitle">Login to Academic Schedule Builder</p>

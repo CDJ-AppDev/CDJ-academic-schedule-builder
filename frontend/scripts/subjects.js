@@ -247,6 +247,7 @@ function displayAvailableCourses() {
     titleEl.style.fontSize = '0.98rem';
     titleEl.style.fontWeight = '600';
     titleEl.style.letterSpacing = '0.01em';
+    titleEl.style.color = '#ffffff';
 
     const arrowEl = document.createElement('img');
     arrowEl.className = 'arrow';
@@ -308,14 +309,32 @@ function displayAvailableCourses() {
             <p class="card-text-main">Professor: ${section.teacher?.name ?? 'TBD'}</p>
             <p class="card-text-sub">Schedule: ${section.schedule?.day ?? 'TBD'} ${section.schedule?.startTime ? `| ${section.schedule.startTime} - ${section.schedule.endTime}` : ''} ${section.schedule?.room ? `| Room: ${section.schedule.room}` : ''}</p>
           </div>
-          <button class="btn-add btn-add-inline" type="button">Add</button>
+          <button class="btn-add btn-add-inline" type="button"><svg class="btn-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px; margin-right: 4px; display: inline-block; vertical-align: -1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Add</button>
         </div>
       `;
 
       const addButton = sectionCard.querySelector('button');
       addButton.addEventListener('click', (event) => {
         event.stopPropagation();
-        addAvailableCourse(section.courseslot_id);
+        
+        // Disable button to prevent double-click
+        addButton.disabled = true;
+        addButton.style.opacity = '0.5';
+        
+        // Emil Design: Snappy, hardware-accelerated exit animation for removal
+        sectionCard.style.overflow = 'hidden';
+        const startHeight = sectionCard.offsetHeight;
+        
+        sectionCard.animate([
+          { opacity: 1, transform: 'scale(1)', height: startHeight + 'px', marginTop: sectionCard.style.marginTop },
+          { opacity: 0, transform: 'scale(0.95)', height: '0px', marginTop: '0px' }
+        ], {
+          duration: 180, // Snappy < 300ms UI animation
+          easing: 'cubic-bezier(0.23, 1, 0.32, 1)', // Strong ease-out
+          fill: 'forwards'
+        }).onfinish = () => {
+          addAvailableCourse(section.courseslot_id);
+        };
       });
 
       dropdown.appendChild(sectionCard);
@@ -437,7 +456,7 @@ function displayCourses() {
              <p class="card-text-main">${esc(displayProf)}</p>
              <p class="card-text-sub">${esc(displayDay)} | ${esc(displayStart)} - ${esc(displayEnd)} ${displayRoom ? `| Room: ${esc(displayRoom)}` : ''}</p>
            </div>
-           <button class="btn-remove btn-remove-inline" data-manual-code="${esc(displayCode)}">REMOVE</button>
+           <button class="btn-remove btn-remove-inline" data-manual-code="${esc(displayCode)}"><svg class="btn-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px; margin-right: 4px; display: inline-block; vertical-align: -1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>REMOVE</button>
          </div>
        `;
       coursesList.appendChild(courseCard);
@@ -470,7 +489,7 @@ function displayCourses() {
           <p class="card-text-main">${esc(displayProf)}</p>
           <p class="card-text-sub">${esc(displayDay)} ${displayStart ? `| ${esc(displayStart)} - ${esc(displayEnd)}` : ''} ${displayRoom ? `| Room: ${esc(displayRoom)}` : ''}</p>
         </div>
-        <button class="btn-remove btn-remove-inline" data-courseslot-id="${course.courseslot_id}">REMOVE</button>
+        <button class="btn-remove btn-remove-inline" data-courseslot-id="${course.courseslot_id}"><svg class="btn-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px; margin-right: 4px; display: inline-block; vertical-align: -1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>REMOVE</button>
       </div>
     `;
     coursesList.appendChild(courseCard);
