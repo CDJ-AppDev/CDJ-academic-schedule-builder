@@ -110,6 +110,113 @@ let cachedCourseSlots = [];
 // Global active tab state
 let activeTab = 'users';
 
+// Pagination configuration
+const RECORDS_PER_PAGE = 10;
+
+// Pagination state for each tab
+let paginationState = {
+  users: { currentPage: 1, totalRecords: 0, allData: [] },
+  programs: { currentPage: 1, totalRecords: 0, allData: [] },
+  terms: { currentPage: 1, totalRecords: 0, allData: [] },
+  courses: { currentPage: 1, totalRecords: 0, allData: [] },
+  professors: { currentPage: 1, totalRecords: 0, allData: [] },
+  courseslots: { currentPage: 1, totalRecords: 0, allData: [] },
+  schedules: { currentPage: 1, totalRecords: 0, allData: [] }
+};
+
+function buildPaginatedData(tabId, data) {
+  const state = paginationState[tabId];
+  state.allData = Array.isArray(data) ? data : [];
+  state.totalRecords = state.allData.length;
+  const totalPages = Math.max(1, Math.ceil(state.totalRecords / RECORDS_PER_PAGE));
+  if (state.currentPage > totalPages) {
+    state.currentPage = totalPages;
+  }
+  if (state.currentPage < 1) {
+    state.currentPage = 1;
+  }
+  const startIndex = (state.currentPage - 1) * RECORDS_PER_PAGE;
+  return state.allData.slice(startIndex, startIndex + RECORDS_PER_PAGE);
+}
+
+function renderPaginationControls(tabId) {
+  const container = document.getElementById(`${tabId}-pagination`);
+  if (!container) return;
+
+  const state = paginationState[tabId];
+  const totalPages = Math.max(1, Math.ceil(state.totalRecords / RECORDS_PER_PAGE));
+  if (state.totalRecords <= RECORDS_PER_PAGE) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const startRecord = (state.currentPage - 1) * RECORDS_PER_PAGE + 1;
+  const endRecord = Math.min(state.totalRecords, state.currentPage * RECORDS_PER_PAGE);
+  const summary = `<span class="pagination-summary">Showing ${startRecord}-${endRecord} of ${state.totalRecords}</span>`;
+
+  const buttons = [];
+  buttons.push(`<button class="pagination-btn" onclick="goToPage('${tabId}', ${state.currentPage - 1})" ${state.currentPage === 1 ? 'disabled' : ''}>Prev</button>`);
+
+  let startPage = Math.max(1, state.currentPage - 2);
+  let endPage = Math.min(totalPages, state.currentPage + 2);
+  if (endPage - startPage < 4) {
+    startPage = Math.max(1, Math.min(startPage, totalPages - 4));
+    endPage = Math.min(totalPages, startPage + 4);
+  }
+
+  if (startPage > 1) {
+    buttons.push(`<button class="pagination-btn" onclick="goToPage('${tabId}', 1)">1</button>`);
+    if (startPage > 2) {
+      buttons.push('<span class="pagination-ellipsis">…</span>');
+    }
+  }
+
+  for (let page = startPage; page <= endPage; page += 1) {
+    buttons.push(`<button class="pagination-btn${page === state.currentPage ? ' active' : ''}" onclick="goToPage('${tabId}', ${page})">${page}</button>`);
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      buttons.push('<span class="pagination-ellipsis">…</span>');
+    }
+    buttons.push(`<button class="pagination-btn" onclick="goToPage('${tabId}', ${totalPages})">${totalPages}</button>`);
+  }
+
+  buttons.push(`<button class="pagination-btn" onclick="goToPage('${tabId}', ${state.currentPage + 1})" ${state.currentPage === totalPages ? 'disabled' : ''}>Next</button>`);
+
+  container.innerHTML = `<div class="pagination-bar">${summary}${buttons.join('')}</div>`;
+}
+
+function renderPagedData(tabId, data, renderFn) {
+  const paged = buildPaginatedData(tabId, data);
+  renderFn(paged);
+  renderPaginationControls(tabId);
+}
+
+function goToPage(tabId, page) {
+  const state = paginationState[tabId];
+  const totalPages = Math.max(1, Math.ceil(state.totalRecords / RECORDS_PER_PAGE));
+  if (page < 1 || page > totalPages) {
+    return;
+  }
+  state.currentPage = page;
+  const paged = buildPaginatedData(tabId, state.allData || []);
+
+  switch (tabId) {
+    case 'users': renderUsers(paged); break;
+    case 'programs': renderPrograms(paged); break;
+    case 'terms': renderTerms(paged); break;
+    case 'courses': renderCourses(paged); break;
+    case 'professors': renderProfessors(paged); break;
+    case 'courseslots': renderCourseSlots(paged); break;
+    case 'schedules': renderSchedules(paged); break;
+    default: return;
+  }
+  renderPaginationControls(tabId);
+}
+
+window.goToPage = goToPage;
+
 // Switch tab layout handler
 function switchTab(tabId) {
   activeTab = tabId;
@@ -155,28 +262,35 @@ async function loadTab(tabId) {
     const data = await response.json();
 
     if (tabId === 'users') {
-      renderUsers(data);
+      paginationState.users.currentPage = 1;
+      renderPagedData('users', data, renderUsers);
     } else if (tabId === 'programs') {
       cachedPrograms = data;
-      renderPrograms(data);
+      paginationState.programs.currentPage = 1;
+      renderPagedData('programs', data, renderPrograms);
     } else if (tabId === 'terms') {
       cachedTerms = data; // Cache for dropdown select elements
       populateFilters('terms', data);
+      paginationState.terms.currentPage = 1;
       applyFilters('terms');
     } else if (tabId === 'courses') {
       cachedCourses = data; // Cache for dropdown select elements
       populateFilters('courses', data);
+      paginationState.courses.currentPage = 1;
       applyFilters('courses');
     } else if (tabId === 'professors') {
       cachedProfessors = data; // Cache for dropdown select elements
       populateFilters('professors', data);
+      paginationState.professors.currentPage = 1;
       applyFilters('professors');
     } else if (tabId === 'courseslots') {
       cachedCourseSlots = data;
       populateFilters('courseslots', data);
+      paginationState.courseslots.currentPage = 1;
       applyFilters('courseslots');
     } else if (tabId === 'schedules') {
-      renderSchedules(data);
+      paginationState.schedules.currentPage = 1;
+      renderPagedData('schedules', data, renderSchedules);
     }
   } catch (err) {
     console.error(`Error loading tab ${tabId}:`, err);
@@ -1392,7 +1506,8 @@ function applyFilters(tabId) {
   if (tabId === 'terms') {
     const val = document.getElementById('filter-terms-program').value;
     const filtered = val === 'All' ? cachedTerms : cachedTerms.filter(t => t.programid === val);
-    renderTerms(filtered);
+    paginationState.terms.currentPage = 1;
+    renderPagedData('terms', filtered, renderTerms);
   } else if (tabId === 'courses') {
     const progVal = document.getElementById('filter-courses-program').value;
     const termVal = document.getElementById('filter-courses-term').value;
@@ -1410,11 +1525,13 @@ function applyFilters(tabId) {
       filtered = filtered.filter(c => c.termids && c.termids.includes(termVal));
     }
 
-    renderCourses(filtered);
+    paginationState.courses.currentPage = 1;
+    renderPagedData('courses', filtered, renderCourses);
   } else if (tabId === 'professors') {
     const val = document.getElementById('filter-professors-dept').value;
     const filtered = val === 'All' ? cachedProfessors : cachedProfessors.filter(p => (p.profdepartment || 'N/A') === val);
-    renderProfessors(filtered);
+    paginationState.professors.currentPage = 1;
+    renderPagedData('professors', filtered, renderProfessors);
   } else if (tabId === 'courseslots') {
     const progVal = document.getElementById('filter-slots-program').value;
     const termVal = document.getElementById('filter-slots-term').value;
@@ -1438,7 +1555,8 @@ function applyFilters(tabId) {
       }
     }
 
-    renderCourseSlots(filtered);
+    paginationState.courseslots.currentPage = 1;
+    renderPagedData('courseslots', filtered, renderCourseSlots);
   }
 }
 window.applyFilters = applyFilters;
