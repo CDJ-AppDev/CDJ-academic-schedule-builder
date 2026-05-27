@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Academic Schedule Builder</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../frontend/css/main.css">
+  <link rel="stylesheet" href="../frontend/css/dashboard.css">
+  <script src="../frontend/scripts/theme.js"></script>
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="app-brand">
+      <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
+      <div class="brand-text">
+        <span>Academic</span>
+        <span>Schedule</span>
+        <span>Builder</span>
+      </div>
+    </div>
+
+    <nav class="app-nav">
+      <button class="nav-button" onclick="window.location.href='home.html'"><img src="../assets/home.png" alt="Home"
+          class="nav-icon"> Home</button>
+      <button class="nav-button" onclick="window.location.href='builder.html'"><img src="../assets/builder.png"
+          alt="Builder" class="nav-icon"> Builder</button>
+      <button class="nav-button" onclick="window.location.href='plotter.html'"><img src="../assets/plotter.png"
+          alt="Plotter" class="nav-icon"> Plotter</button>
+    </nav>
+
+    <div class="header-profile">
+      <img src="../assets/profile.png" alt="Profile" class="header-profile-img">
+      <span class="header-username" id="header-username-display">User</span>
+    </div>
+
+    <div class="header-controls">
+      <button class="header-icon-btn theme-toggle" aria-label="Toggle theme"></button>
+      <button class="header-icon-btn" onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Settings" class="header-icon-img">
+      </button>
+      <button class="header-icon-btn close-btn" onclick="handleLogout('../index.html')">
+        <img src="../assets/logout.png" alt="Log out" class="header-icon-img">
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <div class="page-title">
+      <div class="page-title-header">
+        <img src="../assets/home.png" alt="Home" class="page-title-icon">
+        <h1 class="page-title-text">Home</h1>
+      </div>
+      <p>Choose a tool to get started with your academic planning.</p>
+    </div>
+
+    <section class="page-panel">
+      <div class="dashboard-grid">
+        <div class="dashboard-card" onclick="window.location.href='builder.html'">
+          <div class="card-icon"><img src="../assets/builder.png" alt="Logo" class="brand-icon"></div>
+          <h3>Schedule Builder</h3>
+          <p>Select classes and build your schedule.</p>
+        </div>
+        <div class="dashboard-card" onclick="window.location.href='plotter.html'">
+          <div class="card-icon"><img src="../assets/plotter.png" alt="Logo" class="brand-icon"></div>
+          <h3>Schedule Plotter</h3>
+          <p>Visualize your weekly schedule and customize blocks.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../frontend/scripts/utils.js"></script>
+  <script src="../frontend/scripts/popup.js"></script>
+  <script src="../frontend/scripts/footer.js"></script>
+  <script src="../frontend/scripts/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+    });
+  </script>
+</body>
+
+</html>

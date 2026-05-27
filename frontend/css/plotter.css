@@ -1,0 +1,469 @@
+/* ═══════════════════════════════════════════════════════════════
+   plotter.css — Glassmorphic Dark Schedule Plotter
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Main Plotter Panel ─────────────────────────────────────── */
+.plotter-panel {
+  background: var(--surface);
+  border-radius: var(--radius-container);
+  border: 1px solid var(--border);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Controls Section ───────────────────────────────────────── */
+.plotter-controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--surface);
+  border-radius: var(--radius-container);
+  padding: 22px;
+  border: 1px solid var(--border);
+}
+
+.plotter-controls-section h3 {
+  margin: 0 0 6px;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* ── Schedule List ──────────────────────────────────────────── */
+.plotter-schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plotter-schedule-item {
+  background: var(--surface);
+  border-radius: var(--radius-button);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: var(--text);
+  border: 1px solid var(--border);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  cursor: pointer;
+}
+
+.plotter-schedule-item:hover {
+  background: var(--surface);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.plotter-schedule-item button {
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inline);
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  font-family: inherit;
+}
+
+.plotter-schedule-item button:hover {
+  background: var(--accent, #8b5cf6);
+  border-color: transparent;
+  color: #fff;
+}
+
+.plotter-schedule-item button:active {
+  transform: scale(0.96);
+}
+
+/* ── Options Box ────────────────────────────────────────────── */
+.plotter-options-box {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background: var(--surface);
+  border-radius: var(--radius-container);
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid var(--border);
+}
+
+.options-title {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 0 0 4vw;
+  flex-shrink: 0;
+}
+
+.options-checkboxes {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  flex: 1;
+  justify-content: center;
+}
+
+.options-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.options-column label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.options-column label:hover {
+  color: var(--text);
+}
+
+.options-column input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #8b5cf6;
+  border-radius: 4px;
+}
+
+/* ── Color Picker ───────────────────────────────────────────── */
+.options-color {
+  margin: 0 4vw 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  flex-shrink: 0;
+  border-top: none;
+  padding-top: 0;
+}
+
+.options-color label {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.options-color .color-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.options-color input[type="color"] {
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.options-color .hex-text {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+/* ── Action Buttons ─────────────────────────────────────────── */
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.btn-green {
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: var(--radius-button);
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  letter-spacing: 0.01em;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-green:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-green:active {
+  transform: scale(0.97);
+}
+
+.btn-green.selected {
+  background: #10b981;
+  color: white;
+}
+
+.btn-centered {
+  display: block;
+  margin: 10px auto;
+}
+
+.btn-save {
+  display: none;
+  margin: 10px auto;
+}
+
+.btn-save.visible {
+  display: block;
+}
+
+/* ── Canvas Wrapper ─────────────────────────────────────────── */
+.plotter-canvas-wrapper {
+  background: #0c0c0e;
+  border-radius: var(--radius-container);
+  padding: 20px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  display: none;
+}
+
+.plotter-canvas-wrapper.visible {
+  display: block;
+}
+
+/* ── Timetable Grid ─────────────────────────────────────────── */
+.timetable-grid {
+  display: flex;
+  min-width: 600px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.time-column {
+  width: 70px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+
+.time-cell {
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding-top: 6px;
+  border-bottom: 1px solid var(--border);
+  box-sizing: border-box;
+  color: var(--muted);
+}
+
+.header-cell {
+  height: 40px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.day-columns-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.day-headers {
+  display: flex;
+  height: 40px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.day-header {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-right: 1px solid var(--border);
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.day-columns-grid {
+  display: flex;
+  position: relative;
+  height: 780px;
+}
+
+.day-col {
+  flex: 1;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  background-image: linear-gradient(to bottom, transparent 59px, rgba(255, 255, 255, 0.03) 60px);
+  background-size: 100% 60px;
+}
+
+.blocks-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ── Course Blocks ──────────────────────────────────────────── */
+.course-block {
+  position: absolute;
+  border-radius: 10px;
+  padding: 8px;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: auto;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
+}
+
+.course-block:hover {
+  transform: scale(1.03);
+}
+
+.course-block .subject-code {
+  font-size: 0.8rem;
+  font-weight: 800;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.course-block .subject-name {
+  margin-bottom: 4px;
+  line-height: 1.2;
+  font-size: 0.72rem;
+}
+
+.course-block .prof-name {
+  font-style: italic;
+  margin-bottom: 4px;
+  font-size: 0.65rem;
+  opacity: 0.9;
+}
+
+.course-block .day-text {
+  margin-bottom: 2px;
+  font-size: 0.68rem;
+}
+
+.course-block .day-room-text {
+  margin-bottom: 2px;
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
+.course-block .time-text {
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.course-block .room-text {
+  margin-top: 3px;
+  font-size: 0.68rem;
+  opacity: 0.9;
+}
+
+/* ─── Premium Light Mode Polishes for Plotter ─── */
+[data-theme="light"] .plotter-controls-section h3,
+[data-theme="light"] .plotter-schedule-item,
+[data-theme="light"] .plotter-schedule-item button,
+[data-theme="light"] .options-title,
+[data-theme="light"] .options-color,
+[data-theme="light"] .options-column label {
+  color: var(--text) !important;
+}
+[data-theme="light"] .options-column label:hover {
+  color: var(--accent) !important;
+}
+[data-theme="light"] .plotter-schedule-item:hover {
+  background: var(--panel);
+  border-color: rgba(124, 58, 237, 0.25);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.06);
+}
+[data-theme="light"] .plotter-canvas-wrapper {
+  background: #f8fafc;
+  border-color: var(--border);
+}
+[data-theme="light"] .timetable-grid {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  color: var(--text);
+  box-shadow: var(--panel-shadow);
+}
+[data-theme="light"] .time-column {
+  border-right-color: rgba(15, 23, 42, 0.08);
+  background: rgba(0, 0, 0, 0.01);
+}
+[data-theme="light"] .time-cell {
+  border-bottom-color: rgba(15, 23, 42, 0.04);
+}
+[data-theme="light"] .header-cell {
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+[data-theme="light"] .day-headers {
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+[data-theme="light"] .day-header {
+  border-right-color: rgba(15, 23, 42, 0.04);
+  color: #475569;
+}
+[data-theme="light"] .day-col {
+  border-right-color: rgba(15, 23, 42, 0.04);
+  background-image: linear-gradient(to bottom, transparent 59px, rgba(15, 23, 42, 0.03) 60px);
+}

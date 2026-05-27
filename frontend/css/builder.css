@@ -1,0 +1,481 @@
+/* ═══════════════════════════════════════════════════════════════
+   builder.css — Glassmorphic Dark Schedule Builder
+   ═══════════════════════════════════════════════════════════════ */
+
+.selected-courses {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: rgba(139, 92, 246, 0.1);
+  border-left: 3px solid #8b5cf6;
+  border-radius: 10px;
+  color: #a78bfa;
+  font-weight: 600;
+  display: block;
+  width: 100%;
+  font-size: 0.92rem;
+}
+
+/* ── Course Form ─────────────────────────────────────────────── */
+.course-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border-radius: var(--radius-container);
+  border: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-button);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-group input::placeholder {
+  color: var(--muted);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #8b5cf6;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.form-group select option {
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+/* ── Course Cards ────────────────────────────────────────────── */
+.courses-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.course-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-container);
+  overflow: hidden;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.course-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(139, 92, 246, 0.45);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(139, 92, 246, 0.15);
+}
+
+.course-card-header {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course-card-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.course-card-body {
+  padding: 14px 16px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.course-card-body p {
+  margin: 7px 0;
+  line-height: 1.5;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn-remove {
+  padding: 6px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-inline);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-remove:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+.btn-remove:active {
+  transform: scale(0.96);
+}
+
+.btn-add {
+  padding: 6px 12px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-inline);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-add:hover {
+  background: #10b981;
+  color: #fff;
+  border-color: #10b981;
+  transform: translateY(-1px);
+}
+
+.btn-add:active {
+  transform: scale(0.96);
+}
+
+.btn-toggle {
+  display: block;
+  margin: 16px 0 0;
+  padding: 12px 24px;
+  background: var(--accent, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+}
+
+/* ── Irregular course layout ────────────────────────────────── */
+.single-column {
+  grid-template-columns: 1fr;
+}
+
+.irregular-course {
+  border-color: rgba(139, 92, 246, 0.4) !important;
+}
+
+.irregular-header {
+  cursor: pointer;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  border-bottom: none;
+}
+
+.irregular-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.irregular-header .arrow {
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+  font-weight: 700;
+}
+
+.no-padding {
+  padding: 0;
+}
+
+.dropdown {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+}
+
+.spacer-20 {
+  height: 20px;
+}
+
+/* ── Save Schedule ───────────────────────────────────────────── */
+.save-schedule-container {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  padding: 16px 20px;
+  border-radius: var(--radius-container);
+  border: 1px solid var(--border);
+}
+
+.save-schedule-wrapper {
+  font-weight: 700;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.save-input {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-button);
+  background: var(--input-bg);
+  font-weight: 600;
+  width: 150px;
+  min-width: 80px;
+  max-width: 100%;
+  color: var(--text);
+  outline: none;
+  flex-shrink: 1;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.save-input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.save-input::placeholder {
+  color: var(--muted);
+}
+
+.units-display {
+  margin-left: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+/* ── Schedule Selector Header ───────────────────────────────── */
+.schedules-header-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.schedules-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.schedule-selector {
+  width: auto;
+  min-width: 160px;
+  max-width: 300px;
+  padding: 8px 14px;
+  border-radius: var(--radius-button);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 8px;
+  background-color: var(--input-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b5cf6' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 32px;
+  color: var(--text);
+  outline: none;
+  flex-shrink: 1;
+  font-family: inherit;
+  appearance: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.schedule-selector:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.schedule-selector option {
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+/* ── Irregular course card (JS-generated) ───────────────────── */
+.irregular-course-card {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius-container) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ── Inline action buttons ──────────────────────────────────── */
+.btn-add-inline {
+  background: #10b981;
+  border-radius: 20px;
+  padding: 6px 20px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+}
+
+.btn-add-inline:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-remove-inline {
+  background: #ef4444;
+  border-radius: 20px;
+  padding: 7px 20px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-inline:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.flex-center-gap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Delete schedule button ─────────────────────────────────── */
+.btn-delete-schedule {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.15);
+  border-radius: 20px;
+  padding: 7px 16px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-schedule:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+.schedule-status-badge {
+  display: none;
+  margin-left: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+/* ── Card template utilities ────────────────────────────────── */
+.card-body-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+}
+
+.card-title-sm {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-text-main {
+  margin: 0 0 3px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.card-text-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.text-muted-light {
+  color: var(--muted);
+}
+
+.page-panel h2 {
+  margin: 0;
+  color: var(--text);
+}
+
+/* ── Button icon ─────────────────────────────────────────────── */
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Light mode already handled via CSS vars above — no overrides needed */

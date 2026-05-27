@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Picker</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../frontend/css/main.css">
+  <link rel="stylesheet" href="../frontend/css/profile.css">
+  <script src="../frontend/scripts/theme.js"></script>
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="app-brand">
+      <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
+      <div class="brand-text">
+        <span>Academic</span>
+        <span>Schedule</span>
+        <span>Builder</span>
+      </div>
+    </div>
+
+    <nav class="app-nav">
+      <button class="nav-button" onclick="window.location.href='home.html'"><img src="../assets/home.png" alt="Home"
+          class="nav-icon"> Home</button>
+      <button class="nav-button" onclick="window.location.href='builder.html'"><img src="../assets/builder.png"
+          alt="Builder" class="nav-icon"> Builder</button>
+      <button class="nav-button" onclick="window.location.href='plotter.html'"><img src="../assets/plotter.png"
+          alt="Plotter" class="nav-icon"> Plotter</button>
+    </nav>
+
+    <div class="header-profile">
+      <img src="../assets/profile.png" alt="Profile" class="header-profile-img">
+      <span class="header-username" id="header-username-display">User</span>
+    </div>
+
+    <div class="header-controls">
+      <button class="header-icon-btn theme-toggle" aria-label="Toggle theme"></button>
+      <button class="header-icon-btn" onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Settings" class="header-icon-img">
+      </button>
+      <button class="header-icon-btn close-btn" onclick="handleLogout('../index.html')">
+        <img src="../assets/logout.png" alt="Log out" class="header-icon-img">
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <div class="page-title">
+      <div class="page-title-header">
+        <img src="../assets/profile.png" alt="Profile" class="page-title-icon">
+        <h1 class="page-title-text">Profile</h1>
+      </div>
+      <p>View and update your profile information.</p>
+    </div>
+
+    <div class="profile-container-two-col">
+      <!-- Left Column: Profile Information -->
+      <section class="profile-info-panel-col">
+        <h2>Profile Information</h2>
+        <div class="profile-info-list-col">
+          <div class="profile-info-row-col">
+            <img src="../assets/profile.png" alt="Profile" class="profile-info-icon-col">
+            <div class="profile-info-field-wrapper">
+              <label for="profile-username">Username</label>
+              <input type="text" placeholder="Username" id="profile-username" disabled class="profile-info-input-col">
+            </div>
+            <button class="profile-edit-btn-col" id="edit-btn-username">
+              <img src="../assets/edit.png" alt="Edit" class="profile-edit-icon-col">
+            </button>
+          </div>
+          <div class="profile-info-row-col">
+            <img src="../assets/email.png" alt="Email" class="profile-info-icon-col">
+            <div class="profile-info-field-wrapper">
+              <label for="profile-email">Email</label>
+              <input type="email" placeholder="Email" id="profile-email" disabled class="profile-info-input-col">
+            </div>
+            <button class="profile-edit-btn-col" id="edit-btn-email">
+              <img src="../assets/edit.png" alt="Edit" class="profile-edit-icon-col">
+            </button>
+          </div>
+          <div class="profile-info-row-col">
+            <img src="../assets/password.png" alt="Password" class="profile-info-icon-col">
+            <div class="profile-info-field-wrapper">
+              <label for="profile-password">Password</label>
+              <div style="display: flex; align-items: center; width: 100%; position: relative;">
+                <input type="password" placeholder="Password" id="profile-password" disabled
+                  class="profile-info-input-col" style="padding-right: 40px;">
+                <button type="button" id="toggle-password-visibility-btn"
+                  style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: opacity 0.2s;"
+                  title="Show/Hide Password">
+                  <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="2.5" stroke="#475569" style="width: 20px; height: 20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <button class="profile-edit-btn-col" id="edit-btn-password">
+              <img src="../assets/edit.png" alt="Edit" class="profile-edit-icon-col">
+            </button>
+          </div>
+        </div>
+        <div class="danger-zone-col">
+          <h3>Danger Zone</h3>
+          <p>Permanently delete your account and all associated schedule data. This action is irreversible.</p>
+          <button id="delete-account-btn" class="btn-danger">Delete Account</button>
+        </div>
+      </section>
+
+      <!-- Right Column: Course Selection Panel -->
+      <section class="profile-selection-panel-col">
+        <h2>Academic Selection</h2>
+
+        <div class="profile-select-group">
+          <label for="program-select">Available Courses</label>
+          <select id="program-select" class="profile-dropdown-select">
+            <option value="">-- Select a program --</option>
+          </select>
+        </div>
+
+        <div class="profile-select-group">
+          <label for="year-select">Select Year</label>
+          <select id="year-select" class="profile-dropdown-select" disabled>
+            <option value="">-- Select year level --</option>
+          </select>
+        </div>
+
+        <div class="profile-select-group">
+          <label for="semester-select">Select Semester</label>
+          <select id="semester-select" class="profile-dropdown-select" disabled>
+            <option value="">-- Select semester --</option>
+          </select>
+        </div>
+
+        <button id="apply-courses-btn" class="btn-primary profile-apply-btn">Apply Selection</button>
+        <p id="selected-courses" class="selected-courses"></p>
+      </section>
+    </div>
+  </main>
+  <script src="../frontend/scripts/utils.js"></script>
+  <script src="../frontend/scripts/popup.js"></script>
+  <script src="../frontend/scripts/footer.js"></script>
+  <script src="../frontend/scripts/auth.js"></script>
+  <script src="../frontend/scripts/profile.js"></script>
+</body>
+
+</html>

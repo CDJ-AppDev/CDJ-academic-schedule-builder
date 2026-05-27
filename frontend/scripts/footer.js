@@ -1,0 +1,178 @@
+/**
+ * @file footer.js
+ * @description Injects the universal site footer on all pages except admin.
+ * Provides Terms, Privacy Policy, and About modals.
+ */
+(function () {
+  if (/\/admin\//i.test(window.location.pathname)) return;
+
+  const script = document.currentScript;
+  if (!script || !script.src) return;
+
+  const assetBase = script.src.replace(/frontend\/scripts\/footer\.js.*$/, '');
+
+  function loadStylesheet() {
+    if (document.querySelector('link[data-site-footer]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = assetBase + 'frontend/css/footer.css';
+    link.setAttribute('data-site-footer', '');
+    document.head.appendChild(link);
+  }
+
+  const ICONS = {
+    email: '<svg class="site-footer-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>',
+    terms: '<svg class="site-footer-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+    privacy: '<svg class="site-footer-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>',
+    about: '<svg class="site-footer-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+    };
+
+  const MODAL_CONTENT = {
+    terms: {
+      title: 'Terms and Conditions',
+      body: `
+        <h4>1. Acceptance</h4>
+        <p>By using Academic Schedule Builder, you agree to these Terms and Conditions. If you do not agree, please discontinue use of the service.</p>
+        <h4>2. Educational use</h4>
+        <p>Academic Schedule Builder is provided to help students plan academic schedules. Course data, availability, and institutional policies may change without notice. Always verify your final schedule with your registrar or academic office.</p>
+        <h4>3. Accounts</h4>
+        <p>You are responsible for maintaining the confidentiality of your login credentials and for all activity under your account. Notify us promptly if you suspect unauthorized access.</p>
+        <h4>4. Acceptable use</h4>
+        <p>You agree not to misuse the platform, attempt unauthorized access, interfere with service operation, or use the tool for unlawful purposes.</p>
+        <h4>5. Disclaimer</h4>
+        <p>The service is provided &ldquo;as is&rdquo; without warranties of any kind. CDJ: Academic Schedule Builders is not liable for scheduling conflicts, registration errors, or academic outcomes resulting from use of this tool.</p>
+        <h4>6. Changes</h4>
+        <p>We may update these terms from time to time. Continued use after changes are posted constitutes acceptance of the revised terms.</p>
+        <h4>7. Contact</h4>
+        <p><a href="mailto:academicschedulebuilder@gmail.com">academicschedulebuilder@gmail.com</a>.</p>
+      `,
+    },
+    privacy: {
+      title: 'Privacy Policy',
+      body: `
+        <h4>Information we collect</h4>
+        <p>We collect information you provide when creating an account (such as email address), profile and program preferences, and schedule data you save within the application.</p>
+        <h4>How we use information</h4>
+        <p>Your information is used to authenticate your account, store your schedules, personalize your experience, and improve the reliability of the service.</p>
+        <h4>Data storage and security</h4>
+        <p>We take reasonable measures to protect your data. No method of transmission or storage is completely secure, and we cannot guarantee absolute security.</p>
+        <h4>Sharing</h4>
+        <p>We do not sell your personal information. We may share data only when required by law or to protect the rights and safety of users and the service.</p>
+        <h4>Your choices</h4>
+        <p>You may update profile information within the app. For data inquiries, contact us at the email address listed in the site footer.</p>
+        <h4>Updates</h4>
+        <p>This Privacy Policy may be updated periodically. Material changes will be reflected on this page when you view the policy from the footer.</p>
+        <h4>Contact</h4>
+        <p><a href="mailto:academicschedulebuilder@gmail.com">academicschedulebuilder@gmail.com</a>.</p>
+      `,
+    },
+    about: {
+      title: 'About',
+      body: `
+        <h4>Academic Schedule Builder</h4>
+        <p>Academic Schedule Builder (ASB) is a student-first web application by <strong>CDJ: Academic Schedule Builders</strong> as a join group project for the courses <strong>Application Development and Emerging Technologies</strong>, <strong> Information Management </strong> and <strong>Programming Languages</strong> at <strong>De La Salle University - Dasmarinas</strong>.</p>
+        <h4>What you can do</h4>
+        <ul>
+          <li>Build schedules with conflict detection</li>
+          <li>Plot your week visually with the timeline plotter</li>
+          <li>Save, restore, and manage multiple schedule versions</li>
+        </ul>
+        <h4>Our mission</h4>
+        <p>We built ASB to make semester planning faster, clearer, and less stressful - so you can focus on learning instead of spreadsheet gymnastics.</p>
+        <h4>Get in touch</h4>
+        <p><a href="mailto:academicschedulebuilder@gmail.com">academicschedulebuilder@gmail.com</a>.</p>
+      `,
+    },
+  };
+
+  function showFooterModal(key) {
+    const content = MODAL_CONTENT[key];
+    if (!content) return;
+
+    const existing = document.querySelector('.custom-modal-overlay.footer-info-modal');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-modal-overlay footer-info-modal';
+    overlay.innerHTML = `
+      <div class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="footer-modal-title">
+        <div class="custom-modal-title" id="footer-modal-title">${content.title}</div>
+        <div class="custom-modal-body">${content.body}</div>
+        <div class="custom-modal-actions">
+          <button type="button" class="custom-modal-btn primary" id="footer-modal-close">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('active'));
+
+    const close = () => {
+      overlay.classList.remove('active');
+      setTimeout(() => overlay.remove(), 300);
+    };
+
+    overlay.querySelector('#footer-modal-close').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) close();
+    });
+
+    document.addEventListener('keydown', function onEsc(ev) {
+      if (ev.key === 'Escape') {
+        close();
+        document.removeEventListener('keydown', onEsc);
+      }
+    });
+  }
+
+  function injectFooter() {
+    if (document.querySelector('.site-footer')) return;
+
+    const isHero = document.body.classList.contains('hero-root');
+    const footer = document.createElement('footer');
+    footer.className = 'site-footer ' + (isHero ? 'site-footer--hero' : 'site-footer--static');
+    footer.setAttribute('role', 'contentinfo');
+    footer.innerHTML = `
+      <div class="site-footer-inner">
+        <p class="site-footer-copy">&copy; CDJ: Academic Schedule Builders</p>
+        <nav class="site-footer-nav" aria-label="Site footer">
+          <a class="site-footer-link" href="mailto:academicschedulebuilder@gmail.com">
+            ${ICONS.email}
+            <span>academicschedulebuilder@gmail.com</span>
+          </a>
+          <button type="button" class="site-footer-link" data-footer-modal="terms">
+            ${ICONS.terms}
+            <span>Terms and Conditions</span>
+          </button>
+          <button type="button" class="site-footer-link" data-footer-modal="privacy">
+            ${ICONS.privacy}
+            <span>Privacy Policy</span>
+          </button>
+          <button type="button" class="site-footer-link" data-footer-modal="about">
+            ${ICONS.about}
+            <span>About</span>
+          </button>
+        </nav>
+      </div>
+    `;
+
+    document.body.appendChild(footer);
+
+    if (!isHero) {
+      document.body.classList.add('has-site-footer');
+    }
+
+    footer.querySelectorAll('[data-footer-modal]').forEach((btn) => {
+      btn.addEventListener('click', () => showFooterModal(btn.getAttribute('data-footer-modal')));
+    });
+  }
+
+  loadStylesheet();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectFooter);
+  } else {
+    injectFooter();
+  }
+
+  window.showFooterModal = showFooterModal;
+})();

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Academic Schedule Builder</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../frontend/css/main.css">
+  <script src="../frontend/scripts/theme.js"></script>
+</head>
+<body>
+
+  <!-- Mini Navbar matching landing page style -->
+  <header class="auth-header">
+    <a class="auth-brand" href="../index.html" aria-label="Academic Schedule Builder home">
+      <img src="../assets/logo.png" alt="Logo" class="auth-logo">
+      <span class="auth-brand-text">Academic Schedule Builder</span>
+    </a>
+    <nav class="auth-nav">
+      <button class="theme-toggle auth-theme-btn" aria-label="Toggle theme"></button>
+      <button class="auth-back-btn" id="close-login-btn" aria-label="Back to home" onclick="window.location.href='../index.html'">← Back</button>
+    </nav>
+  </header>
+
+  <div class="page-shell">
+    <div class="login-card">
+      <button class="close-btn" aria-label="Close form" onclick="window.location.href='../index.html'">×</button>
+      <div class="card-content">
+        <h1>Welcome!</h1>
+        <p class="subtitle">Login to Academic Schedule Builder</p>
+
+        <div class="form-group">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" placeholder="Email" aria-label="Email address">
+          </label>
+
+          <label class="field">
+            <span>Password</span>
+            <input type="password" placeholder="Password" aria-label="Password">
+          </label>
+        </div>
+        
+        <div class="separator"></div>
+        <button class="button primary login-btn">Login <span class="arrow">→</span></button>
+
+        <div class="separator"></div>
+
+        <div class="footer-links">
+          <button class="link-button" id="forgot-password">Forgot your password?</button>
+          <p>Don't have an account? <button class="link-button accent" id="signup">Sign Up</button></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../frontend/scripts/utils.js"></script>
+  <script src="../frontend/scripts/popup.js"></script>
+  <script src="../frontend/scripts/footer.js"></script>
+  <script src="../frontend/scripts/auth.js" defer></script>
+</body>
+</html>

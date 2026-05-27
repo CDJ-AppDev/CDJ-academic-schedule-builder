@@ -1,0 +1,29 @@
+# ── Agent & AI tooling ────────────────────────────────────────
+.agent/
+.agents/
+skills-lock.json
+
+# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+
+# ── Environment & secrets ─────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── OS files ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor / IDE ──────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.user
+
+# ── Kubernetes Files ──────────────────────────────────────────────
+k8s/

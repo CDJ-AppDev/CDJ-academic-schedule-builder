@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subject Schedule</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../frontend/css/main.css">
+  <link rel="stylesheet" href="../frontend/css/builder.css">
+  <script src="../frontend/scripts/theme.js"></script>
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="app-brand">
+      <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
+      <div class="brand-text">
+        <span>Academic</span>
+        <span>Schedule</span>
+        <span>Builder</span>
+      </div>
+    </div>
+
+    <nav class="app-nav">
+      <button class="nav-button" onclick="window.location.href='home.html'"><img src="../assets/home.png" alt="Home"
+          class="nav-icon"> Home</button>
+      <button class="nav-button" onclick="window.location.href='builder.html'"><img src="../assets/builder.png"
+          alt="Builder" class="nav-icon"> Builder</button>
+      <button class="nav-button" onclick="window.location.href='plotter.html'"><img src="../assets/plotter.png"
+          alt="Plotter" class="nav-icon"> Plotter</button>
+    </nav>
+
+    <div class="header-profile">
+      <img src="../assets/profile.png" alt="Profile" class="header-profile-img">
+      <span class="header-username" id="header-username-display">User</span>
+    </div>
+
+    <div class="header-controls">
+      <button class="header-icon-btn theme-toggle" aria-label="Toggle theme"></button>
+      <button class="header-icon-btn" onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Settings" class="header-icon-img">
+      </button>
+      <button class="header-icon-btn close-btn" onclick="handleLogout('../index.html')">
+        <img src="../assets/logout.png" alt="Log out" class="header-icon-img">
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <div class="page-title">
+      <div class="page-title-header">
+        <img src="../assets/builder.png" alt="Schedule Builder" class="page-title-icon">
+        <h1 class="page-title-text">Schedule Builder</h1>
+      </div>
+      <p>Select classes and build your schedule.</p>
+    </div>
+
+    <section class="page-panel">
+      <h2>Available Classes</h2>
+
+      <div id="availableCourses" class="courses-list single-column"></div>
+
+      <!-- dynamic courses loaded from API -->
+      <script>
+        // DB-rendered UI below will populate #availableCourses
+      </script>
+
+      <script>
+        function toggleDropdown(dropdownId, arrowId) {
+          const dropdown = document.getElementById(dropdownId);
+          const arrow = document.getElementById(arrowId);
+
+          if (dropdown.style.maxHeight === "0px" || dropdown.style.maxHeight === "") {
+            // Close other available course dropdowns to reduce clutter
+            const availableCoursesList = document.getElementById('availableCourses');
+            if (availableCoursesList) {
+              const otherCards = availableCoursesList.querySelectorAll('.course-card');
+              otherCards.forEach(card => {
+                const otherDropdown = card.querySelector('.dropdown');
+                const otherHeader = card.querySelector('.course-card-header');
+                const otherArrow = card.querySelector('.arrow');
+                if (otherDropdown && otherDropdown.classList.contains('active')) {
+                  otherDropdown.classList.remove('active');
+                  otherDropdown.style.maxHeight = '0';
+                  if (otherHeader) otherHeader.style.borderRadius = '12px';
+                  if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
+                }
+              });
+            }
+            dropdown.style.maxHeight = dropdown.scrollHeight + "px";
+            arrow.style.transform = "rotate(180deg)";
+          } else {
+            dropdown.style.maxHeight = "0";
+            arrow.style.transform = "rotate(0deg)";
+          }
+        }
+      </script>
+
+      <div class="course-card irregular-course">
+        <div class="course-card-header irregular-header" onclick="toggleDropdown('irregularDropdown','irregularArrow')">
+          <h3>Add Irregular Course</h3>
+          <img src="../assets/dropdown.png" alt="Toggle" class="arrow" id="irregularArrow"
+            style="width: 14px; height: 14px; object-fit: contain; transition: transform 0.3s ease;">
+        </div>
+
+        <div class="course-card-body no-padding">
+          <div class="dropdown" id="irregularDropdown">
+            <div class="course-form">
+              <div class="form-group">
+                <label for="course-code">Course Code:</label>
+                <input type="text" id="course-code" placeholder="e.g., CS101" required>
+              </div>
+
+              <div class="form-group">
+                <label for="course-name">Course Name:</label>
+                <input type="text" id="course-name" placeholder="e.g., Intro to Programming" required>
+              </div>
+
+              <div class="form-group">
+                <label for="course-units">Units:</label>
+                <input type="number" id="course-units" placeholder="e.g., 3" required>
+              </div>
+
+              <div class="form-group">
+                <label for="teacher-name">Teacher Name:</label>
+                <input type="text" id="teacher-name" placeholder="e.g., Prof. Garcia" required>
+              </div>
+
+              <div class="form-group">
+                <label for="room-code">Room Code:</label>
+                <input type="text" id="room-code" placeholder="e.g., CL1, WH301, or TBA" required>
+              </div>
+
+              <div class="form-group">
+                <label for="schedule-day">Day:</label>
+                <select id="schedule-day" required>
+                  <option value="">Select Day</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="start-time">Start Time:</label>
+                <input type="time" id="start-time" required>
+              </div>
+
+              <div class="form-group">
+                <label for="end-time">End Time:</label>
+                <input type="time" id="end-time" required>
+              </div>
+
+              <button id="add-course-btn" class="btn-primary" type="button">Add Course</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spacer-20"></div>
+
+      <div class="schedules-header-container">
+        <h2 class="schedules-title">Schedules</h2>
+        <div class="flex-center-gap">
+          <button id="delete-schedule-btn" class="btn-remove btn-delete-schedule"><img src="../assets/delete.png" alt="Delete" class="btn-icon"> DELETE</button>
+          <select id="schedule-selector" class="schedule-selector">
+            <option value="new">+ Create New Schedule</option>
+          </select>
+        </div>
+      </div>
+      <div class="courses-list single-column" id="scheduledList"></div>
+
+      <div class="save-schedule-container">
+        <div class="save-schedule-wrapper">
+          Save Schedule as:
+          <input type="text" id="schedule-name-input" class="save-input" value="">
+          <span id="schedule-units-display" class="units-display">Units: 0 / 0</span>
+          <span id="regular-status-badge" class="schedule-status-badge"></span>
+        </div>
+        <button id="save-schedule-btn" class="btn-primary btn-save" type="button"><img src="../assets/save.png" alt="Save" class="btn-icon"> SAVE</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="../frontend/scripts/utils.js"></script>
+  <script src="../frontend/scripts/popup.js"></script>
+  <script src="../frontend/scripts/footer.js"></script>
+  <script src="../frontend/scripts/auth.js"></script>
+  <script src="../frontend/scripts/classes.js"></script>
+  <script src="../frontend/scripts/subjects.js"></script>
+</body>
+
+</html>

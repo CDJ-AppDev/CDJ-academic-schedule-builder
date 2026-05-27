@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Plotter</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../frontend/css/main.css">
+  <link rel="stylesheet" href="../frontend/css/plotter.css">
+  <script src="../frontend/scripts/theme.js"></script>
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="app-brand">
+      <img src="../assets/logo.png" alt="Academic Schedule Builder" class="brand-icon">
+      <div class="brand-text">
+        <span>Academic</span>
+        <span>Schedule</span>
+        <span>Builder</span>
+      </div>
+    </div>
+
+    <nav class="app-nav">
+      <button class="nav-button" onclick="window.location.href='home.html'"><img src="../assets/home.png" alt="Home"
+          class="nav-icon"> Home</button>
+      <button class="nav-button" onclick="window.location.href='builder.html'"><img src="../assets/builder.png"
+          alt="Builder" class="nav-icon"> Builder</button>
+      <button class="nav-button" onclick="window.location.href='plotter.html'"><img src="../assets/plotter.png"
+          alt="Plotter" class="nav-icon"> Plotter</button>
+    </nav>
+
+    <div class="header-profile">
+      <img src="../assets/profile.png" alt="Profile" class="header-profile-img">
+      <span class="header-username" id="header-username-display">User</span>
+    </div>
+
+    <div class="header-controls">
+      <button class="header-icon-btn theme-toggle" aria-label="Toggle theme"></button>
+      <button class="header-icon-btn" onclick="window.location.href='profile.html'">
+        <img src="../assets/settings.png" alt="Settings" class="header-icon-img">
+      </button>
+      <button class="header-icon-btn close-btn" onclick="handleLogout('../index.html')">
+        <img src="../assets/logout.png" alt="Log out" class="header-icon-img">
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content plotter-main">
+    <div class="page-title">
+      <div class="page-title-header">
+        <img src="../assets/plotter.png" alt="Schedule Plotter" class="page-title-icon">
+        <h1 class="page-title-text">Schedule Plotter</h1>
+      </div>
+      <p>View and customize your schedule visualization</p>
+    </div>
+
+    <section class="page-panel">
+      <!-- Controls Section -->
+      <div class="plotter-controls-section">
+        <h3>Select Schedule</h3>
+
+        <div id="plotter-schedule-list" class="plotter-schedule-list">
+          <!-- Schedules dynamically injected here -->
+          <div class="plotter-schedule-item">
+            <span>Loading schedules...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Options Section -->
+      <div class="plotter-options-box">
+        <h3 class="options-title">OPTIONS</h3>
+
+        <div class="options-checkboxes">
+          <div class="options-column">
+            <label>
+              <span>Hide Professor</span>
+              <input type="checkbox" id="hide-prof">
+            </label>
+            <label>
+              <span>Hide Subject Code</span>
+              <input type="checkbox" id="hide-code">
+            </label>
+            <label>
+              <span>Hide Subject Name</span>
+              <input type="checkbox" id="hide-name">
+            </label>
+          </div>
+          <div class="options-column">
+            <label>
+              <span>Hide Time</span>
+              <input type="checkbox" id="hide-time">
+            </label>
+            <label>
+              <span>Hide Day</span>
+              <input type="checkbox" id="hide-day">
+            </label>
+            <label>
+              <span>Hide Room</span>
+              <input type="checkbox" id="hide-room">
+            </label>
+          </div>
+        </div>
+
+        <div class="options-color">
+          <label>Custom Block Color:</label>
+          <div class="color-input-wrapper">
+            <input type="color" id="custom-color" value="#ffffff"
+              oninput="document.getElementById('color-hex-display').textContent = this.value.toUpperCase()">
+            <span class="hex-text" id="color-hex-display">#ffffff</span>
+          </div>
+          <label>Custom Font Color:</label>
+          <div class="color-input-wrapper">
+            <input type="color" id="custom-font-color" value="#000000"
+              oninput="document.getElementById('font-color-hex-display').textContent = this.value.toUpperCase()">
+            <span class="hex-text" id="font-color-hex-display">#000000</span>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-generate" class="btn-green btn-centered">Generate Schedule</button>
+
+      <!-- Canvas Section -->
+      <div class="plotter-canvas-wrapper" id="capture-area">
+        <div class="timetable-grid" id="timetable">
+          <!-- Timetable background grid and headers -->
+          <div class="time-column">
+            <div class="time-cell header-cell"></div>
+            <div class="time-cell">7 AM</div>
+            <div class="time-cell">8 AM</div>
+            <div class="time-cell">9 AM</div>
+            <div class="time-cell">10 AM</div>
+            <div class="time-cell">11 AM</div>
+            <div class="time-cell">12 PM</div>
+            <div class="time-cell">1 PM</div>
+            <div class="time-cell">2 PM</div>
+            <div class="time-cell">3 PM</div>
+            <div class="time-cell">4 PM</div>
+            <div class="time-cell">5 PM</div>
+            <div class="time-cell">6 PM</div>
+            <div class="time-cell">7 PM</div>
+            <div class="time-cell">8 PM</div>
+          </div>
+
+          <div class="day-columns-wrapper">
+            <div class="day-headers">
+              <div class="day-header">MON</div>
+              <div class="day-header">TUE</div>
+              <div class="day-header">WED</div>
+              <div class="day-header">THU</div>
+              <div class="day-header">FRI</div>
+              <div class="day-header">SAT</div>
+            </div>
+            <div class="day-columns-grid">
+              <!-- Grid lines -->
+              <div class="day-col" data-day="Monday"></div>
+              <div class="day-col" data-day="Tuesday"></div>
+              <div class="day-col" data-day="Wednesday"></div>
+              <div class="day-col" data-day="Thursday"></div>
+              <div class="day-col" data-day="Friday"></div>
+              <div class="day-col" data-day="Saturday"></div>
+
+              <!-- Absolute positioned blocks go here -->
+              <div id="blocks-container" class="blocks-container"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-save-png" class="btn-green btn-centered btn-save"><img src="../assets/save.png" alt="Save" class="btn-icon"> Save as PNG</button>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="../frontend/scripts/utils.js"></script>
+  <script src="../frontend/scripts/popup.js"></script>
+  <script src="../frontend/scripts/footer.js"></script>
+  <script src="../frontend/scripts/auth.js"></script>
+  <script src="../frontend/scripts/plotter.js"></script>
+</body>
+
+</html>
