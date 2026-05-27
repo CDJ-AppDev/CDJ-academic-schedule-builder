@@ -58,7 +58,7 @@
         <p>We take reasonable measures to protect your data. No method of transmission or storage is completely secure, and we cannot guarantee absolute security.</p>
         <h4>SHARING</h4>
         <p>We do not sell your personal information. We may share data only when required by law or to protect the rights and safety of users and the service.</p>
-        <h4>YOUR CHOICES/h4>
+        <h4>YOUR CHOICES</h4>
         <p>You may update and delete profile information within the app. For data inquiries, contact us at the email address listed in the site footer.</p>
         <h4>UPDATES</h4>
         <p>This Privacy Policy may be updated periodically. Material changes will be reflected on this page when you view the policy from the footer.</p>
