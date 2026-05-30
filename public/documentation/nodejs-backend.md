@@ -6,7 +6,6 @@ Express-based JSON API that handles authentication, user profile setup, course c
 ## Key Files & Locations
 - `backend/db-server.js`: Express server + routes + DB access (`pg`)
 - `backend/package.json`: runtime dependencies and start script
-- `backend/get_password.js`: CLI helper to decrypt a stored password by email (admin/debug tooling)
 - `backend/sql/*.sql`: schema and seed data (consumed externally during DB initialization)
 
 ## Features
@@ -43,7 +42,6 @@ Express-based JSON API that handles authentication, user profile setup, course c
 
 ## TODOs & Known Limitations
 - **Credential security**: passwords are encrypted/decrypted (reversible). Move to one-way hashing (bcrypt/argon2) and remove password-decrypt functionality from API outputs and admin tooling.
-- **`get_password.js` is sensitive**: it enables retrieving decrypted passwords; restrict/remove outside local debugging.
 - **Validation coverage**: the audit added input validation for core auth/reset flows; other admin endpoints still accept broad inputs and would benefit from schema validation (e.g. Zod/Joi) for stricter contracts.
 - **JWT configuration**: authenticated routes depend on `JWT_SECRET`; ensure it is always set in production.
 

@@ -1,7 +1,12 @@
 # ── Agent & AI tooling ────────────────────────────────────────
 .agent/
 .agents/
+.codex
+.graphify-py/
+graphify-out/
+.graphify*
 skills-lock.json
+CODEX.md
 
 # ── Dependencies ──────────────────────────────────────────────
 node_modules/

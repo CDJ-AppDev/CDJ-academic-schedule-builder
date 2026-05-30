@@ -186,22 +186,6 @@ app.put('/api/schedule', authenticateToken, async (req, res) => {
 
 ---
 
-### 2. Password Retrieval Utility: [get_password.js](file:///c:/Users/theun/Downloads/sched/backend/get_password.js)
-A secure command-line tool allowing system administrators to locate credentials and decrypt passwords.
-
-* **Location:** [get_password.js](file:///c:/Users/theun/Downloads/sched/backend/get_password.js)
-* **Functionality:** Queries the `USER_CREDENTIALS` database by email and decrypts the password using the shared AES-256-CBC utility logic.
-
-```javascript
-// Command line execution: node get_password.js user@example.com
-const email = process.argv[2];
-const result = await pool.query('SELECT UserID, UserEmail, UserPassword, UserAccess FROM USER_CREDENTIALS WHERE LOWER(UserEmail) = LOWER($1)', [email]);
-const decryptedPassword = decrypt(result.rows[0].userpassword);
-console.log(`Password:  ${decryptedPassword}`);
-```
-
----
-
 ## 🎨 Frontend JavaScript Architecture
 
 The frontend consists of modular, single-responsibility scripts that execute within the browser, coordinating layouts, API requests, routing guards, and timetable grid plotting.
