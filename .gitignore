@@ -11,7 +11,7 @@ CODEX.md
 # ── Dependencies ──────────────────────────────────────────────
 node_modules/
 
-# ── Environment & secrets ─────────────────────────────────────
+# ── Environment & secrets ───────────────────────────────────── 
 .env
 .env.local
 .env.*.local

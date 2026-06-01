@@ -99,8 +99,11 @@
   width: 100%;
   overflow-x: auto;
   border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  border: 1px solid var(--panel-border-glass);
+  background: var(--panel-glass);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: var(--panel-shadow-glass);
 }
 
 .admin-table {
@@ -112,13 +115,13 @@
 .admin-table th,
 .admin-table td {
   padding: 13px 18px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--panel-border-glass);
   font-size: 0.9rem;
 }
 
 .admin-table th {
-  background: var(--surface);
-  font-weight: 600;
+  background: rgba(255, 255, 255, 0.02);
+  font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
   font-size: 0.72rem;
@@ -159,30 +162,37 @@
 
 .pagination-btn {
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
   color: var(--text);
   padding: 8px 12px;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
   min-width: 40px;
   font-size: 0.85rem;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  border-color: var(--accent);
-  background: rgba(139, 92, 246, 0.08);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
 }
 
 .pagination-btn.active {
-  background: var(--accent);
+  background: linear-gradient(to bottom, #a78bfa, #8b5cf6);
+  border: 1px solid var(--accent-skeuo-border);
   color: #fff;
-  border-color: transparent;
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .pagination-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .pagination-ellipsis {
@@ -193,53 +203,98 @@
 
 /* ── Action Buttons ─────────────────────────────────────────── */
 .btn-action {
-  padding: 5px 11px;
+  padding: 5px 13px;
   border-radius: 8px;
-  border: 1px solid transparent;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  font-family: inherit;
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: inherit;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
 }
 
+.btn-action::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.10), transparent);
+  pointer-events: none;
+}
+
+/* ── Edit (purple) ─────────────────────── */
 .btn-action.edit-btn {
-  background-color: rgba(139, 92, 246, 0.12);
-  color: #a78bfa;
-  border-color: rgba(139, 92, 246, 0.25);
+  background: linear-gradient(to bottom, rgba(167, 139, 250, 0.22), rgba(139, 92, 246, 0.14));
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .btn-action.edit-btn:hover {
-  background-color: #8b5cf6;
+  background: linear-gradient(to bottom, #a78bfa, #8b5cf6);
+  border-color: var(--accent-skeuo-border, #7c3aed);
   color: #fff;
-  border-color: transparent;
+  box-shadow: 0 3px 10px rgba(139, 92, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
 }
 
+.btn-action.edit-btn:active {
+  background: linear-gradient(to bottom, #7c3aed, #6d28d9);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(139, 92, 246, 0.2);
+  transform: translateY(1px) scale(0.97);
+}
+
+/* ── Delete (red) ──────────────────────── */
 .btn-action.delete-btn {
-  background-color: rgba(239, 68, 68, 0.12);
-  color: #f87171;
-  border-color: rgba(239, 68, 68, 0.25);
+  background: linear-gradient(to bottom, rgba(248, 113, 113, 0.18), rgba(239, 68, 68, 0.10));
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .btn-action.delete-btn:hover {
-  background-color: #ef4444;
+  background: linear-gradient(to bottom, #f87171, #ef4444);
+  border-color: rgba(239, 68, 68, 0.5);
   color: #fff;
-  border-color: transparent;
+  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
+.btn-action.delete-btn:active {
+  background: linear-gradient(to bottom, #dc2626, #b91c1c);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(239, 68, 68, 0.2);
+  transform: translateY(1px) scale(0.97);
+}
+
+/* ── Make Admin (green) ────────────────── */
 .btn-action.make-admin-btn {
-  background-color: rgba(16, 185, 129, 0.12);
-  color: #34d399;
-  border-color: rgba(16, 185, 129, 0.25);
+  background: linear-gradient(to bottom, rgba(52, 211, 153, 0.18), rgba(16, 185, 129, 0.10));
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .btn-action.make-admin-btn:hover {
-  background-color: #10b981;
+  background: linear-gradient(to bottom, #34d399, #10b981);
+  border-color: rgba(16, 185, 129, 0.45);
   color: #fff;
-  border-color: transparent;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.btn-action.make-admin-btn:active {
+  background: linear-gradient(to bottom, #059669, #047857);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35), 0 1px 1px rgba(16, 185, 129, 0.15);
+  transform: translateY(1px) scale(0.97);
 }
 
 /* ── Password toggle ────────────────────────────────────────── */
@@ -316,14 +371,16 @@
 }
 
 .modal-content {
-  background: var(--panel);
+  background: var(--panel-glass);
   padding: 32px;
   border-radius: 24px;
   width: min(520px, 92%);
   max-height: 88vh;
   overflow-y: auto;
-  box-shadow: var(--panel-shadow), 0 0 0 1px rgba(139, 92, 246, 0.2);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: var(--panel-shadow-glass), 0 0 0 1px rgba(139, 92, 246, 0.25);
+  border: 1px solid var(--panel-border-glass);
   position: relative;
   animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -459,10 +516,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--surface);
+  background: var(--panel-glass);
   padding: 6px 12px;
   border-radius: 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--panel-border-glass);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .filter-container label {
@@ -481,7 +539,7 @@
   border-radius: 8px;
   padding: 6px 30px 6px 12px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
   outline: none;
   cursor: pointer;
@@ -490,9 +548,14 @@
   background-repeat: no-repeat;
   background-position: right 8px center;
   background-size: 11px;
-  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   min-width: 130px;
   font-family: inherit;
+}
+
+[data-theme="light"] .admin-filter-select {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .admin-filter-select option {
@@ -502,7 +565,6 @@
 
 .admin-filter-select:hover {
   border-color: rgba(139, 92, 246, 0.35);
-  background-color: rgba(255, 255, 255, 0.07);
 }
 
 .admin-filter-select:focus {

@@ -77,10 +77,27 @@
    * @param {Function} onConfirm - Callback trigger when accepted
    * @param {Function} [onCancel] - Optional cancel trigger when closed
    * @param {string} [title] - Header title
+   * @param {string} [confirmType] - Button/theme variant: 'primary' (default), 'warning', or 'error'
    */
-  window.confirmPopup = function (message, onConfirm, onCancel, title) {
+  window.confirmPopup = function (message, onConfirm, onCancel, title, confirmType) {
+    confirmType = confirmType || 'primary';
     title = title || 'Confirmation';
-    
+
+    // Resolve icon, icon class, and title class based on confirmType
+    let iconHtml = `<svg class="modal-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 24px; height: 24px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+    let iconClass = '';
+    let titleClass = '';
+
+    if (confirmType === 'warning') {
+      iconHtml = `<svg class="modal-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 24px; height: 24px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+      iconClass = 'warning';
+      titleClass = 'warning-text';
+    } else if (confirmType === 'error') {
+      iconHtml = `<svg class="modal-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 24px; height: 24px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+      iconClass = 'error';
+      titleClass = 'error-text';
+    }
+
     const existing = document.querySelector('.custom-modal-overlay');
     if (existing) existing.remove();
 
@@ -88,12 +105,12 @@
     overlay.className = 'custom-modal-overlay';
     overlay.innerHTML = `
       <div class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="cmod-title">
-        <div class="custom-modal-icon"><svg class="modal-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 24px; height: 24px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
-        <div class="custom-modal-title" id="cmod-title">${title}</div>
+        <div class="custom-modal-icon ${iconClass}">${iconHtml}</div>
+        <div class="custom-modal-title ${titleClass}" id="cmod-title">${title}</div>
         <div class="custom-modal-body">${message}</div>
         <div class="custom-modal-actions">
           <button class="custom-modal-btn secondary" id="custom-confirm-cancel">Cancel</button>
-          <button class="custom-modal-btn primary" id="custom-confirm-ok">Confirm</button>
+          <button class="custom-modal-btn ${confirmType}" id="custom-confirm-ok">Confirm</button>
         </div>
       </div>
     `;

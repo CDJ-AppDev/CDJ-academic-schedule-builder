@@ -220,34 +220,14 @@ function displayAvailableCourses() {
 
   Object.values(courseGroups).forEach((course) => {
     const courseCard = document.createElement('div');
-    courseCard.className = 'course-card';
-    courseCard.style.border = 'none';
-    courseCard.style.background = 'transparent';
-    courseCard.style.boxShadow = 'none';
-    courseCard.style.overflow = 'visible';
+    courseCard.className = 'available-course-group';
 
     const courseHeader = document.createElement('div');
-    courseHeader.className = 'course-card-header';
-    courseHeader.style.cursor = 'pointer';
-    courseHeader.style.display = 'flex';
-    courseHeader.style.justifyContent = 'space-between';
-    courseHeader.style.alignItems = 'center';
-    courseHeader.style.background = '#4543AB'; // Classes dropdown theme color
-    courseHeader.style.color = 'white';
-    courseHeader.style.borderRadius = '12px';
-    courseHeader.style.padding = '14px 20px';
-    courseHeader.style.borderBottom = 'none';
-    courseHeader.style.fontWeight = 'bolder';
-    courseHeader.style.boxShadow = '0 4px 12px rgba(69, 67, 171, 0.15)';
-    courseHeader.style.transition = 'all 0.3s ease';
+    courseHeader.className = 'available-course-header';
 
     const titleEl = document.createElement('h3');
     titleEl.textContent = `${course.code} - ${course.name}`;
-    titleEl.style.margin = '0';
-    titleEl.style.fontSize = '0.98rem';
-    titleEl.style.fontWeight = '600';
-    titleEl.style.letterSpacing = '0.01em';
-    titleEl.style.color = '#ffffff';
+    titleEl.className = 'available-course-title';
 
     const arrowEl = document.createElement('img');
     arrowEl.className = 'arrow';
@@ -263,23 +243,20 @@ function displayAvailableCourses() {
 
     const dropdown = document.createElement('div');
     dropdown.className = 'dropdown';
-    dropdown.style.overflow = 'hidden';
-    dropdown.style.maxHeight = '0';
-    dropdown.style.transition = 'max-height 0.4s ease';
 
     courseHeader.addEventListener('click', () => {
       const isOpen = dropdown.classList.contains('active');
       if (!isOpen) {
         // Close other available course dropdowns to reduce clutter
-        const otherCards = availableCoursesList.querySelectorAll('.course-card');
+        const otherCards = availableCoursesList.querySelectorAll('.available-course-group');
         otherCards.forEach(card => {
           const otherDropdown = card.querySelector('.dropdown');
-          const otherHeader = card.querySelector('.course-card-header');
+          const otherHeader = card.querySelector('.available-course-header');
           const otherArrow = card.querySelector('.arrow');
           if (otherDropdown && otherDropdown !== dropdown && otherDropdown.classList.contains('active')) {
             otherDropdown.classList.remove('active');
             otherDropdown.style.maxHeight = '0';
-            if (otherHeader) otherHeader.style.borderRadius = '12px';
+            if (otherHeader) otherHeader.classList.remove('active');
             if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
           }
         });
@@ -296,7 +273,11 @@ function displayAvailableCourses() {
       const newOpenState = dropdown.classList.toggle('active');
       arrowEl.style.transform = newOpenState ? 'rotate(180deg)' : 'rotate(0deg)';
       dropdown.style.maxHeight = newOpenState ? `${dropdown.scrollHeight}px` : '0';
-      courseHeader.style.borderRadius = newOpenState ? '12px 12px 0 0' : '12px';
+      if (newOpenState) {
+        courseHeader.classList.add('active');
+      } else {
+        courseHeader.classList.remove('active');
+      }
     });
 
     course.sections.forEach((section, index) => {
@@ -566,7 +547,8 @@ if (coursesList) {
         }
       },
       null,
-      'Remove Course'
+      'Remove Course',
+      'warning'
     );
   });
 }

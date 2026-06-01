@@ -1290,7 +1290,8 @@ async function deleteRecord(targetType, recordId) {
       }
     },
     null,
-    'Confirm Delete'
+    'Confirm Delete',
+    'error'
   );
 }
 

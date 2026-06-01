@@ -75,15 +75,15 @@
             // Close other available course dropdowns to reduce clutter
             const availableCoursesList = document.getElementById('availableCourses');
             if (availableCoursesList) {
-              const otherCards = availableCoursesList.querySelectorAll('.course-card');
+              const otherCards = availableCoursesList.querySelectorAll('.available-course-group');
               otherCards.forEach(card => {
                 const otherDropdown = card.querySelector('.dropdown');
-                const otherHeader = card.querySelector('.course-card-header');
+                const otherHeader = card.querySelector('.available-course-header');
                 const otherArrow = card.querySelector('.arrow');
                 if (otherDropdown && otherDropdown.classList.contains('active')) {
                   otherDropdown.classList.remove('active');
                   otherDropdown.style.maxHeight = '0';
-                  if (otherHeader) otherHeader.style.borderRadius = '12px';
+                  if (otherHeader) otherHeader.classList.remove('active');
                   if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
                 }
               });
