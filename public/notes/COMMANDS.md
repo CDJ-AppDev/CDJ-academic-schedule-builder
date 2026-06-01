@@ -7,12 +7,13 @@
 - docker push jjtschooldlsud/builder-backend:v3.1.4
 
 ## Frontend
-- docker build -t jjtschooldlsud/builder-frontend:v3.2.1 -f Dockerfile .
-- docker push jjtschooldlsud/builder-frontend:v3.2.1
+- docker build -t jjtschooldlsud/builder-frontend:v3.2.2 -f Dockerfile .
+- docker push jjtschooldlsud/builder-frontend:v3.2.2
 
 ## Apply Configurations
 - kubectl apply -f k8s/secret.yaml
 - kubectl apply -f k8s/configmap.yaml
+- kubectl apply -f k8s/versions.yaml
 
 ## Apply Database
 - kubectl apply -f k8s/postgres-pv.yaml

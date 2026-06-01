@@ -153,6 +153,22 @@
           </button>
         </nav>
       </div>
+      <div class="site-footer-versions" id="site-footer-versions" aria-label="Deployed versions">
+        <span class="sfv-item">
+          <span class="sfv-label">Frontend</span>
+          <span class="sfv-badge" id="sfv-frontend">&mdash;</span>
+        </span>
+        <span class="sfv-divider" aria-hidden="true"></span>
+        <span class="sfv-item">
+          <span class="sfv-label">Backend</span>
+          <span class="sfv-badge" id="sfv-backend">&mdash;</span>
+        </span>
+        <span class="sfv-divider" aria-hidden="true"></span>
+        <span class="sfv-item">
+          <span class="sfv-label">Postgres</span>
+          <span class="sfv-badge" id="sfv-postgres">&mdash;</span>
+        </span>
+      </div>
     `;
 
     document.body.appendChild(footer);
@@ -164,6 +180,23 @@
     footer.querySelectorAll('[data-footer-modal]').forEach((btn) => {
       btn.addEventListener('click', () => showFooterModal(btn.getAttribute('data-footer-modal')));
     });
+
+    // Fetch version data from /versions.json (served via k8s ConfigMap mount)
+    fetch(assetBase + 'versions.json')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        const set = (id, val) => {
+          const el = document.getElementById(id);
+          if (el && val) { el.textContent = 'v' + val; el.classList.add('sfv-loaded'); }
+        };
+        set('sfv-frontend', data.frontend);
+        set('sfv-backend', data.backend);
+        set('sfv-postgres', data.postgres);
+        const bar = document.getElementById('site-footer-versions');
+        if (bar) bar.classList.add('sfv-ready');
+      })
+      .catch(() => { /* silent fallback for local dev without k8s */ });
   }
 
   loadStylesheet();
