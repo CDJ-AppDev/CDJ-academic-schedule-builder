@@ -49,10 +49,6 @@ This repository contains extensive architectural and product documentation:
 └── README.md       # This file
 ```
 
-## Running Locally
-
-For detailed setup, database seeding, and Kubernetes deployment instructions, see [COMMANDS.md](./public/notes/COMMANDS.md) and [nodejs-backend.md](./public/documentation/nodejs-backend.md).
-
 ## Future Roadmap
 
 The application has a robust backlog of planned enhancements:
