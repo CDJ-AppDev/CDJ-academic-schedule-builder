@@ -215,8 +215,22 @@
     redirectPath = redirectPath || '../index.html';
     window.confirmPopup(
       'Are you sure you want to log out and return to the main landing page?',
-      () => {
+      async () => {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (refreshToken) {
+          try {
+            const API_BASE = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3000/api';
+            await fetch(`${API_BASE}/logout`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refreshToken })
+            });
+          } catch (e) {
+            console.error('Failed to notify server for logout session destruction:', e);
+          }
+        }
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
         window.location.href = redirectPath;
       },

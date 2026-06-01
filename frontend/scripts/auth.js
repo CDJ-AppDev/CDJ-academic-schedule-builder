@@ -6,6 +6,141 @@
 // Detect API base URL from centralized configuration
 const API_BASE = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3000/api';
 
+// Centralized fetch wrapper to intercept and refresh expired tokens
+(function () {
+  const originalFetch = window.fetch;
+  let isRefreshing = false;
+  let refreshSubscribers = [];
+
+  function subscribeTokenRefresh(cb) {
+    refreshSubscribers.push(cb);
+  }
+
+  function onTokenRefreshed(newToken) {
+    refreshSubscribers.forEach(cb => cb(newToken));
+    refreshSubscribers = [];
+  }
+
+  window.fetch = async function (resource, options = {}) {
+    const url = typeof resource === 'string' ? resource : (resource.url || '');
+    
+    // Avoid intercepting login, signup, refresh, or logout calls to prevent recursive infinite loops
+    if (url.includes('/api/login') || url.includes('/api/signup') || url.includes('/api/refresh') || url.includes('/api/logout')) {
+      return originalFetch(resource, options);
+    }
+
+    // Execute the original fetch request
+    let response;
+    try {
+      response = await originalFetch(resource, options);
+    } catch (err) {
+      throw err;
+    }
+
+    // Intercept 401 Unauthorized status (indicates access token expiration)
+    if (response.status === 401) {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (!refreshToken) {
+        return response; // No refresh token available, let the 401 bubble up
+      }
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+        
+        try {
+          const refreshRes = await originalFetch(`${API_BASE}/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken })
+          });
+
+          if (refreshRes.ok) {
+            const refreshData = await refreshRes.json();
+            localStorage.setItem('token', refreshData.token);
+            if (refreshData.refreshToken) {
+              localStorage.setItem('refreshToken', refreshData.refreshToken);
+            }
+            
+            isRefreshing = false;
+            onTokenRefreshed(refreshData.token);
+
+            // Retry the original request that triggered the refresh
+            const newOptions = { ...options };
+            if (newOptions.headers) {
+              if (newOptions.headers instanceof Headers) {
+                newOptions.headers.set('Authorization', `Bearer ${refreshData.token}`);
+              } else if (Array.isArray(newOptions.headers)) {
+                const authIndex = newOptions.headers.findIndex(([k]) => k.toLowerCase() === 'authorization');
+                if (authIndex !== -1) {
+                  newOptions.headers[authIndex] = ['Authorization', `Bearer ${refreshData.token}`];
+                } else {
+                  newOptions.headers.push(['Authorization', `Bearer ${refreshData.token}`]);
+                }
+              } else {
+                newOptions.headers = { ...options.headers };
+                const authKey = Object.keys(newOptions.headers).find(k => k.toLowerCase() === 'authorization') || 'Authorization';
+                newOptions.headers[authKey] = `Bearer ${refreshData.token}`;
+              }
+            } else {
+              newOptions.headers = { 'Authorization': `Bearer ${refreshData.token}` };
+            }
+            return originalFetch(resource, newOptions);
+          } else {
+            // Refresh token has failed (expired, deleted, etc.) - force clean logout
+            isRefreshing = false;
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            
+            // Redirect to login page if we are not already on an auth page
+            const pathname = window.location.pathname;
+            const isLandingOrAuth = pathname.endsWith('/') || pathname.includes('index.html') || pathname.includes('login.html') || pathname.includes('signup.html');
+            if (!isLandingOrAuth) {
+              const isInsidePages = pathname.includes('/pages/');
+              const loginPath = isInsidePages ? './login.html' : './pages/login.html';
+              window.location.href = loginPath;
+            }
+            return response;
+          }
+        } catch (refreshErr) {
+          isRefreshing = false;
+          console.error('Failed to perform silent token refresh:', refreshErr);
+          return response;
+        }
+      }
+
+      // If we are already refreshing, queue the request until refresh completes
+      return new Promise((resolve) => {
+        subscribeTokenRefresh((newToken) => {
+          // Re-clone options and update Authorization header
+          const newOptions = { ...options };
+          if (newOptions.headers) {
+            if (newOptions.headers instanceof Headers) {
+              newOptions.headers.set('Authorization', `Bearer ${newToken}`);
+            } else if (Array.isArray(newOptions.headers)) {
+              const authIndex = newOptions.headers.findIndex(([k]) => k.toLowerCase() === 'authorization');
+              if (authIndex !== -1) {
+                newOptions.headers[authIndex] = ['Authorization', `Bearer ${newToken}`];
+              } else {
+                newOptions.headers.push(['Authorization', `Bearer ${newToken}`]);
+              }
+            } else {
+              newOptions.headers = { ...options.headers };
+              const authKey = Object.keys(newOptions.headers).find(k => k.toLowerCase() === 'authorization') || 'Authorization';
+              newOptions.headers[authKey] = `Bearer ${newToken}`;
+            }
+          } else {
+            newOptions.headers = { 'Authorization': `Bearer ${newToken}` };
+          }
+          resolve(originalFetch(resource, newOptions));
+        });
+      });
+    }
+
+    return response;
+  };
+})();
+
 /**
  * Retrieves the session token from either URL search parameters or standard local storage.
  * URL-based extraction is required for dynamic protocol sandboxing (e.g. file:// protocols crossing directory scopes).
@@ -254,6 +389,9 @@ if (loginButton) {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        if (data.refreshToken) {
+          localStorage.setItem('refreshToken', data.refreshToken);
+        }
         localStorage.setItem('user', JSON.stringify(data.user));
         if (data.user && data.user.access === 'Admin') {
           redirectWithToken(getAdminPath());
@@ -321,6 +459,9 @@ if (signupButton) {
 
       if (loginResponse.ok) {
         localStorage.setItem('token', loginData.token);
+        if (loginData.refreshToken) {
+          localStorage.setItem('refreshToken', loginData.refreshToken);
+        }
         localStorage.setItem('user', JSON.stringify(loginData.user));
         redirectWithToken(`./setup.html`);
       } else {

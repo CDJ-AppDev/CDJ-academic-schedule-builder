@@ -3,12 +3,12 @@
 - docker push jjtschooldlsud/builder-postgres:v3.1.1
 
 ## Backend
-- docker build -t jjtschooldlsud/builder-backend:v3.1.2 -f backend/Dockerfile backend
-- docker push jjtschooldlsud/builder-backend:v3.1.2
+- docker build -t jjtschooldlsud/builder-backend:v3.1.4 -f backend/Dockerfile backend
+- docker push jjtschooldlsud/builder-backend:v3.1.4
 
 ## Frontend
-- docker build -t jjtschooldlsud/builder-frontend:v3.2.0 -f Dockerfile .
-- docker push jjtschooldlsud/builder-frontend:v3.2.0
+- docker build -t jjtschooldlsud/builder-frontend:v3.2.1 -f Dockerfile .
+- docker push jjtschooldlsud/builder-frontend:v3.2.1
 
 ## Apply Configurations
 - kubectl apply -f k8s/secret.yaml

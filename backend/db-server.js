@@ -199,6 +199,26 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
+// Auto-initialize refresh tokens table for zero-config deployments
+(async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS REFRESH_TOKENS (
+        ID SERIAL PRIMARY KEY,
+        UserID INT NOT NULL REFERENCES USER_CREDENTIALS(UserID) ON DELETE CASCADE,
+        Token VARCHAR(500) NOT NULL UNIQUE,
+        ExpiresAt TIMESTAMP NOT NULL,
+        CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON REFRESH_TOKENS(Token);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_refresh_tokens_userid ON REFRESH_TOKENS(UserID);`);
+    logDebug('Database refresh token table auto-initialized successfully.');
+  } catch (err) {
+    console.error('Error auto-initializing database refresh token table:', err);
+  }
+})();
+
 /**
  * Express Middleware to verify JWT authentication token from request headers.
  * Populates req.user with decoded token data (e.g. user_id) on success.
@@ -215,7 +235,7 @@ const authenticateToken = (req, res, next) => {
   if (!token) return res.status(401).json({ error: 'Access denied' });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
+    if (err) return res.status(401).json({ error: 'Invalid or expired token' });
     req.user = user;
     next();
   });
@@ -284,8 +304,103 @@ app.post('/api/login', asyncHandler(async (req, res) => {
   const validPassword = (decrypt(user.userpassword) === password);
   if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
 
-  const token = jwt.sign({ user_id: user.userid }, process.env.JWT_SECRET);
-  res.json({ token, user: { user_id: user.userid, name: user.username, email: normalizedEmail, access: user.useraccess } });
+  // Generate short-lived Access Token (15 minutes)
+  const token = jwt.sign({ user_id: user.userid }, process.env.JWT_SECRET, { expiresIn: '15m' });
+  
+  // Generate long-lived Refresh Token (7 days)
+  const refreshSecret = process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh');
+  const refreshToken = jwt.sign({ user_id: user.userid }, refreshSecret, { expiresIn: '7d' });
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+  // Clean up any previously expired refresh tokens for this user to prevent db bloat
+  await pool.query('DELETE FROM REFRESH_TOKENS WHERE UserID = $1 AND ExpiresAt < CURRENT_TIMESTAMP', [user.userid]);
+
+  // Insert the fresh refresh token into the database
+  await pool.query(
+    'INSERT INTO REFRESH_TOKENS (UserID, Token, ExpiresAt) VALUES ($1, $2, $3)',
+    [user.userid, refreshToken, expiresAt]
+  );
+
+  res.json({ 
+    token, 
+    refreshToken,
+    user: { user_id: user.userid, name: user.username, email: normalizedEmail, access: user.useraccess } 
+  });
+}));
+
+// Refresh Token Endpoint with RTR (Refresh Token Rotation)
+app.post('/api/refresh', asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    return res.status(400).json({ error: 'Refresh token is required' });
+  }
+
+  const refreshSecret = process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh');
+
+  // Verify the refresh token structure & signature
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshToken, refreshSecret);
+  } catch (err) {
+    // If the token is structure-wise expired/invalid, purge it from our DB
+    await pool.query('DELETE FROM REFRESH_TOKENS WHERE Token = $1', [refreshToken]);
+    return res.status(401).json({ error: 'Invalid or expired refresh token' });
+  }
+
+  // Verify the token exists in the database
+  const dbResult = await pool.query(
+    'SELECT UserID, ExpiresAt FROM REFRESH_TOKENS WHERE Token = $1',
+    [refreshToken]
+  );
+
+  if (dbResult.rows.length === 0) {
+    return res.status(401).json({ error: 'Refresh token not recognized or already rotated' });
+  }
+
+  const { userid, expiresat } = dbResult.rows[0];
+
+  // Double check expiration dates
+  if (new Date() > new Date(expiresat)) {
+    await pool.query('DELETE FROM REFRESH_TOKENS WHERE Token = $1', [refreshToken]);
+    return res.status(401).json({ error: 'Refresh token expired' });
+  }
+
+  // Implement RTR (Refresh Token Rotation): Generate a new pair
+  const token = jwt.sign({ user_id: userid }, process.env.JWT_SECRET, { expiresIn: '15m' });
+  const newRefreshToken = jwt.sign({ user_id: userid }, refreshSecret, { expiresIn: '7d' });
+  const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    
+    // Invalidate the old refresh token
+    await client.query('DELETE FROM REFRESH_TOKENS WHERE Token = $1', [refreshToken]);
+    
+    // Insert the new one
+    await client.query(
+      'INSERT INTO REFRESH_TOKENS (UserID, Token, ExpiresAt) VALUES ($1, $2, $3)',
+      [userid, newRefreshToken, newExpiresAt]
+    );
+
+    await client.query('COMMIT');
+    res.json({ token, refreshToken: newRefreshToken });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Error during token rotation:', err);
+    res.status(500).json({ error: 'Server error rotating tokens' });
+  } finally {
+    client.release();
+  }
+}));
+
+// Revoke Refresh Token (Logout)
+app.post('/api/logout', asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+  if (refreshToken) {
+    await pool.query('DELETE FROM REFRESH_TOKENS WHERE Token = $1', [refreshToken]);
+  }
+  res.json({ message: 'Successfully logged out' });
 }));
 
 // Forgot Password Endpoint
