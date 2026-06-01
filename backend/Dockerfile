@@ -1,16 +1,16 @@
-FROM node:16-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Since the Dockerfile is INSIDE the db folder, 
-# just refer to the files directly.
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy the server script and env
-COPY db-server.js .
-COPY .env .
+# Copy all the remaining application files
+COPY . .
 
 EXPOSE 3000
 
-CMD ["node", "db-server.js"]
+CMD ["npm", "start"]
