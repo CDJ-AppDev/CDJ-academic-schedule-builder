@@ -133,7 +133,10 @@
     footer.setAttribute('role', 'contentinfo');
     footer.innerHTML = `
       <div class="site-footer-inner">
-        <p class="site-footer-copy">&copy; CDJ: Academic Schedule Builders</p>
+        <p class="site-footer-copy">
+          &copy; CDJ: Academic Schedule Builders
+          <span class="sfv-inline" id="sfv-inline" aria-label="Deployed versions"></span>
+        </p>
         <nav class="site-footer-nav" aria-label="Site footer">
           <a class="site-footer-link" href="mailto:academicschedulebuilder@gmail.com">
             ${ICONS.email}
@@ -153,22 +156,6 @@
           </button>
         </nav>
       </div>
-      <div class="site-footer-versions" id="site-footer-versions" aria-label="Deployed versions">
-        <span class="sfv-item">
-          <span class="sfv-label">Frontend</span>
-          <span class="sfv-badge" id="sfv-frontend">&mdash;</span>
-        </span>
-        <span class="sfv-divider" aria-hidden="true"></span>
-        <span class="sfv-item">
-          <span class="sfv-label">Backend</span>
-          <span class="sfv-badge" id="sfv-backend">&mdash;</span>
-        </span>
-        <span class="sfv-divider" aria-hidden="true"></span>
-        <span class="sfv-item">
-          <span class="sfv-label">Postgres</span>
-          <span class="sfv-badge" id="sfv-postgres">&mdash;</span>
-        </span>
-      </div>
     `;
 
     document.body.appendChild(footer);
@@ -186,15 +173,17 @@
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (!data) return;
-        const set = (id, val) => {
-          const el = document.getElementById(id);
-          if (el && val) { el.textContent = 'v' + val; el.classList.add('sfv-loaded'); }
-        };
-        set('sfv-frontend', data.frontend);
-        set('sfv-backend', data.backend);
-        set('sfv-postgres', data.postgres);
-        const bar = document.getElementById('site-footer-versions');
-        if (bar) bar.classList.add('sfv-ready');
+        const inline = document.getElementById('sfv-inline');
+        if (!inline) return;
+        const parts = [
+          data.frontend ? 'v' + data.frontend : null,
+          data.backend  ? 'v' + data.backend  : null,
+          data.postgres ? 'v' + data.postgres : null
+        ].filter(Boolean);
+        if (parts.length) {
+          inline.textContent = parts.join(' · ');
+          inline.classList.add('sfv-loaded');
+        }
       })
       .catch(() => { /* silent fallback for local dev without k8s */ });
   }
