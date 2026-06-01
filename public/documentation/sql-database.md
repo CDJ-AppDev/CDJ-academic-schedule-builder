@@ -1,38 +1,34 @@
 # SQL Database — Feature Documentation
 
 ## Overview
-PostgreSQL schema for the Academic Schedule Builder, covering authentication credentials, user profiles, programs/terms, courses/professors/course slots, schedules, and password reset PINs.
+The PostgreSQL database forms the persistence layer for Academic Schedule Builder. It uses relational schemas to structure the academic catalog, authentication data, and user profiles, and utilizes NoSQL (JSONB) features to efficiently store user schedules.
 
 ## Key Files & Locations
-- `backend/sql/1setup.sql`: schema definition (tables, constraints) + indexes
-- `backend/sql/1terms.sql`: seed data for `program` + `term`
-- `backend/sql/2users.sql`: seed users + profiles (AES-encrypted sample passwords)
-- `backend/sql/3professors.sql`: seed professors
-- `backend/sql/4courses.sql`: seed courses, course↔term mapping, and course slots
+All initialization files are located in `backend/sql/`.
+- `1setup.sql`: Defines all schemas, tables, constraints, foreign keys, and indexes. **This must be run first.**
+- `1terms.sql`: Seed data for academic `program` and `term` structures.
+- `2users.sql`: Seed users and profiles (includes admin and test accounts with AES-encrypted passwords).
+- `3professors.sql`: Seed data for instructors.
+- `4courses.sql`: Seed data for courses, term mappings, and meeting slots.
 
-## Features
-- **User auth storage**: `user_credentials` stores email, encrypted password, access role (`Admin`/`Default`), and timestamps.
-- **User profile**: `user_profile` stores display name and selected `termid`.
-- **Program/term modeling**:
-  - `program` defines program metadata (duration, semester type, default units).
-  - `term` defines program/year/semester with required units; uniqueness enforced by `(programid, yearlevel, semester)`.
-- **Course catalog**:
-  - `course` stores course identity and unit count.
-  - `course_term` maps courses to one or more terms.
-- **Scheduling primitives**:
-  - `professor` stores instructor metadata.
-  - `courseslot` stores meeting blocks (day/time/room) and optional professor assignment.
-- **User schedules**:
-  - `schedule` stores per-user named schedules; `schedulelist` is JSONB for selected course slots + manual entries.
-- **Password reset**:
-  - `password_reset_token` stores a 6-digit PIN and expiry per email.
+## Data Model & Features
+- **User Management**
+  - `user_credentials`: Stores email, encrypted passwords, roles (`Admin` or `Default`), and timestamps.
+  - `user_profile`: Stores display name and links to the selected `termid`.
+  - `password_reset_token`: Temporary 6-digit PIN tracking for password recovery.
+- **Academic Catalog (Relational)**
+  - `program` & `term`: Defines the academic tree. A `term` is a unique composite of `(programid, yearlevel, semester)`.
+  - `course` & `course_term`: The course dictionary and its many-to-many relationship with available terms.
+  - `professor` & `courseslot`: Physical meeting times bounded by days/times and assigned to professors.
+- **Schedule Storage (JSONB)**
+  - `schedule`: Stores named schedule variants per user (`schedulename`, `totalunits`, `regular` status).
+  - `schedulelist`: A `JSONB` column inside the `schedule` table storing an array of selected course slots and manual, irregular entries. This avoids complex many-to-many junction tables for highly volatile, draft schedules.
 
 ## Dependencies
-- **Node.js Backend**: all reads/writes are executed by `backend/db-server.js` via `pg` parameterized queries.
-- **Kubernetes**: `k8s/postgres*.yaml` provides the Postgres Deployment/Service/PV/PVC.
+- **Node.js Backend**: The `backend/services/*.js` modules connect via the `pg` pool. All queries must be parameterized to prevent SQL injection.
+- **Docker/K8s**: The database is designed to run in a containerized environment (see `backend/sql/Dockerfile`).
 
 ## TODOs & Known Limitations
-- **Passwords are reversibly encrypted**: the current design encrypts/decrypts passwords (AES) instead of using one-way hashing (e.g. bcrypt/argon2). This is a security risk and also forces the backend/admin tooling to handle decrypted secrets.
-- **Seed data contains real-looking credentials**: `backend/sql/2users.sql` includes encrypted sample passwords and admin email; treat as non-production seed data.
-- **Indexes added post-hoc**: `backend/sql/1setup.sql` now creates explicit indexes for foreign-key join columns; ensure your DB instance is rebuilt or migrations are applied if you rely on existing data.
-
+- **Reversible Password Encryption**: Passwords are saved using AES-encryption instead of standard one-way hashes (bcrypt/argon2). This represents a major security vulnerability that must be resolved prior to launch.
+- **Seed Data Security**: `2users.sql` contains realistic credentials and administrative emails. Do not deploy these seed users to a live production environment.
+- **Migration Strategy**: The project currently relies on dropping and recreating tables or running manual ALTER statements. Implementing a robust migration runner (like Knex or Flyway) is strongly recommended for production lifecycles.

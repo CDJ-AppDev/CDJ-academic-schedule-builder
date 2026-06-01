@@ -1,39 +1,35 @@
 # Front-End JavaScript — Feature Documentation
 
 ## Overview
-Browser-side JavaScript powers authentication flows, API access, schedule builder/plotter interactions, profile management, and a private admin dashboard that performs CRUD operations via the backend admin API.
+Browser-side vanilla JavaScript powers authentication flows, API access, schedule builder/plotter interactions, profile management, and a private admin dashboard that performs CRUD operations via the backend admin API.
 
 ## Key Files & Locations
-- **Shared**
-  - `frontend/scripts/utils.js`: app configuration (`APP_CONFIG`) + shared utilities (`APP_UTILS`)
-  - `frontend/scripts/auth.js`: token handling, route guard, login/signup/reset flows, admin nav injection
-  - `frontend/scripts/theme.js`: light/dark theme toggle + persistence
-  - `frontend/scripts/popup.js`: shared modal/confirm UI
-- **Pages**
-  - `frontend/scripts/setup.js`: post-signup setup (program/year/semester)
-  - `frontend/scripts/profile.js`: user profile updates and account actions
-  - `frontend/scripts/subjects.js`, `frontend/scripts/classes.js`: builder catalog/selection logic
-  - `frontend/scripts/plotter.js`: plotting schedule blocks
-- **Private admin**
-  - `admin/admin.js`: admin dashboard UI state, filters, modals, CRUD calls to `/api/admin/*`
+- **Shared Utilities**
+  - `frontend/scripts/utils.js`: Core app configuration (`APP_CONFIG`), dynamic API base resolution, and shared utilities (`APP_UTILS.escapeHtml()`, `APP_UTILS.timeStringToMinutes()`). This file must be loaded before others.
+  - `frontend/scripts/auth.js`: Token handling, route guard, login/signup/reset flows, file URL token pass-through, and admin nav injection.
+  - `frontend/scripts/theme.js`: Light/dark theme toggle and local storage persistence.
+  - `frontend/scripts/popup.js`: Shared modal/confirm UI, replacing native alerts.
+- **Application Pages**
+  - `frontend/scripts/setup.js`: Post-signup setup (cascading program/year/semester selection).
+  - `frontend/scripts/profile.js`: User profile updates and account actions.
+  - `frontend/scripts/classes.js`: OOP Data classes (`Professor`, `CourseSlot`, `Course`).
+  - `frontend/scripts/subjects.js`: Schedule builder logic, course selection, manual irregular entries, and conflict checking (`doTimesOverlap()`, `checkScheduleConflict()`).
+  - `frontend/scripts/plotter.js`: Timetable grid generation (7 AM to 8 PM, Mon-Sat), customization, and PNG export via `html2canvas`.
+- **Private Admin Dashboard**
+  - `admin/admin.js`: Admin UI state, cascading filters, modal forms, and CRUD calls to `/api/admin/*`.
 
 ## Features
-- **API base URL resolution**: `APP_CONFIG.API_BASE` selects API origin based on protocol/host (supports `file://` and hosted environments).
-- **Token propagation**: `auth.js` supports URL token pass-through for `file://` sandbox navigation.
-- **Route guarding & role syncing**: `auth.js` checks `/api/user-session` to refresh cached user metadata and injects admin navigation for admin accounts.
-- **Admin dashboard (CRUD)**
-  - Tabs for users/programs/terms/courses/professors/course slots/schedules
-  - Filtering logic for terms/courses/course slots
-  - Modal create/edit flows that submit JSON to backend
-  - **Audit change**: removed duplicate token helpers from `admin/admin.js` and centralized on the shared `auth.js` helpers; also switched admin page to load `utils.js` and use shared `escapeHtml`/time utilities (with fallbacks).
+- **API Base URL Resolution**: `APP_CONFIG.API_BASE` dynamically targets backend endpoints based on the deployment environment (local, hosted, or file://).
+- **Token Propagation**: `auth.js` maintains session JWTs in `localStorage` and automatically wraps requests with `Authorization: Bearer <token>`.
+- **Conflict Prevention**: `subjects.js` enforces schedule validity by checking day/time overlaps for both regular slots and manual entries.
+- **Admin Dashboard**: Comprehensive CRUD tools with dependency filters (e.g., Program -> Term -> Course cascades).
 
 ## Dependencies
-- **Node.js Backend**: all data flows depend on `backend/db-server.js` endpoints
-- **HTML Pages**: scripts are loaded by `pages/*.html` and `admin/admin.html`
-- **CSS**: behavior assumes specific class/ID hooks styled in `frontend/css/*`
+- **Node.js Backend**: All data flows depend on Express endpoints in `backend/db-server.js`.
+- **HTML Pages**: Scripts rely on DOM IDs and classes defined in `pages/*.html` and `admin/admin.html`.
 
 ## TODOs & Known Limitations
-- **Inline event handlers**: many pages use `onclick` / `onsubmit` attributes. Converting to `addEventListener` would improve maintainability but is a behavior-sensitive refactor.
-- **Admin JS size**: `admin/admin.js` is monolithic; consider splitting into modules (api client, renderers, filters, modal forms).
-- **Client-side validation**: some validation is UI-only; backend should remain the source of truth for validation.
-
+- **Inline Event Handlers**: Moving `onclick`/`onsubmit` to `addEventListener` would improve code hygiene but requires rigorous testing.
+- **Monolithic Admin JS**: `admin/admin.js` handles too much (API, rendering, filtering) and could be modularized.
+- **Future Architecture (React/TS)**: As documented in `REACT-TAILWIND-REBUILD-PLAN.md`, this entire vanilla JavaScript ecosystem is planned to be replaced by a React/TypeScript application to improve component reusability and type safety.
+- **Keyboard Shortcuts**: Planned functionality (see `KEYBOARD-PLAN.md`) is yet to be fully integrated.

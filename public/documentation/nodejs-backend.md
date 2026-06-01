@@ -1,47 +1,44 @@
 # Node.js Backend — Feature Documentation
 
 ## Overview
-Express-based JSON API that handles authentication, user profile setup, course catalog retrieval, schedule CRUD, and an admin-only CRUD dashboard backed by PostgreSQL.
+The backend is a modular Node.js/Express API that handles authentication, user profile management, course catalog retrieval, schedule persistence, and administrative CRUD operations. It acts as the intermediary between the frontend and the PostgreSQL database.
 
 ## Key Files & Locations
-- `backend/db-server.js`: Express server + routes + DB access (`pg`)
-- `backend/package.json`: runtime dependencies and start script
-- `backend/sql/*.sql`: schema and seed data (consumed externally during DB initialization)
+- **Core Application**:
+  - `backend/db-server.js`: Main Express app composition, mounted routers, middleware wiring, and server startup.
+- **Routing & Controllers**:
+  - `backend/routes/auth.js`: Login, signup, token refresh, logout, password reset.
+  - `backend/routes/user.js`: Profile updates, term selection.
+  - `backend/routes/courses.js`: Course retrieval, schedule saving/loading.
+  - `backend/routes/programs.js`: Cached program listings.
+  - `backend/routes/admin.js`: Administrative CRUD endpoints.
+- **Services (Business & DB Logic)**:
+  - `backend/services/*.js`: SQL queries (using `pg` parameterized queries), business rules, JWT rotation, and admin transaction logic.
+- **Middleware**:
+  - `backend/middleware/auth.js`: `authenticateToken` and `adminOnly` route guards.
+  - `backend/middleware/errorHandler.js`: Centralized Express error handler.
+- **Configuration & Utilities**:
+  - `backend/config/env.js`, `backend/config/database.js`: Environment and connection pool configuration.
+  - `backend/utils/crypto.js`, `backend/utils/email.js`: AES encryption helpers and nodemailer configuration.
 
 ## Features
-- **Authentication**
-  - `POST /api/signup`: creates `user_credentials` and `user_profile` (temporary username defaults to email)
-  - `POST /api/login`: issues JWT (`{ user_id }`) and returns user metadata
-  - `authenticateToken` middleware: verifies `Authorization: Bearer <token>` and sets `req.user`
-- **Password reset (PIN)**
-  - `POST /api/forgot-password`: validates email, creates a 6-digit PIN record in `password_reset_token`, sends email via SMTP (or dev fallback)
-  - `POST /api/reset-password`: validates PIN/email/expiry, updates encrypted password, deletes PIN token
-- **User program/term setup**
-  - `POST /api/term`: transactional update of `user_profile.termid` (and optional `username`)
-  - `GET /api/term`: returns either current user’s term selection or a specific term by query param
-  - `GET /api/programs`: public list of programs
-- **Catalog + schedules**
-  - `GET /api/courses`: returns course + slot + professor details for the user’s selected term (multi-join query)
-  - `GET /api/schedule`: returns user schedules; optimized to avoid N+1 by fetching all referenced `courseslot` rows in one query
-  - `PUT /api/schedule`: upserts a schedule (create or update) with `schedulelist` JSON
-  - `DELETE /api/schedule`: removes a course slot entry from a schedule’s JSONB list
-  - `DELETE /api/schedule/:id`: deletes a schedule
-- **Admin-only CRUD**
-  - `adminOnly` middleware: confirms `user_credentials.useraccess = 'Admin'`
-  - `GET/POST/PUT/DELETE /api/admin/*`: CRUD for programs, users, terms, courses, professors, course slots, and schedules
-  - **Bug fix applied**: admin course update now correctly deletes `course_term` mappings for the *old* course code before inserting mappings for the new code.
-- **Operational hardening**
-  - Switched to `cors` middleware (replacing manual CORS headers)
-  - Added centralized async error handler (catches `asyncHandler` routes)
-  - Reduced noisy debug logging in production paths
+- **Session & Auth Management**
+  - Generates short-lived JWT access tokens and long-lived refresh tokens (rotated transactionally).
+  - Protects private routes via `authenticateToken` and restricts dashboard actions via `adminOnly`.
+- **Schedule Management**
+  - Saves and retrieves student schedules in an optimized JSONB format, batch-loading related course slots to prevent N+1 query issues.
+- **Admin Dashboard Integration**
+  - Manages cascading updates (e.g., updating a program automatically generates/regenerates associated academic terms).
+  - Enforces time validation (7:00 AM to 8:00 PM) for course slots.
+- **Security & Reliability**
+  - Uses `cors`, `compression`, and `express-rate-limit`.
+  - Uses `asyncHandler` wrappers to pass exceptions directly to a centralized error handler.
 
 ## Dependencies
-- **SQL Database**: PostgreSQL schema in `backend/sql/`
-- **Email**: SMTP (`nodemailer`) with env-based configuration (and dev fallback)
-- **Kubernetes**: `k8s/backend.yaml` provides runtime env vars and probes
+- **PostgreSQL**: Relies entirely on the schema defined in `backend/sql/1setup.sql`.
+- **Third-Party Libraries**: `express`, `pg`, `jsonwebtoken`, `nodemailer`, `cors`, `dotenv`.
 
 ## TODOs & Known Limitations
-- **Credential security**: passwords are encrypted/decrypted (reversible). Move to one-way hashing (bcrypt/argon2) and remove password-decrypt functionality from API outputs and admin tooling.
-- **Validation coverage**: the audit added input validation for core auth/reset flows; other admin endpoints still accept broad inputs and would benefit from schema validation (e.g. Zod/Joi) for stricter contracts.
-- **JWT configuration**: authenticated routes depend on `JWT_SECRET`; ensure it is always set in production.
-
+- **Password Hashing**: Currently, user passwords are encrypted using reversible AES-256-CBC. This must be migrated to a one-way hashing algorithm like `bcrypt` or `argon2` before public release.
+- **Validation**: While core auth flows have input validation, many admin endpoints rely on basic type checking. Integrating a robust validation library (like Zod or Joi) is recommended.
+- **Refactoring**: Keep routes thin. Move any lingering raw SQL strings out of route files and into `backend/services/`.

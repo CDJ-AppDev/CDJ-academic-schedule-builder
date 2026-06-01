@@ -1,48 +1,46 @@
 # Kubernetes (K8s) — Feature Documentation
 
 ## Overview
-Kubernetes manifests deploy the frontend (static web), backend (Express API), and PostgreSQL database with Services for connectivity. The setup is designed for a simple single-namespace deployment.
+Kubernetes manifests deploy the frontend (static web), backend (Express API), and PostgreSQL database with Services for connectivity. The setup is designed for a simple single-namespace deployment, representing the "Production Model" (Option C) for ASB.
 
 ## Key Files & Locations
-- Deployments:
+- **Deployments:**
   - `k8s/frontend.yaml`
   - `k8s/backend.yaml`
   - `k8s/postgres.yaml`
-- Services:
+- **Services:**
   - `k8s/frontend-service.yaml`
   - `k8s/backend-service.yaml`
   - `k8s/postgres-service.yaml`
-- Configuration:
+- **Configuration & Storage:**
   - `k8s/configmap.yaml`
   - `k8s/secret.yaml`
-- Storage:
   - `k8s/postgres-pv.yaml`
   - `k8s/postgres-pvc.yaml`
+- **Reverse Proxy:**
+  - `k8s/nginx.conf` (Used by the frontend container for API routing)
 
 ## Features
-- **Frontend**
-  - Deployment exposes port 80
-  - LoadBalancer Service exposes the UI externally
-  - **Audit change**: added resource requests/limits and readiness/liveness HTTP probes (`/`)
-- **Backend**
-  - Deployment exposes port 3000
-  - LoadBalancer Service exposes the API externally
-  - Env vars sourced from ConfigMap/Secret for DB connectivity and JWT/SMTP
-  - **Audit change**: added resource requests/limits and readiness/liveness HTTP probes (`/api/programs`), plus `NODE_ENV=production`
-  - **Audit change**: optional `ENCRYPTION_KEY` env var wiring (secret key optional)
-- **Postgres**
-  - Deployment exposes port 5432
-  - Service provides cluster-internal hostname (`postgres-service`)
-  - PV/PVC provides storage via `hostPath` + manual StorageClass
-  - **Audit change**: added resource requests/limits and TCP readiness/liveness probes
+- **Frontend Container**
+  - Deployment exposes port 80.
+  - LoadBalancer Service exposes the UI externally.
+  - Configured with resource limits and HTTP liveness/readiness probes on `/`.
+- **Backend Container**
+  - Deployment exposes port 3000.
+  - LoadBalancer Service exposes the API externally.
+  - Reads variables from ConfigMap (`NODE_ENV`, `DB_HOST`, etc.) and Secret (`DB_PASSWORD`, `JWT_SECRET`).
+  - Liveness/Readiness probe on `/api/programs`.
+- **PostgreSQL Database**
+  - Deployment exposes port 5432 internally.
+  - Uses `hostPath` PersistentVolume for storage persistence.
+  - TCP liveness checks on port 5432.
 
 ## Dependencies
-- **SQL Database schema**: `backend/sql/1setup.sql` must be applied to the Postgres instance to create tables/indexes.
-- **Node.js Backend**: expects DB + JWT secrets to be present via env vars.
+- **Docker Images**: Requires pre-built Docker images for the frontend, backend, and a SQL initialization image.
+- **Initial Setup**: The Postgres DB is seeded via `backend/sql/*.sql` scripts on initialization.
 
 ## TODOs & Known Limitations
-- **Secrets in repo**: `k8s/secret.yaml` contains base64-encoded credentials and should be treated as dev/local only. Move to a secret manager / sealed-secrets and rotate credentials.
-- **Service exposure**: both backend and frontend are `type: LoadBalancer`. In many environments you’ll want `ClusterIP` + Ingress instead.
-- **Storage portability**: `hostPath` PV is node-specific and not suitable for managed multi-node clusters; use a dynamic provisioner (e.g. EBS/GCE PD/CSI).
-- **APP_URL**: `k8s/configmap.yaml` sets `APP_URL` to localhost; update it to the externally reachable frontend URL in real deployments.
-
+- **Secrets Management**: `k8s/secret.yaml` contains raw base64-encoded credentials. In a real production cluster, use an external Secret Manager, HashiCorp Vault, or Sealed Secrets.
+- **Service Exposure (Ingress)**: Exposing both frontend and backend as `LoadBalancer` types is costly and redundant. Transition to `ClusterIP` and use an Ingress Controller.
+- **Storage Portability**: The current `hostPath` PV binds data to a specific node, making it unsuitable for managed multi-node clusters (like EKS, GKE, AKS). Transition to dynamic volume provisioning (e.g., AWS EBS or GCP Persistent Disk).
+- **App URL Resolution**: The frontend ConfigMap sets `APP_URL` to localhost; update this to the actual domain name before deployment.

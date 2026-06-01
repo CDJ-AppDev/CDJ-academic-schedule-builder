@@ -25,4 +25,4 @@ CSS stylesheets provide the visual system (colors, spacing, typography, componen
 - **Duplication across page styles**: multiple page CSS files contain similar button/input/table patterns; consider consolidating into `main.css` utilities or a small component layer.
 - **Vendor prefixes**: `-webkit-backdrop-filter` is present to support Safari; other vendor prefixes are minimal.
 - **Audit scope**: this audit prioritized functional safety; deeper dead-rule elimination would require runtime coverage (page-by-page rendering + CSS usage tooling).
-
+- **Tailwind CSS Migration**: As outlined in the `REACT-TAILWIND-REBUILD-PLAN.md`, this entire vanilla CSS architecture is scheduled to be deprecated in favor of a unified Tailwind CSS design system inside a React SPA. Until the React app achieves feature parity, do not introduce new bespoke CSS frameworks here.

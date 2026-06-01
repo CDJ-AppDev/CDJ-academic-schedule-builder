@@ -30,4 +30,4 @@ Static HTML pages form the UI surface for the Academic Schedule Builder, includi
 - **Inline event attributes**: many pages use `onclick`, `onsubmit`, `onchange`. Removing these requires careful refactoring to preserve navigation and form behavior.
 - **Script ordering**: pages that depend on shared globals must ensure `frontend/scripts/utils.js` loads before scripts that reference `APP_CONFIG`/`APP_UTILS`.
 - **Semantic cleanup**: further audit could standardize landmarks (`header/main/nav` usage), dedupe repeated meta patterns, and enforce stricter accessibility (ARIA labels, focus states) across all pages.
-
+- **React Migration**: These static HTML pages are slated to be replaced by a Vite + React Single Page Application (SPA). The HTML files will act as the legacy frontend until full parity is reached in the React version (see `REACT-TAILWIND-REBUILD-PLAN.md`).
